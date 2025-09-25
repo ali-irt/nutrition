@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - The Nutri Co.{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <div class="home-header">
+        <h1>Dashboard</h1>
+        <p>Welcome to your nutrition coaching dashboard</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Quick Stats -->
+        <div class="stats-card">
+            <h3>Active Clients</h3>
+            <div class="stat-number">24</div>
+            <div class="stat-change positive">+3 this week</div>
+        </div>
+        
+        <div class="stats-card">
+            <h3>Meal Plans</h3>
+            <div class="stat-number">156</div>
+            <div class="stat-change">Created this month</div>
+        </div>
+        
+        <div class="stats-card">
+            <h3>Workouts</h3>
+            <div class="stat-number">89</div>
+            <div class="stat-change">Templates available</div>
+        </div>
+        
+        <div class="stats-card">
+            <h3>Check-ins</h3>
+            <div class="stat-number">12</div>
+            <div class="stat-change">Pending review</div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon">👤</div>
+                <div class="activity-content">
+                    <div class="activity-title">New client registered</div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">📊</div>
+                <div class="activity-content">
+                    <div class="activity-title">Vera completed check-in</div>
+                    <div class="activity-time">4 hours ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">🍽️</div>
+                <div class="activity-content">
+                    <div class="activity-title">New meal plan created</div>
+                    <div class="activity-time">1 day ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

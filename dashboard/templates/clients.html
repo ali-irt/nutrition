@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .nav-link{
+        color: white !important;
+
+    }
+     .bg-black{
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 90px;
+  }
+  .black-sec{
+    padding-left: 40px;
+  }
+</style>
+<!-- Header Section -->
+ <section class="bg-black text-white py-5 px-4">
+      <div class="container black-sec">
+    <h2>Clients / <span class="fw-bold">Active</span></h2>
+    <ul class="nav nav-pills mt-3">
+      <li class="nav-item"><a class="nav-link active" href="#">All Active (2)</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Payment Error</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Just Started</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">New Message</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">New Check-In (2)</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Missed Check-In (1)</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Reminders</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Ending Soon</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">No Communication (2)</a></li>
+    </ul>
+  </div>
+</div>
+ </section>
+
+<!-- Content Section -->
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>Showing 2 of 2 clients</div>
+    <div class="d-flex gap-2">
+      <input type="text" class="form-control" placeholder="Search">
+      <select class="form-select">
+        <option>Tag</option>
+      </select>
+      <button class="btn btn-black">Broadcast message</button>
+      <button class="btn btn-black">Add Lead</button>
+    </div>
+  </div>
+
+  <!-- Client Table -->
+  <table class="table client-table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Chat</th>
+        <th>Week</th>
+        <th>Check-in</th>
+        <th>Plans</th>
+        <th>Reminders</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="avatar me-2">VR</div>
+            Vera Rossakoff
+            <span class="badge bg-dark ms-2">Demo</span>
+          </div>
+        </td>
+        <td>
+          Thank you Coach! It looks great<br>
+          <small class="text-muted">10 days ago</small>
+        </td>
+        <td>2 of 13</td>
+        <td>10 days <span class="badge bg-dark ms-2">New</span></td>
+        <td>🍐</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="avatar me-2 bg-warning">HP</div>
+            Hercule Poirot
+            <span class="badge bg-dark ms-2">Demo</span>
+            <span class="badge bg-dark ms-1">+1</span>
+          </div>
+        </td>
+        <td>
+          Dear Hercule, your plans are ready!<br>
+          <small class="text-muted">12 days ago</small>
+        </td>
+        <td>2 of 26</td>
+        <td>7 days <span class="badge bg-dark ms-2">New</span></td>
+        <td>🍐</td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

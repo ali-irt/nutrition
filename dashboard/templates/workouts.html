@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Workouts - The Nutri Co.{% endblock %}
+
+{% block content %}
+<div class="workouts-container">
+    <div class="workouts-header">
+        <h1>Workouts</h1>
+        <div class="header-actions">
+            <button class="btn-primary">Add workout plan</button>
+        </div>
+    </div>
+    
+    <div class="workouts-tabs">
+        <a href="#" class="tab active">Templates</a>
+        <a href="#" class="tab">Exercises</a>
+    </div>
+    
+    <div class="workouts-content">
+        <!-- Workout Plans Summary -->
+        <div class="workout-summary">
+            <p>Showing 1 workout plan</p>
+        </div>
+        
+        <!-- Workout Plans Table -->
+        <div class="workout-table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Introduction</th>
+                        <th>Status</th>
+                        <th>Sessions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="workout-image">
+                                <img src="{% static 'dashboard/images/Workouts.png' %}" alt="Workout Plan">
+                            </div>
+                        </td>
+                        <td>Vera's Workout Plan</td>
+                        <td>-</td>
+                        <td><span class="status-badge published">Published</span></td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Exercise Library Section -->
+        <div class="exercise-section">
+            <div class="section-header">
+                <h2>Exercise Library</h2>
+                <div class="section-actions">
+                    <input type="search" placeholder="Search" class="search-input">
+                    <select class="filter-select">
+                        <option>Muscle groups</option>
+                        <option>Chest</option>
+                        <option>Back</option>
+                        <option>Legs</option>
+                        <option>Arms</option>
+                        <option>Core</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Library All</option>
+                        <option>Pre-made</option>
+                        <option>Custom</option>
+                    </select>
+                    <button class="btn-primary">Add exercises</button>
+                </div>
+            </div>
+            
+            <div class="exercises-summary">
+                <p>Showing 1,314 exercises</p>
+            </div>
+            
+            <!-- Exercises Table -->
+            <div class="exercises-table">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Content</th>
+                            <th>Muscle groups</th>
+                            <th>Equipment</th>
+                            <th>Library</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="exercise-info">
+                                    <div class="exercise-icon">
+                                        <img src="{% static 'dashboard/images/exercises.png' %}" alt="Exercise">
+                                    </div>
+                                    <span>1/2 Barbell Squat</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="content-icons">
+                                    <span class="icon">📹</span>
+                                    <span class="icon">📷</span>
+                                    <span class="icon">📄</span>
+                                </div>
+                            </td>
+                            <td>Glutes</td>
+                            <td>Barbell</td>
+                            <td><span class="library-badge pre-made">Pre-made</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <div class="exercise-info">
+                                    <div class="exercise-icon">
+                                        <img src="{% static 'dashboard/images/exercises.png' %}" alt="Exercise">
+                                    </div>
+                                    <span>1/2 Barbell Squat</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="content-icons">
+                                    <span class="icon">📹</span>
+                                    <span class="icon">📷</span>
+                                    <span class="icon">📄</span>
+                                </div>
+                            </td>
+                            <td>Glutes</td>
+                            <td>Barbell</td>
+                            <td><span class="library-badge pre-made">Pre-made</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <div class="exercise-info">
+                                    <div class="exercise-icon">
+                                        <img src="{% static 'dashboard/images/exercises.png' %}" alt="Exercise">
+                                    </div>
+                                    <span>1/2 Barbell Squat</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="content-icons">
+                                    <span class="icon">📹</span>
+                                    <span class="icon">📷</span>
+                                    <span class="icon">📄</span>
+                                </div>
+                            </td>
+                            <td>Glutes</td>
+                            <td>Barbell</td>
+                            <td><span class="library-badge pre-made">Pre-made</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

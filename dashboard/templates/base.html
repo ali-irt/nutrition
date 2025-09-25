@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}The Nutri Co.{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<style>
+    /* Parent dropdown item */
+.nav-menu .dropdown {
+    position: relative;
+}
+
+/* Dropdown list hidden by default */
+.nav-menu .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;  /* below the parent link */
+    left: 0;
+    background: #1a1a1a; /* navbar background */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 180px;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+/* Show on hover */
+.nav-menu .dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown links */
+.nav-menu .dropdown-menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-menu .dropdown-menu li a:hover,
+.nav-menu .dropdown-menu li a.active {
+    background: #333;
+}
+
+
+</style>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-icon">⊕</span>
+                    <span class="logo-text">The Nutri Co.</span>
+                </div>
+                <div class="trial-notice">
+                    Trial ends in 3 days ↗
+                </div>
+            </div>
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'lead' %}">Lead</a></li>
+   <li class="dropdown">
+    <a href="#" class="dropdown-toggle {% if current_page in 'client_list started_clients ended_clients' %}active{% endif %}" data-toggle="dropdown">
+        Clients ▼
+    </a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="{% url 'clients_active' %}" class="{% if current_page == 'client_list' %}active{% endif %}">All Clients</a>
+        </li>
+        <li>
+            <a href="{% url 'started_clients' %}" class="{% if current_page == 'started_clients' %}active{% endif %}">Starting Client</a>
+        </li>
+        <li>
+            <a href="{% url 'ended_clients' %}" class="{% if current_page == 'ended_clients' %}active{% endif %}">Ended Reports</a>
+        </li>
+    </ul>
+</li>
+
+
+
+
+                    <li>
+                        <a href="{% url 'nutrition' %}" class="{% if current_page == 'nutrition' %}active{% endif %}">Nutrition
+                            </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'workouts' %}" class="{% if current_page == 'workouts' %}active{% endif %}">Workouts </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'content' %}" class="{% if current_page == 'content' %}active{% endif %}">Content </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'meals' %}" class="{% if current_page == 'meals' %}active{% endif %}">Meals </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-right">
+                <div class="nav-icons">
+                    <span class="nav-icon">Roadmap</span>
+                    <span class="nav-icon">📍</span>
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-icon">Hey Usamah</span>
+                    <div class="user-avatar">U</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{% static 'dashboard/js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

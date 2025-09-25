@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meals - The Nutri Co.{% endblock %}
+
+{% block content %}
+<div class="meals-container">
+    <div class="meals-header">
+        <h1>Meals Management</h1>
+        <div class="header-actions">
+            <button class="btn-primary">Create New Meal</button>
+            <button class="btn-secondary">Import Recipes</button>
+        </div>
+    </div>
+    
+    <div class="meals-stats">
+        <div class="stat-card">
+            <h3>Total Meals</h3>
+            <div class="stat-number">342</div>
+            <div class="stat-change">In database</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Popular Meals</h3>
+            <div class="stat-number">89</div>
+            <div class="stat-change">Most used</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Custom Recipes</h3>
+            <div class="stat-number">156</div>
+            <div class="stat-change">Created by you</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Avg Calories</h3>
+            <div class="stat-number">485</div>
+            <div class="stat-change">Per meal</div>
+        </div>
+    </div>
+    
+    <div class="meals-filters">
+        <div class="filter-group">
+            <input type="search" placeholder="Search meals..." class="search-input">
+            <select class="filter-select">
+                <option>All Categories</option>
+                <option>Breakfast</option>
+                <option>Lunch</option>
+                <option>Dinner</option>
+                <option>Snacks</option>
+            </select>
+            <select class="filter-select">
+                <option>All Diets</option>
+                <option>Vegetarian</option>
+                <option>Vegan</option>
+                <option>Keto</option>
+                <option>Paleo</option>
+                <option>Gluten-Free</option>
+            </select>
+        </div>
+        
+        <div class="view-options">
+            <button class="view-btn active">Grid</button>
+            <button class="view-btn">List</button>
+        </div>
+    </div>
+    
+    <div class="meals-grid">
+        <div class="meal-card">
+            <div class="meal-image">
+                <img src="{% static 'dashboard/images/nutrition.png' %}" alt="Grilled Chicken Salad">
+            </div>
+            <div class="meal-content">
+                <h3>Grilled Chicken Salad</h3>
+                <p>Fresh mixed greens with grilled chicken breast, cherry tomatoes, and balsamic dressing</p>
+                <div class="meal-stats">
+                    <span>🔥 420 cal</span>
+                    <span>🥩 35g protein</span>
+                    <span>🍞 12g carbs</span>
+                    <span>🥑 28g fat</span>
+                </div>
+                <div class="meal-tags">
+                    <span class="tag">High Protein</span>
+                    <span class="tag">Low Carb</span>
+                    <span class="tag">Gluten-Free</span>
+                </div>
+                <div class="meal-actions">
+                    <button class="btn-primary">Add to Plan</button>
+                    <button class="btn-secondary">Edit</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="meal-card">
+            <div class="meal-image">
+                <img src="{% static 'dashboard/images/nutrition-1.png' %}" alt="Quinoa Buddha Bowl">
+            </div>
+            <div class="meal-content">
+                <h3>Quinoa Buddha Bowl</h3>
+                <p>Nutritious bowl with quinoa, roasted vegetables, chickpeas, and tahini dressing</p>
+                <div class="meal-stats">
+                    <span>🔥 520 cal</span>
+                    <span>🥩 18g protein</span>
+                    <span>🍞 65g carbs</span>
+                    <span>🥑 22g fat</span>
+                </div>
+                <div class="meal-tags">
+                    <span class="tag">Vegetarian</span>
+                    <span class="tag">High Fiber</span>
+                    <span class="tag">Gluten-Free</span>
+                </div>
+                <div class="meal-actions">
+                    <button class="btn-primary">Add to Plan</button>
+                    <button class="btn-secondary">Edit</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="meal-card">
+            <div class="meal-image">
+                <img src="{% static 'dashboard/images/nutrition-2.png' %}" alt="Salmon with Sweet Potato">
+            </div>
+            <div class="meal-content">
+                <h3>Salmon with Sweet Potato</h3>
+                <p>Baked salmon fillet with roasted sweet potato and steamed broccoli</p>
+                <div class="meal-stats">
+                    <span>🔥 580 cal</span>
+                    <span>🥩 42g protein</span>
+                    <span>🍞 35g carbs</span>
+                    <span>🥑 28g fat</span>
+                </div>
+                <div class="meal-tags">
+                    <span class="tag">High Protein</span>
+                    <span class="tag">Omega-3</span>
+                    <span class="tag">Paleo</span>
+                </div>
+                <div class="meal-actions">
+                    <button class="btn-primary">Add to Plan</button>
+                    <button class="btn-secondary">Edit</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="meal-card">
+            <div class="meal-image">
+                <img src="{% static 'dashboard/images/nutrition-3.png' %}" alt="Avocado Toast">
+            </div>
+            <div class="meal-content">
+                <h3>Avocado Toast</h3>
+                <p>Whole grain toast topped with mashed avocado, cherry tomatoes, and hemp seeds</p>
+                <div class="meal-stats">
+                    <span>🔥 340 cal</span>
+                    <span>🥩 12g protein</span>
+                    <span>🍞 28g carbs</span>
+                    <span>🥑 24g fat</span>
+                </div>
+                <div class="meal-tags">
+                    <span class="tag">Vegetarian</span>
+                    <span class="tag">High Fiber</span>
+                    <span class="tag">Quick</span>
+                </div>
+                <div class="meal-actions">
+                    <button class="btn-primary">Add to Plan</button>
+                    <button class="btn-secondary">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pagination">
+        <button class="page-btn">← Previous</button>
+        <span class="page-info">Page 1 of 12</span>
+        <button class="page-btn">Next →</button>
+    </div>
+</div>
+{% endblock %}
+

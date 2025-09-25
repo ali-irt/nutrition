@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ client.name }} - The Nutri Co.{% endblock %}
+
+{% block content %}
+<div class="client-profile">
+    <!-- Client Header -->
+    <div class="client-header">
+        <div class="client-info">
+            <div class="client-avatar">{{ client.initials }}</div>
+            <div class="client-details">
+                <h1>{{ client.name }}</h1>
+                <span class="demo-badge">Demo 🔗</span>
+            </div>
+        </div>
+        
+        <!-- Client Navigation Tabs -->
+        <div class="client-nav">
+            <a href="?tab=overview" class="{% if current_tab == 'overview' %}active{% endif %}">Overview</a>
+            <a href="?tab=nutrition" class="{% if current_tab == 'nutrition' %}active{% endif %}">Nutrition</a>
+            <a href="?tab=workouts" class="{% if current_tab == 'workouts' %}active{% endif %}">Workouts</a>
+            <a href="?tab=progress" class="{% if current_tab == 'progress' %}active{% endif %}">Progress</a>
+            <a href="?tab=membership" class="{% if current_tab == 'membership' %}active{% endif %}">Membership</a>
+        </div>
+        
+        <div class="client-actions">
+            <button class="btn-icon">💬</button>
+            <button class="btn-icon">👁️</button>
+            <button class="btn-icon">⚙️</button>
+        </div>
+    </div>
+    
+    <!-- App Promotion Banner -->
+    <div class="app-banner">
+        <div class="banner-content">
+            <span>{{ client.app_message }} ✨</span>
+        </div>
+        <div class="banner-action">
+            <a href="#" class="show-me-how">{{ client.show_me_how }} →</a>
+        </div>
+    </div>
+    
+    <!-- Client Settings Section -->
+    <div class="client-settings">
+        <div class="settings-header">
+            <h2>Client Setting</h2>
+            <button class="settings-icon">⚙️</button>
+        </div>
+        
+        <div class="notification-card">
+            <h3>Great! {{ client.name }} has a new check-in</h3>
+            <p>Doesn't enjoy long workouts</p>
+        </div>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <!-- Weight Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Weight</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.weight_change }} <span class="unit">{{ client.weight_unit }}</span></div>
+            <div class="stat-subtitle">{{ client.weight_status }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Check-in Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Check-in</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.checkin_status }}</div>
+            <div class="stat-subtitle">{{ client.checkin_message }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Nutrition Plan Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Nutrition plan</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.nutrition_plan }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 80%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Training Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Training</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.training_sessions }} <span class="unit">Sessions</span></div>
+            <div class="stat-subtitle">{{ client.training_message }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calories Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Nutrition plan</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.calories }} <span class="unit">Calories</span></div>
+            <div class="stat-subtitle">{{ client.calories_target }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 90%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Training Sessions Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span>Training</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="stat-value">{{ client.training_sessions }} <span class="unit">Sessions</span></div>
+            <div class="stat-subtitle">{{ client.training_message }}</div>
+            <div class="stat-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Membership Section -->
+    <div class="membership-section">
+        <div class="membership-card">
+            <div class="membership-header">
+                <span>Membership {{ client.membership_status }}</span>
+                <button class="refresh-btn">🔄</button>
+            </div>
+            <div class="membership-content">
+                <h3>{{ client.membership_status }} with active app</h3>
+                <div class="membership-progress">
+                    <div class="progress-text">Week 2</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 14%;"></div>
+                    </div>
+                    <div class="progress-text">out of 14 weeks</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Communications Section -->
+    <div class="communications-section">
+        <h3>Communications & Media</h3>
+        
+        <div class="communication-item">
+            <div class="comm-header">
+                <span>0 unread messages</span>
+                <div class="comm-actions">
+                    <button class="btn-icon">💬</button>
+                    <button class="btn-icon">📋</button>
+                </div>
+            </div>
+            <div class="comm-content">
+                <span>1 tasks</span>
+                <span>●</span>
+            </div>
+        </div>
+        
+        <div class="media-sections">
+            <div class="media-section">
+                <div class="media-header">
+                    <span>Documents</span>
+                    <span class="count">📄 0 File Uploaded</span>
+                    <div class="media-actions">
+                        <button class="btn-add">+</button>
+                        <button class="btn-download">↓</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="media-section">
+                <div class="media-header">
+                    <span>Lessons</span>
+                    <span class="count">📚 0 Lessons sent, 0 Scheduled</span>
+                    <button class="btn-download">↓</button>
+                </div>
+            </div>
+            
+            <div class="media-section">
+                <div class="media-header">
+                    <span>Email & Publishing History</span>
+                    <button class="btn-download">↓</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

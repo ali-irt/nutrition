@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Content - The Nutri Co.{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="content-header">
+        <h1>Content</h1>
+        <div class="header-actions">
+            <button class="btn-primary">Add Files</button>
+        </div>
+    </div>
+    
+    <div class="content-tabs">
+        <a href="#" class="tab active">Files</a>
+        <a href="#" class="tab">Lessons</a>
+    </div>
+    
+    <div class="content-main">
+        <!-- Files Section -->
+        <div class="files-section">
+            <div class="files-header">
+                <p>Showing 0 files</p>
+                <div class="search-section">
+                    <input type="search" placeholder="Search" class="search-input">
+                </div>
+            </div>
+            
+            <!-- Files Table -->
+            <div class="files-table">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Created at</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty state will be shown -->
+                    </tbody>
+                </table>
+                
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <div class="empty-icon">❓</div>
+                    <h3>No clients found</h3>
+                    <p>Upload your first file and share it with your clients through the chat or files section</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lessons Section -->
+        <div class="lessons-section" style="display: none;">
+            <div class="lessons-header">
+                <p>Showing 3 lessons</p>
+                <div class="search-section">
+                    <input type="search" placeholder="Search" class="search-input">
+                </div>
+            </div>
+            
+            <!-- Lessons Table -->
+            <div class="lessons-table">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Publish after</th>
+                            <th>Theme</th>
+                            <th>Content</th>
+                            <th>Tags</th>
+                            <th>Weight goal</th>
+                            <th>Sex</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Welcome!</td>
+                            <td><span class="status-badge unpublished">Unpublished</span></td>
+                            <td>General</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5 Tips for better relationship with food</td>
+                            <td><span class="status-badge unpublished">Unpublished</span></td>
+                            <td>General</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>Well done!</td>
+                            <td><span class="status-badge unpublished">Unpublished</span></td>
+                            <td>General</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                            <td>All</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab switching functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab');
+    const filesSection = document.querySelector('.files-section');
+    const lessonsSection = document.querySelector('.lessons-section');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Show/hide sections based on tab
+            if (this.textContent.trim() === 'Files') {
+                filesSection.style.display = 'block';
+                lessonsSection.style.display = 'none';
+            } else if (this.textContent.trim() === 'Lessons') {
+                filesSection.style.display = 'none';
+                lessonsSection.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

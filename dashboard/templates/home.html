@@ -1,71 +1,163 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Home - The Nutri Co.{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="home-container">
-    <div class="home-header">
-        <h1>Dashboard</h1>
-        <p>Welcome to your nutrition coaching dashboard</p>
-    </div>
-    
-    <div class="dashboard-grid">
-        <!-- Quick Stats -->
-        <div class="stats-card">
-            <h3>Active Clients</h3>
-            <div class="stat-number">24</div>
-            <div class="stat-change positive">+3 this week</div>
-        </div>
-        
-        <div class="stats-card">
-            <h3>Meal Plans</h3>
-            <div class="stat-number">156</div>
-            <div class="stat-change">Created this month</div>
-        </div>
-        
-        <div class="stats-card">
-            <h3>Workouts</h3>
-            <div class="stat-number">89</div>
-            <div class="stat-change">Templates available</div>
-        </div>
-        
-        <div class="stats-card">
-            <h3>Check-ins</h3>
-            <div class="stat-number">12</div>
-            <div class="stat-change">Pending review</div>
-        </div>
-    </div>
-    
-    <!-- Recent Activity -->
-    <div class="recent-activity">
-        <h2>Recent Activity</h2>
-        <div class="activity-list">
-            <div class="activity-item">
-                <div class="activity-icon">👤</div>
-                <div class="activity-content">
-                    <div class="activity-title">New client registered</div>
-                    <div class="activity-time">2 hours ago</div>
-                </div>
-            </div>
-            
-            <div class="activity-item">
-                <div class="activity-icon">📊</div>
-                <div class="activity-content">
-                    <div class="activity-title">Vera completed check-in</div>
-                    <div class="activity-time">4 hours ago</div>
-                </div>
-            </div>
-            
-            <div class="activity-item">
-                <div class="activity-icon">🍽️</div>
-                <div class="activity-content">
-                    <div class="activity-title">New meal plan created</div>
-                    <div class="activity-time">1 day ago</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f7f9fc;
+    }
+    /* NAVBAR */
+    .navbar-dark { background-color: #000; }
 
+    /* HERO SECTION */
+    .hero {
+      background-color: #000;
+      color: #fff;
+      padding: 3rem 2rem;
+    }
+    .hero h1 { font-weight: bold; }
+    .hero p { color: #e0e0e0; }
+
+    /* DASHBOARD CARDS */
+    .info-card {
+      background: #f8fafc;
+      border: none;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .info-card h6 {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+    .info-card p {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    /* BUSINESS STATS */
+    .stat-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .stat-card span {
+      display: block;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .stat-card small {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* LINKS SECTION */
+    .link-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-top: 1rem;
+    }
+    .dark{
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left:20px ;
+    }
+  </style>
+</head>
+<body>
+
+
+  <!-- HERO -->
+  <section class="hero dark">
+    <div class="container">
+      <h1>Good evening, <strong>Nutri</strong> ☁️</h1>
+      <p>At a glance</p>
+    </div>
+  </section>
+
+  <!-- TOP INFO CARDS -->
+  <section class="container mt-n4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="info-card">
+          <h6>New leads</h6>
+          <p>Everyone's up to date</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <h6>Missed payments</h6>
+          <p>None</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <h6>Messages</h6>
+          <p>Up to date</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUSINESS OVERVIEW -->
+  <section class="container mt-5">
+    <h5 class="mb-4">Your business at a glance</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span>0</span>
+          <small>Pending leads</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span>0</span>
+          <small>Starting clients</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span>0</span>
+          <small>Active clients</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span>0</span>
+          <small>Ending clients</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADDITIONAL LINKS -->
+  <section class="container mt-4">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="link-card">
+          <small>Browse our feature roadmap 🚀</small>
+          <p class="mb-0 fw-bold">See your payouts</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="link-card">
+          <small>Your Contact Page:</small>
+          <p class="mb-0 fw-bold">
+            https://us.zenfit.io/dashboard/settings/branding
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{%endblock%}

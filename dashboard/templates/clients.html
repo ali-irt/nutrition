@@ -1,104 +1,83 @@
 {% extends 'base.html' %}
 {% block content %}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <style>
-    .nav-link{
-        color: white !important;
-
-    }
-     .bg-black{
-    margin-left: -20px;
-    margin-right: -20px;
-    padding: 90px;
+  body { background-color: #f7f9fc; }
+  .header-sec { background:#000; padding:3rem 2rem; color:#fff; }
+  .header-sec h1 { font-weight:600; }
+  .header-sec .tabs a {
+    margin-right:1.5rem; text-decoration:none; color:#aaa; font-weight:500;
   }
-  .black-sec{
-    padding-left: 40px;
-  }
+  .header-sec .tabs a.active { color:#fff; border-bottom:2px solid #fff; padding-bottom:.3rem; }
+  .client-table td, .client-table th { vertical-align: middle; }
+  .badge-demo { background:#000; color:#fff; border-radius:.5rem; padding:.3rem .8rem; }
 </style>
-<!-- Header Section -->
- <section class="bg-black text-white py-5 px-4">
-      <div class="container black-sec">
-    <h2>Clients / <span class="fw-bold">Active</span></h2>
-    <ul class="nav nav-pills mt-3">
-      <li class="nav-item"><a class="nav-link active" href="#">All Active (2)</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Payment Error</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Just Started</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">New Message</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">New Check-In (2)</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Missed Check-In (1)</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Reminders</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Ending Soon</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">No Communication (2)</a></li>
-    </ul>
-  </div>
-</div>
- </section>
 
-<!-- Content Section -->
-<div class="container my-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>Showing 2 of 2 clients</div>
+<section class="header-sec">
+  <h1>Clients / {{ status }}</h1>
+  <div class="tabs mt-4 d-flex flex-wrap">
+    <a href="{% url 'clients_active' %}" class="{% if status == 'Active' %}active{% endif %}">All Active(2)</a>
+    <a href="{% url 'clients_payment_error' %}" class="{% if status == 'Payment Error' %}active{% endif %}">Payment Error</a>
+    <a href="{% url 'clients_just_started' %}" class="{% if status == 'Just Started' %}active{% endif %}">Just Started</a>
+    <a href="{% url 'clients_new_message' %}" class="{% if status == 'New Message' %}active{% endif %}">New Message</a>
+    <a href="{% url 'clients_new_checkin' %}" class="{% if status == 'New Check-In' %}active{% endif %}">New Check-In</a>
+    <a href="{% url 'clients_missed_checkin' %}" class="{% if status == 'Missed Check-In' %}active{% endif %}">Missed Check-In</a>
+    <a href="{% url 'clients_reminders' %}" class="{% if status == 'Reminders' %}active{% endif %}">Reminders</a>
+    <a href="{% url 'clients_ending' %}" class="{% if status == 'Ending Soon' %}active{% endif %}">Ending Soon</a>
+    <a href="{% url 'clients_no_communication' %}" class="{% if status == 'No Communication' %}active{% endif %}">No Communication</a>
+  </div>
+</section>
+
+<section class="px-4 py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <span class="text-muted">Showing {{ clients|length }} clients</span>
     <div class="d-flex gap-2">
       <input type="text" class="form-control" placeholder="Search">
-      <select class="form-select">
-        <option>Tag</option>
-      </select>
-      <button class="btn btn-black">Broadcast message</button>
-      <button class="btn btn-black">Add Lead</button>
+      <select class="form-select"><option>Tag</option></select>
+      <button class="btn btn-dark">Broadcast message</button>
+      <button class="btn btn-dark">Add Lead</button>
     </div>
   </div>
 
-  <!-- Client Table -->
-  <table class="table client-table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Chat</th>
-        <th>Week</th>
-        <th>Check-in</th>
-        <th>Plans</th>
-        <th>Reminders</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center">
-            <div class="avatar me-2">VR</div>
-            Vera Rossakoff
-            <span class="badge bg-dark ms-2">Demo</span>
-          </div>
-        </td>
-        <td>
-          Thank you Coach! It looks great<br>
-          <small class="text-muted">10 days ago</small>
-        </td>
-        <td>2 of 13</td>
-        <td>10 days <span class="badge bg-dark ms-2">New</span></td>
-        <td>🍐</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center">
-            <div class="avatar me-2 bg-warning">HP</div>
-            Hercule Poirot
-            <span class="badge bg-dark ms-2">Demo</span>
-            <span class="badge bg-dark ms-1">+1</span>
-          </div>
-        </td>
-        <td>
-          Dear Hercule, your plans are ready!<br>
-          <small class="text-muted">12 days ago</small>
-        </td>
-        <td>2 of 26</td>
-        <td>7 days <span class="badge bg-dark ms-2">New</span></td>
-        <td>🍐</td>
-        <td>-</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <div class="table-responsive">
+    <table class="table bg-white client-table shadow-sm">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Chat</th>
+          <th>Week</th>
+          <th>Check-in</th>
+          <th>Plans</th>
+          <th>Reminders</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for client in clients %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <div class="rounded-circle d-flex justify-content-center align-items-center me-2" 
+                   style="width:35px;height:35px;background:#fef9c3;color:black;font-weight:bold;">
+                {{ client.name|slice:":2" }}
+              </div>
+              <div>
+                <strong>{{ client.name }}</strong><br>
+                <span class="badge-demo">Demo ↗</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ client.chat }}<br><small class="text-muted">{{ client.days }} days ago</small></td>
+          <td>{{ client.week }}</td>
+          <td><span class="badge bg-dark">{{ client.checkin }}</span></td>
+          <td>🥗</td>
+          <td>-</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted">No clients in this category</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

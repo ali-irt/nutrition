@@ -558,12 +558,12 @@ class PurchaseStatusFilter(admin.SimpleListFilter):
 class WishlistItemAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'user_display',  # Changed from user_link to user_display
+        'user_display',
         'category_badge',
         'priority',
-        'is_purchased',
+        'is_purchased', 
         'price_display',
-        'url_link'
+        'url_link' 
     )
     list_editable = ('priority', 'is_purchased')
     list_filter = (PurchaseStatusFilter, 'category', 'priority', 'user')

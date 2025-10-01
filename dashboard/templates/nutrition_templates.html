@@ -8,8 +8,8 @@
     <h1 class="text-4xl font-bold">Nutrition</h1>
     <div class="flex space-x-8 mt-4 text-gray-300">
       <a href="{% url 'nutrition_recipes'%}" class="hover:text-white">Recipes</a>
-      <a href="{% url 'nutrition'%}" class="border-b-2 border-white text-white">ingredients</a>
-      <a href="{% url 'nutrition_templates' %}" class="hover:text-white">Templates</a>
+      <a href="{% url 'nutrition'%}" class="hover:text-white">ingredients</a>
+      <a href="{% url 'nutrition_templates' %}" class="border-b-2 border-white text-white">Templates</a>
     </div>
   </section>
 
@@ -48,11 +48,6 @@
       <p class="text-sm text-gray-500">Try adding a new ingredient</p>
     </div>
   </main>
-
-  <!-- MODAL -->
-  <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-      <h2 class="text-2xl font-bold mb-6">Create recipe</h2>
 
       <!-- Upload + Name -->
       <div class="flex items-start space-x-4 mb-6">

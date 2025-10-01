@@ -8,12 +8,27 @@ def home(request):
     }
     return render(request, 'home.html', context)
 
-def lead(request):
-    """Lead page view"""
-    context = {
-        'page_title': 'Lead',
-        'current_page': 'lead'
-    }
+
+def leads_all(request):
+    return render(request, "leads.html", {"status": "All"})
+
+def leads_new(request):
+    return render(request, "leads.html", {"status": "New"})
+
+def leads_contacted(request):
+    return render(request, "leads.html", {"status": "Contacted"})
+
+def leads_dialogue(request):
+    return render(request, "leads.html", {"status": "In Dialogue"})
+
+def leads_onhold(request):
+    return render(request, "leads.html", {"status": "On Hold"})
+
+def leads_won(request):
+    return render(request, "leads.html", {"status": "Won"})
+
+def leads_lost(request):
+    return render(request, "leads.html", {"status": "Lost"})
     return render(request, 'lead.html', context)
 
 def client_profile(request, client_id):
@@ -79,11 +94,41 @@ def meals(request):
         'current_page': 'meals'
     }
     return render(request, 'meals.html', context)
-
 def clients_active(request):
-   
-    return render(request, 'clients.html')
+    clients = [
+        {"name": "Vera Rossakoff", "chat": "Thank you Coach! It looks Grate", "days": 10, "week": "2 of 13", "checkin": "New"}
+    ]
+    return render(request, "clients.html", {"status": "Active", "clients": clients})
+
+def clients_payment_error(request):
+    return render(request, "clients.html", {"status": "Payment Error", "clients": []})
+
+def clients_just_started(request):
+    return render(request, "clients.html", {"status": "Just Started", "clients": []})
+
+def clients_new_message(request):
+    return render(request, "clients.html", {"status": "New Message", "clients": []})
+
+def clients_new_checkin(request):
+    return render(request, "clients.html", {"status": "New Check-In", "clients": []})
+
+def clients_missed_checkin(request):
+    return render(request, "clients.html", {"status": "Missed Check-In", "clients": []})
+
+def clients_reminders(request):
+    return render(request, "clients.html", {"status": "Reminders", "clients": []})
+
+def clients_ending(request):
+    return render(request, "clients.html", {"status": "Ending Soon", "clients": []})
+
+def clients_no_communication(request):
+    return render(request, "clients.html", {"status": "No Communication", "clients": []})
+
 def clients_started(request):
     return render(request,'clients_started.html')
 def clients_completed(request):
     return render(request,'clients_ended.html')
+def nutrition_recipes(request):
+    return render(request,"nutrition_recipes.html")
+def nutrition_templates(request):
+    return render(request,"nutrition_templates.html")

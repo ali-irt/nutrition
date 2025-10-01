@@ -1,217 +1,172 @@
-{% extends 'base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Profile - Vera Rossakoff</title>
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#f8fafc; color:#111; }
 
-{% block title %}{{ client.name }} - The Nutri Co.{% endblock %}
+    /* Trial banner */
+    .trial-banner { background: #ffeeba; padding: 6px 16px; font-size: 13px; text-align:center; }
 
-{% block content %}
-<div class="client-profile">
-    <!-- Client Header -->
-    <div class="client-header">
-        <div class="client-info">
-            <div class="client-avatar">{{ client.initials }}</div>
-            <div class="client-details">
-                <h1>{{ client.name }}</h1>
-                <span class="demo-badge">Demo 🔗</span>
-            </div>
-        </div>
-        
-        <!-- Client Navigation Tabs -->
-        <div class="client-nav">
-            <a href="?tab=overview" class="{% if current_tab == 'overview' %}active{% endif %}">Overview</a>
-            <a href="?tab=nutrition" class="{% if current_tab == 'nutrition' %}active{% endif %}">Nutrition</a>
-            <a href="?tab=workouts" class="{% if current_tab == 'workouts' %}active{% endif %}">Workouts</a>
-            <a href="?tab=progress" class="{% if current_tab == 'progress' %}active{% endif %}">Progress</a>
-            <a href="?tab=membership" class="{% if current_tab == 'membership' %}active{% endif %}">Membership</a>
-        </div>
-        
-        <div class="client-actions">
-            <button class="btn-icon">💬</button>
-            <button class="btn-icon">👁️</button>
-            <button class="btn-icon">⚙️</button>
-        </div>
-    </div>
-    
-    <!-- App Promotion Banner -->
-    <div class="app-banner">
-        <div class="banner-content">
-            <span>{{ client.app_message }} ✨</span>
-        </div>
-        <div class="banner-action">
-            <a href="#" class="show-me-how">{{ client.show_me_how }} →</a>
-        </div>
-    </div>
-    
-    <!-- Client Settings Section -->
-    <div class="client-settings">
-        <div class="settings-header">
-            <h2>Client Setting</h2>
-            <button class="settings-icon">⚙️</button>
-        </div>
-        
-        <div class="notification-card">
-            <h3>Great! {{ client.name }} has a new check-in</h3>
-            <p>Doesn't enjoy long workouts</p>
-        </div>
-    </div>
-    
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <!-- Weight Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Weight</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.weight_change }} <span class="unit">{{ client.weight_unit }}</span></div>
-            <div class="stat-subtitle">{{ client.weight_status }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 60%;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Check-in Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Check-in</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.checkin_status }}</div>
-            <div class="stat-subtitle">{{ client.checkin_message }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Nutrition Plan Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Nutrition plan</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.nutrition_plan }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 80%;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Training Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Training</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.training_sessions }} <span class="unit">Sessions</span></div>
-            <div class="stat-subtitle">{{ client.training_message }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Calories Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Nutrition plan</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.calories }} <span class="unit">Calories</span></div>
-            <div class="stat-subtitle">{{ client.calories_target }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 90%;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Training Sessions Card -->
-        <div class="stat-card">
-            <div class="stat-header">
-                <span>Training</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="stat-value">{{ client.training_sessions }} <span class="unit">Sessions</span></div>
-            <div class="stat-subtitle">{{ client.training_message }}</div>
-            <div class="stat-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Membership Section -->
-    <div class="membership-section">
-        <div class="membership-card">
-            <div class="membership-header">
-                <span>Membership {{ client.membership_status }}</span>
-                <button class="refresh-btn">🔄</button>
-            </div>
-            <div class="membership-content">
-                <h3>{{ client.membership_status }} with active app</h3>
-                <div class="membership-progress">
-                    <div class="progress-text">Week 2</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 14%;"></div>
-                    </div>
-                    <div class="progress-text">out of 14 weeks</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Communications Section -->
-    <div class="communications-section">
-        <h3>Communications & Media</h3>
-        
-        <div class="communication-item">
-            <div class="comm-header">
-                <span>0 unread messages</span>
-                <div class="comm-actions">
-                    <button class="btn-icon">💬</button>
-                    <button class="btn-icon">📋</button>
-                </div>
-            </div>
-            <div class="comm-content">
-                <span>1 tasks</span>
-                <span>●</span>
-            </div>
-        </div>
-        
-        <div class="media-sections">
-            <div class="media-section">
-                <div class="media-header">
-                    <span>Documents</span>
-                    <span class="count">📄 0 File Uploaded</span>
-                    <div class="media-actions">
-                        <button class="btn-add">+</button>
-                        <button class="btn-download">↓</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="media-section">
-                <div class="media-header">
-                    <span>Lessons</span>
-                    <span class="count">📚 0 Lessons sent, 0 Scheduled</span>
-                    <button class="btn-download">↓</button>
-                </div>
-            </div>
-            
-            <div class="media-section">
-                <div class="media-header">
-                    <span>Email & Publishing History</span>
-                    <button class="btn-download">↓</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    /* Header */
+    header {
+      background:#000; color:white; padding:15px 30px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    header nav a { margin:0 10px; color:white; text-decoration:none; font-size:14px; }
+    header nav a:hover { text-decoration:underline; }
+
+    /* Client Profile Header */
+    .profile-header { display:flex; align-items:center; padding:20px 30px; background:white; border-bottom:1px solid #eee; }
+    .avatar { width:60px; height:60px; border-radius:50%; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold; margin-right:15px; }
+    .profile-header h2 { margin:0; }
+    .profile-header small { color:#666; }
+
+    /* Tabs */
+    .tabs { display:flex; gap:20px; padding:10px 30px; background:white; border-bottom:1px solid #ddd; }
+    .tabs button {
+      background:none; border:none; font-size:15px; cursor:pointer; padding:10px; color:#555;
+    }
+    .tabs button.active {
+      border-bottom:3px solid black; font-weight:bold; color:#000;
+    }
+
+    /* Content area */
+    .tab-content { display:none; padding:20px 30px; }
+    .tab-content.active { display:block; }
+
+    /* Card */
+    .card { background:white; padding:20px; margin-bottom:20px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .card h3 { margin-top:0; }
+
+    /* Table */
+    table { width:100%; border-collapse:collapse; background:white; margin-top:10px; }
+    th, td { padding:10px; border-bottom:1px solid #eee; text-align:left; }
+    thead { background:#f6f6f6; }
+  </style>
+</head>
+<body>
+
+<div class="trial-banner">⏳ Trial ends in 3 days</div>
+
+<header>
+  <div>The Nutri Co.</div>
+  <nav>
+    <a href="#">Home</a><a href="#">Leads</a><a href="#">Clients</a>
+    <a href="#">Nutrition</a><a href="#">Workouts</a><a href="#">Content</a>
+    <a href="#">Meals</a><a href="#">Roadmap</a>
+  </nav>
+  <div>Hey Usamah (UU)</div>
+</header>
+
+<div class="profile-header">
+  <div class="avatar">VR</div>
+  <div>
+    <h2>Vera Rossakoff</h2>
+    <small>Demo Client • Membership Free for 3 months</small>
+  </div>
 </div>
-{% endblock %}
 
+<div class="tabs">
+  <button class="active" onclick="showTab('overview', event)">Overview</button>
+  <button onclick="showTab('nutrition', event)">Nutrition</button>
+  <button onclick="showTab('workouts', event)">Workouts</button>
+  <button onclick="showTab('progress', event)">Progress</button>
+  <button onclick="showTab('membership', event)">Membership</button>
+</div>
+
+<main>
+  <!-- Overview -->
+  <div id="overview" class="tab-content active">
+    <div class="grid">
+      <div class="card">
+        <h3>Check-ins</h3>
+        <p>✅ Vera has submitted a new check-in.</p>
+        <button>Mark as resolved</button>
+      </div>
+      <div class="card">
+        <h3>Macros</h3>
+        <p>Total: 1954 kcal</p>
+        <p>Protein: 142g (30%)</p>
+        <p>Carbs: 209g (44%)</p>
+        <p>Fat: 59g (26%)</p>
+      </div>
+      <div class="card">
+        <h3>Client Info</h3>
+        <p>Goal: Maintain weight</p>
+        <p>Weight: 145.5 lbs (Lost 2.2 lbs)</p>
+      </div>
+      <div class="card">
+        <h3>Ratings</h3>
+        <p>Avg Rating: ⭐ 4.5/5</p>
+        <p>Energy: Good | Mood: Balanced</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nutrition -->
+  <div id="nutrition" class="tab-content">
+    <div class="card">
+      <h3>Meal Plans</h3>
+      <table>
+        <thead><tr><th>Meal</th><th>Calories</th><th>Macros</th></tr></thead>
+        <tbody>
+          <tr><td>Breakfast</td><td>490 kcal</td><td>31p / 65c / 11f</td></tr>
+          <tr><td>Lunch</td><td>600 kcal</td><td>40p / 80c / 20f</td></tr>
+          <tr><td>Dinner</td><td>550 kcal</td><td>35p / 70c / 15f</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Workouts -->
+  <div id="workouts" class="tab-content">
+    <div class="card">
+      <h3>Workout Plans</h3>
+      <table>
+        <thead><tr><th>Name</th><th>Status</th><th>Sessions</th></tr></thead>
+        <tbody>
+          <tr><td>Vera’s Workout Plan</td><td>Published</td><td>3</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="progress" class="tab-content">
+    <div class="card">
+      <h3>Weight Timeline</h3>
+      <p>Start: 147.7 lbs → Current: 145.5 lbs </p>
+      <p>-2.2 lbs total since starting</p>
+    </div>
+    <div class="card">
+      <h3>Measurements</h3>
+      <p>Waist: 30” | Chest: 36” | Hips: 38”</p>
+    </div>
+  </div>
+
+  <!-- Membership -->
+  <div id="membership" class="tab-content">
+    <div class="card">
+      <h3>Membership Info</h3>
+      <p>Status: Active (Free Trial)</p>
+      <p>Ends: Sept 18th, 2025</p>
+      <button>Adjust Membership</button>
+    </div>
+  </div>
+</main>
+
+<script>
+function showTab(tabId, evt) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+  evt.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

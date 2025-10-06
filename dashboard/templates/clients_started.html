@@ -299,13 +299,19 @@
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </h1>
-  <nav class="tabs" aria-label="Client status tabs">
-    <a href="#" class="active" tabindex="0">All Starting(2)</a>
-    <a href="#" tabindex="0">Offer Sent</a>
-    <a href="#" tabindex="0">No Account(1)</a>
-    <a href="#" tabindex="0">Onboarding Form Pending</a>
-    <a href="#" tabindex="0">Ready To Start</a>
-  </nav>
+ <nav class="tabs" aria-label="Client status tabs">
+  <a href="{% url 'clients_started' %}" class="{% if status == 'Starting' %}active{% endif %}" tabindex="0">
+    All Starting({{ clients|length }})
+  </a>
+  <a href="{% url 'clients_offer_sent' %}" class="{% if status == 'Offer Sent' %}active{% endif %}" tabindex="0">
+    Offer Sent
+  </a>
+  <a href="{% url 'clients_no_account' %}" class="{% if status == 'No Account' %}active{% endif %}" tabindex="0">
+    No Account
+  </a>
+  <a href="#" tabindex="0">Onboarding Form Pending</a>
+  <a href="#" tabindex="0">Ready To Start</a>
+</nav>
   </div>
 </section>
 
@@ -343,27 +349,47 @@
       </tr>
     </thead>
     <tbody>
-      <tr role="row">
-        <td role="gridcell">
-          <div class="client-name">
-            <div class="client-initials" aria-label="Initials VR">VR</div>
-            Vera Rossakoff
-          </div>
-        </td>
-        <td role="gridcell">
-          <span class="chat-button" aria-label="No account tag">No account</span>
-        </td>
-        <td role="gridcell" class="center" aria-label="Start day 14 days ago">14 days ago</td>
-        <td role="gridcell" class="center" aria-label="Created at 16th, march 2025">16th, march 2025</td>
-        <td role="gridcell" class="center">
-          <svg class="more-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="More options" role="img" tabindex="0">
-            <circle cx="12" cy="5" r="1"></circle>
-            <circle cx="12" cy="12" r="1"></circle>
-            <circle cx="12" cy="19" r="1"></circle>
-          </svg>
-        </td>
-      </tr>
-    </tbody>
+  {% for client in clients %}
+  <tr role="row">
+    <!-- Name + initials -->
+    <td role="gridcell">
+      <div class="client-name">
+        <div class="client-initials" aria-label="Initials {{ client.initials }}">
+          {{ client.initials }}
+        </div>
+        {{ client.name }}
+      </div>
+    </td>
+
+    <!-- Chat badge -->
+    <td role="gridcell">
+      <span class="chat-button">{{ client.chat }}</span>
+    </td>
+
+    <!-- Start day -->
+    <td role="gridcell" class="center">{{ client.start_day }}</td>
+
+    <!-- Creation date -->
+    <td role="gridcell" class="center">{{ client.created_at }}</td>
+
+    <!-- Options -->
+    <td role="gridcell" class="center">
+      <svg class="more-icon" viewBox="0 0 24 24" fill="none" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="5" r="1"></circle>
+        <circle cx="12" cy="12" r="1"></circle>
+        <circle cx="12" cy="19" r="1"></circle>
+      </svg>
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5" class="text-center py-5 text-muted">
+      No starting clients found
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
   </table>
 </section>
 {% endblock %}

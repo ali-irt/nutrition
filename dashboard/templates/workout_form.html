@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .page-header { padding: 25px 30px 10px; }
+  .card { background:#fff; border:1px solid #eee; border-radius:8px; padding:18px; margin-bottom:18px; }
+  .btn { display:inline-block; background:#000; color:#fff; padding:10px 16px; border-radius:6px; text-decoration:none; border:0; cursor:pointer; }
+  .btn.secondary { background:#f5f5f5; color:#333; }
+  .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
+  .row { border:1px solid #eee; border-radius:6px; padding:12px; margin-bottom:10px; }
+  .row h4 { margin:0 0 8px 0; font-size:14px; }
+  .muted { color:#666; font-size:13px; }
+  .errors { background:#fff4f4; border:1px solid #f3c2c2; color:#8b1a1a; padding:10px; border-radius:6px; margin-bottom:12px; }
+</style>
+
+<section class="page-header">
+  <h1 style="margin:0;">{% if workout %}Edit{% else %}New{% endif %} Workout</h1>
+</section>
+
+<form method="post" class="container" style="width:94%; margin:auto;">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="errors">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0;">Workout details</h3>
+    {{ form.as_p }}
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h3 style="margin:0;">Exercises</h3>
+      <button type="button" class="btn secondary" id="add-row">Add exercise row</button>
+    </div>
+
+    {{ formset.management_form }}
+
+    <div id="rows">
+      {% for f in formset %}
+        <div class="row">
+          {% if f.non_field_errors %}
+            <div class="errors">{{ f.non_field_errors }}</div>
+          {% endif %}
+          <div class="grid">
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.order.label_tag }} {{ f.order }}</div>
+            <div class="col-span-4" style="grid-column:span 4;">{{ f.exercise.label_tag }} {{ f.exercise }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.sets.label_tag }} {{ f.sets }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps.label_tag }} {{ f.reps }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.rest_seconds.label_tag }} {{ f.rest_seconds }}</div>
+
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps_min.label_tag }} {{ f.reps_min }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps_max.label_tag }} {{ f.reps_max }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.rpe_min.label_tag }} {{ f.rpe_min }}</div>
+            <div class="col-span-2" style="grid-column:span 2;">{{ f.rpe_max.label_tag }} {{ f.rpe_max }}</div>
+            <div class="col-span-4" style="grid-column:span 4;">{{ f.tempo.label_tag }} {{ f.tempo }}</div>
+
+            <div class="col-span-12" style="grid-column:span 12;">{{ f.notes.label_tag }} {{ f.notes }}</div>
+            <div class="col-span-12 muted" style="grid-column:span 12;">
+              {{ f.time_seconds.label_tag }} {{ f.time_seconds }} &nbsp; • &nbsp; {{ f.distance_m.label_tag }} {{ f.distance_m }}
+            </div>
+
+            {% if f.instance.pk %}
+              <div class="col-span-12" style="grid-column:span 12;">
+                {{ f.DELETE }} <label>Delete this row</label>
+              </div>
+            {% else %}
+              <div class="col-span-12" style="grid-column:span 12;">
+                {{ f.DELETE }} <label>Delete this row</label>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="muted">No exercises yet. Click “Add exercise row”.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Hidden empty form template -->
+    <div id="empty-row" style="display:none;">
+      <div class="row">
+        <div class="grid">
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.order.label_tag }} {{ formset.empty_form.order }}</div>
+          <div class="col-span-4" style="grid-column:span 4;">{{ formset.empty_form.exercise.label_tag }} {{ formset.empty_form.exercise }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.sets.label_tag }} {{ formset.empty_form.sets }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps.label_tag }} {{ formset.empty_form.reps }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rest_seconds.label_tag }} {{ formset.empty_form.rest_seconds }}</div>
+
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps_min.label_tag }} {{ formset.empty_form.reps_min }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps_max.label_tag }} {{ formset.empty_form.reps_max }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rpe_min.label_tag }} {{ formset.empty_form.rpe_min }}</div>
+          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rpe_max.label_tag }} {{ formset.empty_form.rpe_max }}</div>
+          <div class="col-span-4" style="grid-column:span 4;">{{ formset.empty_form.tempo.label_tag }} {{ formset.empty_form.tempo }}</div>
+
+          <div class="col-span-12" style="grid-column:span 12;">{{ formset.empty_form.notes.label_tag }} {{ formset.empty_form.notes }}</div>
+          <div class="col-span-12 muted" style="grid-column:span 12;">
+            {{ formset.empty_form.time_seconds.label_tag }} {{ formset.empty_form.time_seconds }} &nbsp; • &nbsp; {{ formset.empty_form.distance_m.label_tag }} {{ formset.empty_form.distance_m }}
+          </div>
+          <div class="col-span-12" style="grid-column:span 12;">
+            {{ formset.empty_form.DELETE }} <label>Delete this row</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex; gap:10px;">
+    <button type="submit" class="btn">Save</button>
+    <a href="{% url 'workouts' %}" class="btn secondary">Cancel</a>
+  </div>
+</form>
+
+<script>
+  // Generic dynamic formset adder (works with any formset prefix)
+  (function(){
+    const rows = document.getElementById("rows");
+    const empty = document.getElementById("empty-row").innerHTML;
+    const addBtn = document.getElementById("add-row");
+    const totalInput = document.querySelector('input[name$="-TOTAL_FORMS"]'); // e.g. workoutexercise_set-TOTAL_FORMS
+    if (!rows || !empty || !totalInput || !addBtn) return;
+
+    addBtn.addEventListener("click", function(){
+      const index = parseInt(totalInput.value, 10);
+      const html = empty.replace(/__prefix__/g, index);
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      // move the row (wrapped) into rows container
+      rows.appendChild(wrapper.firstElementChild);
+      totalInput.value = index + 1;
+    });
+  })();
+</script>
+{% endblock %}

@@ -3,29 +3,42 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-  body { background-color: #f7f9fc; }
-  .header-sec { background:#000; padding:3rem 2rem; color:#fff; }
+  body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f8fc;
+      color: #1f2937;
+    }  
+  .header-sec { background:#000; padding:3rem 2rem; color:#fff; margin-left: -28px;margin-right: -20px; }
   .header-sec h1 { font-weight:600; }
   .header-sec .tabs a {
-    margin-right:1.5rem; text-decoration:none; color:#aaa; font-weight:500;
+    margin-right:1.5rem; text-decoration:none; color:#aaa;
   }
   .header-sec .tabs a.active { color:#fff; border-bottom:2px solid #fff; padding-bottom:.3rem; }
   .client-table td, .client-table th { vertical-align: middle; }
   .badge-demo { background:#000; color:#fff; border-radius:.5rem; padding:.3rem .8rem; }
+  .chat-badge {
+    background:#000;
+    color:#fff;
+    border-radius:.5rem;
+    padding:.3rem .8rem;
+    font-size: 0.75rem;
+    display: inline-block;
+  }
 </style>
 
 <section class="header-sec">
   <h1>Clients / {{ status }}</h1>
   <div class="tabs mt-4 d-flex flex-wrap">
-    <a href="{% url 'clients_active' %}" class="{% if status == 'Active' %}active{% endif %}">All Active(2)</a>
-    <a href="{% url 'clients_payment_error' %}" class="{% if status == 'Payment Error' %}active{% endif %}">Payment Error</a>
-    <a href="{% url 'clients_just_started' %}" class="{% if status == 'Just Started' %}active{% endif %}">Just Started</a>
-    <a href="{% url 'clients_new_message' %}" class="{% if status == 'New Message' %}active{% endif %}">New Message</a>
-    <a href="{% url 'clients_new_checkin' %}" class="{% if status == 'New Check-In' %}active{% endif %}">New Check-In</a>
-    <a href="{% url 'clients_missed_checkin' %}" class="{% if status == 'Missed Check-In' %}active{% endif %}">Missed Check-In</a>
-    <a href="{% url 'clients_reminders' %}" class="{% if status == 'Reminders' %}active{% endif %}">Reminders</a>
-    <a href="{% url 'clients_ending' %}" class="{% if status == 'Ending Soon' %}active{% endif %}">Ending Soon</a>
-    <a href="{% url 'clients_no_communication' %}" class="{% if status == 'No Communication' %}active{% endif %}">No Communication</a>
+    <a href="{% url 'clients_active' %}" class="{% if status == 'Active' %}active{% endif %}">All Active({{ clients|length }})</a>
+    <a href="{% url 'clients_payment_error' %}" class="{% if status == 'Payment Error' %}active{% endif %}">Payment Error({{ clients|length }})</a>
+    <a href="{% url 'clients_started' %}" class="{% if status == 'Just Started' %}active{% endif %}">Just Started({{ clients|length }})</a>
+    <a href="{% url 'clients_new_message' %}" class="{% if status == 'New Message' %}active{% endif %}">New Message({{ clients|length }})</a>
+    <a href="{% url 'clients_new_checkin' %}" class="{% if status == 'New Check-In' %}active{% endif %}">New Check-In({{ clients|length }})</a>
+    <a href="{% url 'clients_missed_checkin' %}" class="{% if status == 'Missed Check-In' %}active{% endif %}">Missed Check-In({{ clients|length }})</a>
+    <a href="{% url 'clients_reminders' %}" class="{% if status == 'Reminders' %}active{% endif %}">Reminders({{ clients|length }})</a>
+    <a href="{% url 'clients_completed' %}" class="{% if status == 'Ending Soon' %}active{% endif %}">Ending Soon({{ clients|length }})</a>
+    <a href="{% url 'clients_no_communication' %}" class="{% if status == 'No Communication' %}active{% endif %}">No Communication({{ clients|length }})</a>
   </div>
 </section>
 
@@ -34,7 +47,12 @@
     <span class="text-muted">Showing {{ clients|length }} clients</span>
     <div class="d-flex gap-2">
       <input type="text" class="form-control" placeholder="Search">
-      <select class="form-select"><option>Tag</option></select>
+      <select class="form-select">
+        <option>Tag</option>
+        <option>Active</option>
+        <option>Payment Issue</option>
+        <option>New Message</option>
+      </select>
       <button class="btn btn-dark">Broadcast message</button>
       <button class="btn btn-dark">Add Lead</button>
     </div>
@@ -57,24 +75,46 @@
         <tr>
           <td>
             <div class="d-flex align-items-center">
-              <div class="rounded-circle d-flex justify-content-center align-items-center me-2" 
-                   style="width:35px;height:35px;background:#fef9c3;color:black;font-weight:bold;">
-                {{ client.name|slice:":2" }}
+              <div class="rounded-circle d-flex justify-content-center align-items-center me-2"
+                   style="width:35px;height:35px;background:#fef9c3;color:#a16207;font-weight:bold;">
+                {{ client.initials }}
               </div>
               <div>
-                <strong>{{ client.name }}</strong><br>
-                <span class="badge-demo">Demo ↗</span>
-              </div>
+                <strong>{{ client.name }}</strong>
+                <br>              </div>
             </div>
           </td>
-          <td>{{ client.chat }}<br><small class="text-muted">{{ client.days }} days ago</small></td>
+          <td>
+            <span class="chat-badge">{{ client.chat }}</span><br>
+            <small class="text-muted">{{ client.days }} days ago</small>
+          </td>
           <td>{{ client.week }}</td>
-          <td><span class="badge bg-dark">{{ client.checkin }}</span></td>
-          <td>🥗</td>
-          <td>-</td>
+          <td>
+            {% if client.checkin == "New" %}
+              <span class="badge bg-success">{{ client.checkin }}</span>
+            {% elif client.checkin == "Overdue" or client.checkin == "Missed" %}
+              <span class="badge bg-danger">{{ client.checkin }}</span>
+            {% elif client.checkin == "Pending" %}
+              <span class="badge bg-warning text-dark">{{ client.checkin }}</span>
+            {% else %}
+              <span class="badge bg-dark">{{ client.checkin }}</span>
+            {% endif %}
+          </td>
+          <td>{{ client.plans }}</td>
+          <td>
+            {% if client.reminders != "-" %}
+              <span class="badge bg-info">{{ client.reminders }}</span>
+            {% else %}
+              {{ client.reminders }}
+            {% endif %}
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="text-center text-muted">No clients in this category</td></tr>
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">
+            No clients in this category
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>

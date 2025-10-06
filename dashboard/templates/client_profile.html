@@ -1,172 +1,682 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Profile - Vera Rossakoff</title>
+{% extends "base.html" %}
+{% block active_page %}clients{% endblock %}
+{% block content %}
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    body { margin:0; font-family:Arial, sans-serif; background:#f8fafc; color:#111; }
-
-    /* Trial banner */
-    .trial-banner { background: #ffeeba; padding: 6px 16px; font-size: 13px; text-align:center; }
-
-    /* Header */
-    header {
-      background:#000; color:white; padding:15px 30px;
-      display:flex; justify-content:space-between; align-items:center;
+    :root {
+      --brand: #111;
+      --brand-contrast: #fff;
+      --muted: #6c757d;
+      --card-bg: #ffffff;
+      --soft-border: #eee;
     }
-    header nav a { margin:0 10px; color:white; text-decoration:none; font-size:14px; }
-    header nav a:hover { text-decoration:underline; }
-
-    /* Client Profile Header */
-    .profile-header { display:flex; align-items:center; padding:20px 30px; background:white; border-bottom:1px solid #eee; }
-    .avatar { width:60px; height:60px; border-radius:50%; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold; margin-right:15px; }
-    .profile-header h2 { margin:0; }
-    .profile-header small { color:#666; }
-
-    /* Tabs */
-    .tabs { display:flex; gap:20px; padding:10px 30px; background:white; border-bottom:1px solid #ddd; }
-    .tabs button {
-      background:none; border:none; font-size:15px; cursor:pointer; padding:10px; color:#555;
+    body { background: #f6f7f9; }
+    .rounded-4 { border-radius: 1rem !important; }
+    .card-soft { background: var(--card-bg); border: 1px solid var(--soft-border); }
+    .text-muted-small { color: var(--muted); font-size: .9rem; }
+    .avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: #fff; color: #111; display: grid; place-items: center; font-weight: 700;
     }
-    .tabs button.active {
-      border-bottom:3px solid black; font-weight:bold; color:#000;
-    }
-
-    /* Content area */
-    .tab-content { display:none; padding:20px 30px; }
-    .tab-content.active { display:block; }
-
-    /* Card */
-    .card { background:white; padding:20px; margin-bottom:20px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-    .card h3 { margin-top:0; }
-
-    /* Table */
-    table { width:100%; border-collapse:collapse; background:white; margin-top:10px; }
-    th, td { padding:10px; border-bottom:1px solid #eee; text-align:left; }
-    thead { background:#f6f6f6; }
+    .tab-pane { padding-top: .5rem; }
+    .table > :not(caption) > * > * { background: transparent !important; }
+    .photo-grid img { object-fit: cover; width: 100%; height: 100%; }
+    .photo-tile { aspect-ratio: 3/4; overflow: hidden; border-radius: .75rem; }
+    .alert-dark { background: #1d1d1d; color: #fff; }
   </style>
-</head>
+
 <body>
+  <!-- Global Header -->
+ 
 
-<div class="trial-banner">⏳ Trial ends in 3 days</div>
-
-<header>
-  <div>The Nutri Co.</div>
-  <nav>
-    <a href="#">Home</a><a href="#">Leads</a><a href="#">Clients</a>
-    <a href="#">Nutrition</a><a href="#">Workouts</a><a href="#">Content</a>
-    <a href="#">Meals</a><a href="#">Roadmap</a>
-  </nav>
-  <div>Hey Usamah (UU)</div>
-</header>
-
-<div class="profile-header">
-  <div class="avatar">VR</div>
-  <div>
-    <h2>Vera Rossakoff</h2>
-    <small>Demo Client • Membership Free for 3 months</small>
-  </div>
-</div>
-
-<div class="tabs">
-  <button class="active" onclick="showTab('overview', event)">Overview</button>
-  <button onclick="showTab('nutrition', event)">Nutrition</button>
-  <button onclick="showTab('workouts', event)">Workouts</button>
-  <button onclick="showTab('progress', event)">Progress</button>
-  <button onclick="showTab('membership', event)">Membership</button>
-</div>
-
-<main>
-  <!-- Overview -->
-  <div id="overview" class="tab-content active">
-    <div class="grid">
-      <div class="card">
-        <h3>Check-ins</h3>
-        <p>✅ Vera has submitted a new check-in.</p>
-        <button>Mark as resolved</button>
+  <!-- Client Header + Tabs -->
+  <section class="bg-black text-white py-5 px-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar">JR</div>
+        <div>
+          <h1 class="h4 mb-1">Jordan Rivera</h1>
+          <div class="d-flex flex-wrap gap-2 text-secondary">
+            <span>jordan@example.com</span><span>•</span>
+            <span>Status: <span class="text-white">Active</span></span><span>•</span>
+            <span>Joined Sep 3, 2024</span>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Macros</h3>
-        <p>Total: 1954 kcal</p>
-        <p>Protein: 142g (30%)</p>
-        <p>Carbs: 209g (44%)</p>
-        <p>Fat: 59g (26%)</p>
-      </div>
-      <div class="card">
-        <h3>Client Info</h3>
-        <p>Goal: Maintain weight</p>
-        <p>Weight: 145.5 lbs (Lost 2.2 lbs)</p>
-      </div>
-      <div class="card">
-        <h3>Ratings</h3>
-        <p>Avg Rating: ⭐ 4.5/5</p>
-        <p>Energy: Good | Mood: Balanced</p>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#checkInModal">New check-in</button>
+        <a href="mailto:jordan@example.com" class="btn btn-light btn-sm">Message</a>
+        <a href="#" class="btn btn-outline-light btn-sm">Edit profile</a>
       </div>
     </div>
-  </div>
 
-  <!-- Nutrition -->
-  <div id="nutrition" class="tab-content">
-    <div class="card">
-      <h3>Meal Plans</h3>
-      <table>
-        <thead><tr><th>Meal</th><th>Calories</th><th>Macros</th></tr></thead>
-        <tbody>
-          <tr><td>Breakfast</td><td>490 kcal</td><td>31p / 65c / 11f</td></tr>
-          <tr><td>Lunch</td><td>600 kcal</td><td>40p / 80c / 20f</td></tr>
-          <tr><td>Dinner</td><td>550 kcal</td><td>35p / 70c / 15f</td></tr>
-        </tbody>
-      </table>
+    <!-- Tabs -->
+    <div class="mt-4">
+      <ul class="nav nav-pills" id="profileTabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#tab-overview" role="tab" aria-controls="tab-overview" aria-selected="true">Overview</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#tab-nutrition" role="tab" aria-controls="tab-nutrition">Nutrition</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#tab-workouts" role="tab" aria-controls="tab-workouts">Workouts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#tab-progress" role="tab" aria-controls="tab-progress">Progress</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#tab-membership" role="tab" aria-controls="tab-membership">Membership</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Tab Content -->
+  <section class="px-4 py-5">
+    <div class="tab-content" id="profileTabsContent">
+
+      <!-- Overview -->
+      <div class="tab-pane fade show active" id="tab-overview" role="tabpanel">
+        <div class="alert alert-dark rounded-4 d-flex align-items-center justify-content-between">
+          <div>
+            <div class="fw-bold">Great! Jordan has a new check-in</div>
+            <div class="text-muted-small">Submitted 2h ago</div>
+          </div>
+          <button class="btn btn-light btn-sm" data-open-tab="#tab-progress">Review</button>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-soft rounded-4 p-3">
+              <div class="text-muted-small">Weight</div>
+              <div class="h4 mb-1"><span id="ovWeight">82.3</span> kg</div>
+              <div class="text-muted-small">Last: 2 days ago</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-soft rounded-4 p-3">
+              <div class="text-muted-small">Body Fat</div>
+              <div class="h4 mb-1">18.4%</div>
+              <div class="text-muted-small">Goal: 15%</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-soft rounded-4 p-3">
+              <div class="text-muted-small">Calories Target</div>
+              <div class="h4 mb-1">2,350</div>
+              <div class="text-muted-small">Adherence: 82%</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-soft rounded-4 p-3">
+              <div class="text-muted-small">Training</div>
+              <div class="h4 mb-1">4/wk</div>
+              <div class="text-muted-small">Last: yesterday</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0">Assigned Nutrition</h5>
+                  <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#assignMealPlanModal">Assign plan</button>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="fw-semibold">Lean Cut · 4 weeks</div>
+                    <div class="text-muted-small">~2,350 kcal/day</div>
+                  </div>
+                  <button class="btn btn-sm btn-dark" data-open-tab="#tab-nutrition">Open</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0">Assigned Workout</h5>
+                  <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#assignWorkoutModal">Assign program</button>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="fw-semibold">Upper/Lower Split</div>
+                    <div class="text-muted-small">4x/week • Week 2 of 8</div>
+                  </div>
+                  <button class="btn btn-sm btn-dark" data-open-tab="#tab-workouts">Open</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0">Notes</h5>
+                  <a href="#" class="btn btn-sm btn-outline-secondary">View all</a>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item px-0">
+                    <div class="fw-semibold">Knee sensitivity</div>
+                    <div class="text-muted-small">Avoid deep knee flexion this week; sub split squats with leg press.</div>
+                  </li>
+                  <li class="list-group-item px-0">
+                    <div class="fw-semibold">Travel</div>
+                    <div class="text-muted-small">Business trip next week; offer hotel-friendly bodyweight session.</div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h5 class="mb-3">Recent Activity</h5>
+                <ul class="list-unstyled">
+                  <li class="mb-2 text-muted-small"><span class="fw-semibold">Workout logged</span> • 1h ago</li>
+                  <li class="mb-2 text-muted-small"><span class="fw-semibold">Hit protein target</span> • yesterday</li>
+                  <li class="mb-2 text-muted-small"><span class="fw-semibold">New check-in submitted</span> • 2 days ago</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nutrition -->
+      <div class="tab-pane fade" id="tab-nutrition" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Nutrition</h4>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#assignMealPlanModal">Assign/Replace Plan</button>
+            <a class="btn btn-outline-secondary btn-sm" href="#">Export</a>
+            <a class="btn btn-dark btn-sm" href="#">Create Plan</a>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <div class="fw-semibold">Lean Cut</div>
+                    <div class="text-muted-small">28 days • ~2,350 kcal/day</div>
+                  </div>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary">Duplicate</button>
+                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                  </div>
+                </div>
+                <hr>
+                <div class="d-flex gap-2 flex-wrap mb-3">
+                  <button class="btn btn-sm btn-dark">Day 1</button>
+                  <button class="btn btn-sm btn-outline-secondary">Day 2</button>
+                  <button class="btn btn-sm btn-outline-secondary">Day 3</button>
+                  <button class="btn btn-sm btn-outline-secondary">Day 4</button>
+                </div>
+
+                <!-- Day meals -->
+                <div class="border rounded-3 p-3 mb-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-semibold">Meal 1 • 520 kcal</div>
+                    <div class="text-muted-small">P 45 • C 50 • F 16</div>
+                  </div>
+                  <ul class="list-unstyled mt-2 mb-0 text-muted-small">
+                    <li class="d-flex justify-content-between"><span>Oats + Whey + Berries</span><span>120g • 380 kcal</span></li>
+                    <li class="d-flex justify-content-between"><span>Greek Yogurt</span><span>150g • 140 kcal</span></li>
+                  </ul>
+                </div>
+
+                <div class="border rounded-3 p-3 mb-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-semibold">Meal 2 • 610 kcal</div>
+                    <div class="text-muted-small">P 45 • C 60 • F 20</div>
+                  </div>
+                  <ul class="list-unstyled mt-2 mb-0 text-muted-small">
+                    <li class="d-flex justify-content-between"><span>Chicken + Rice + Veg</span><span>450g • 530 kcal</span></li>
+                    <li class="d-flex justify-content-between"><span>Olive Oil</span><span>10g • 80 kcal</span></li>
+                  </ul>
+                </div>
+
+                <div class="border rounded-3 p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-semibold">Meal 3 • 1,050 kcal</div>
+                    <div class="text-muted-small">P 60 • C 110 • F 40</div>
+                  </div>
+                  <ul class="list-unstyled mt-2 mb-0 text-muted-small">
+                    <li class="d-flex justify-content-between"><span>Steak + Potato + Salad</span><span>550g • 950 kcal</span></li>
+                    <li class="d-flex justify-content-between"><span>Dark Chocolate</span><span>20g • 100 kcal</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <h6 class="mb-2">Macro Targets</h6>
+                <div class="text-muted-small mb-2">Calories: <span class="fw-semibold">2,350</span></div>
+                <div class="text-muted-small">P 175 • C 255 • F 70</div>
+                <div class="mt-3"><a href="#" class="btn btn-sm btn-outline-secondary">Adjust targets</a></div>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h6 class="mb-2">Adherence (last 7d)</h6>
+                <div class="text-muted-small">Calories: 82%</div>
+                <div class="text-muted-small">Protein: 90%</div>
+                <div class="text-muted-small">Carbs: 78%</div>
+                <div class="text-muted-small">Fat: 85%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workouts -->
+      <div class="tab-pane fade" id="tab-workouts" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Workouts</h4>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#assignWorkoutModal">Assign/Replace Program</button>
+            <a class="btn btn-dark btn-sm" href="#">Create Program</a>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold">Upper/Lower Split</div>
+                    <div class="text-muted-small">4x/week • Week 2 of 8</div>
+                  </div>
+                  <div class="btn-group">
+                    <a class="btn btn-sm btn-outline-secondary" href="#">Edit</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="#">Duplicate</a>
+                  </div>
+                </div>
+                <hr>
+                <h6 class="mb-2">Upcoming Sessions</h6>
+                <div class="table-responsive">
+                  <table class="table mb-0">
+                    <thead><tr><th>Day</th><th>Focus</th><th>Exercises</th><th></th></tr></thead>
+                    <tbody>
+                      <tr><td>Mon</td><td>Upper A</td><td class="text-muted-small">7 exercises</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">View</a></td></tr>
+                      <tr><td>Tue</td><td>Lower A</td><td class="text-muted-small">6 exercises</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">View</a></td></tr>
+                      <tr><td>Thu</td><td>Upper B</td><td class="text-muted-small">7 exercises</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">View</a></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h6 class="mb-2">History</h6>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2 text-muted-small">Oct 5 • Lower A • 58 mins</li>
+                  <li class="mb-2 text-muted-small">Oct 3 • Upper B • 61 mins</li>
+                  <li class="mb-2 text-muted-small">Oct 1 • Upper A • 55 mins</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h6 class="mb-2">Next Session</h6>
+                <div class="fw-semibold">Upper A</div>
+                <div class="text-muted-small mb-2">Push emphasis • ~60 mins</div>
+                <ol class="text-muted-small mb-0">
+                  <li>Bench Press — 5x5</li>
+                  <li>Pull-ups — 4xAMRAP</li>
+                  <li>OHP — 3x8</li>
+                  <li>Cable Row — 3x12</li>
+                  <li>DB Fly — 3x15</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="tab-pane fade" id="tab-progress" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Progress</h4>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">Upload photos</button>
+            <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#checkInModal">Add check-in</button>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0">Weight trend</h6>
+                  <div class="text-muted-small"><span id="wStart">86.0</span> → <span id="wEnd">82.3</span> kg</div>
+                </div>
+                <canvas id="weightChart" height="120"></canvas>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <h6 class="mb-2">Body measurements</h6>
+                <canvas id="measureChart" height="120"></canvas>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4" id="checkins">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0">Check-ins</h6>
+                  <button class="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0" id="checkinsTable">
+                    <thead><tr><th>Date</th><th>Weight</th><th>BF%</th><th>Notes</th></tr></thead>
+                    <tbody>
+                      <tr><td>Sep 10, 2025</td><td>84.7</td><td>19.1</td><td class="text-muted-small">Felt great</td></tr>
+                      <tr><td>Sep 17, 2025</td><td>83.9</td><td>18.7</td><td class="text-muted-small">Travel week</td></tr>
+                      <tr><td>Sep 24, 2025</td><td>83.1</td><td>18.6</td><td class="text-muted-small">Back on routine</td></tr>
+                      <tr><td>Oct 01, 2025</td><td>82.6</td><td>18.4</td><td class="text-muted-small">Solid week</td></tr>
+                      <tr><td>Oct 08, 2025</td><td>82.3</td><td>18.4</td><td class="text-muted-small">Deload</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-soft rounded-4 mb-4">
+              <div class="card-body">
+                <h6 class="mb-2">Activity</h6>
+                <div class="text-muted-small">Sessions this week: 3</div>
+                <div class="text-muted-small">Steps avg: 8,200</div>
+              </div>
+            </div>
+
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h6 class="mb-2">Progress Photos</h6>
+                <div class="row g-2 photo-grid">
+                  <div class="col-6"><div class="photo-tile"><img src="https://via.placeholder.com/300x400?text=Front" alt="Front"></div></div>
+                  <div class="col-6"><div class="photo-tile"><img src="https://via.placeholder.com/300x400?text=Side" alt="Side"></div></div>
+                  <div class="col-6"><div class="photo-tile"><img src="https://via.placeholder.com/300x400?text=Back" alt="Back"></div></div>
+                  <div class="col-6"><div class="photo-tile"><img src="https://via.placeholder.com/300x400?text=Flex" alt="Flex"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Membership -->
+      <div class="tab-pane fade" id="tab-membership" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h5 class="mb-3">Membership</h5>
+                <div class="d-flex justify-content-between"><div class="text-muted-small">Plan</div><div class="fw-semibold">Premium Coaching</div></div>
+                <div class="d-flex justify-content-between"><div class="text-muted-small">Status</div><div class="fw-semibold">Active</div></div>
+                <div class="d-flex justify-content-between"><div class="text-muted-small">Renews</div><div class="fw-semibold">Nov 3, 2025</div></div>
+                <hr>
+                <div class="d-flex gap-2">
+                  <a class="btn btn-dark btn-sm" href="#">Change plan</a>
+                  <a class="btn btn-outline-secondary btn-sm" href="#">Pause</a>
+                  <a class="btn btn-outline-danger btn-sm" href="#">Cancel</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="card card-soft rounded-4">
+              <div class="card-body">
+                <h6 class="mb-3">Billing history</h6>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0">
+                    <thead><tr><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td>Oct 3, 2025</td><td>$199</td>
+                        <td><span class="badge bg-success">Paid</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">Invoice</a></td>
+                      </tr>
+                      <tr>
+                        <td>Sep 3, 2025</td><td>$199</td>
+                        <td><span class="badge bg-success">Paid</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">Invoice</a></td>
+                      </tr>
+                      <tr>
+                        <td>Aug 3, 2025</td><td>$199</td>
+                        <td><span class="badge bg-success">Paid</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="#">Invoice</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Shared Modals -->
+  <div class="modal fade" id="checkInModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" id="checkInForm">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">New check-in</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label">Weight (kg)</label>
+              <input type="number" step="0.01" name="weight" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Body fat (%)</label>
+              <input type="number" step="0.1" name="body_fat" class="form-control">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notes</label>
+              <textarea name="notes" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-dark" type="submit">Save</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Workouts -->
-  <div id="workouts" class="tab-content">
-    <div class="card">
-      <h3>Workout Plans</h3>
-      <table>
-        <thead><tr><th>Name</th><th>Status</th><th>Sessions</th></tr></thead>
-        <tbody>
-          <tr><td>Vera’s Workout Plan</td><td>Published</td><td>3</td></tr>
-        </tbody>
-      </table>
+  <div class="modal fade" id="assignMealPlanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Assign meal plan</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Select plan</label>
+          <select class="form-select">
+            <option>Lean Cut — 2350 kcal</option>
+            <option>Recomp — 2600 kcal</option>
+            <option>Mass — 3000 kcal</option>
+          </select>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-dark" data-bs-dismiss="modal" type="button">Assign</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Progress -->
-  <div id="progress" class="tab-content">
-    <div class="card">
-      <h3>Weight Timeline</h3>
-      <p>Start: 147.7 lbs → Current: 145.5 lbs </p>
-      <p>-2.2 lbs total since starting</p>
-    </div>
-    <div class="card">
-      <h3>Measurements</h3>
-      <p>Waist: 30” | Chest: 36” | Hips: 38”</p>
+  <div class="modal fade" id="assignWorkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Assign workout program</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Select program</label>
+          <select class="form-select">
+            <option>Upper/Lower Split (4x/wk)</option>
+            <option>Full Body (3x/wk)</option>
+            <option>PPL (6x/wk)</option>
+          </select>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-dark" data-bs-dismiss="modal" type="button">Assign</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Membership -->
-  <div id="membership" class="tab-content">
-    <div class="card">
-      <h3>Membership Info</h3>
-      <p>Status: Active (Free Trial)</p>
-      <p>Ends: Sept 18th, 2025</p>
-      <button>Adjust Membership</button>
+  <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Upload progress photos</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control" type="file" accept="image/*" multiple>
+          <div class="form-text">You can upload multiple images.</div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-dark" data-bs-dismiss="modal" type="button">Upload</button>
+        </div>
+      </form>
     </div>
   </div>
-</main>
 
-<script>
-function showTab(tabId, evt) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
-  evt.target.classList.add('active');
-}
-</script>
+  <!-- Scripts: Bootstrap bundle + Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</body>
-</html>
+  <!-- Tab helper: allows any button/link to open a tab; supports URL hashes -->
+  <script>
+    function showTab(id) {
+      const trigger = document.querySelector(`[data-bs-toggle="tab"][href="${id}"]`);
+      if (!trigger) return;
+      bootstrap.Tab.getOrCreateInstance(trigger).show();
+      if (history.replaceState) { history.replaceState(null, "", id); } else { location.hash = id; }
+    }
+
+    document.querySelectorAll("[data-open-tab]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        showTab(btn.getAttribute("data-open-tab"));
+      });
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (location.hash && document.querySelector(location.hash)) {
+        showTab(location.hash);
+      }
+    });
+  </script>
+
+  <!-- Demo charts + check-in behavior -->
+  <script>
+    // Weight chart
+    const weightCtx = document.getElementById('weightChart');
+    const weightChart = new Chart(weightCtx, {
+      type: 'line',
+      data: {
+        labels: ["Sep 3","Sep 10","Sep 17","Sep 24","Oct 1","Oct 8"],
+        datasets: [{
+          label: 'Weight',
+          data: [86.0, 84.7, 83.9, 83.1, 82.6, 82.3],
+          borderColor: '#111',
+          backgroundColor: 'rgba(17,17,17,.08)',
+          tension: .35,
+          fill: true,
+          pointRadius: 3
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => v + ' kg' } } } }
+    });
+
+    // Measurements chart
+    const measCtx = document.getElementById('measureChart');
+    new Chart(measCtx, {
+      type: 'line',
+      data: {
+        labels: ["Sep 3","Sep 10","Sep 17","Sep 24","Oct 1","Oct 8"],
+        datasets: [{
+          label: 'Waist (cm)',
+          data: [86,85.5,85,84.6,84.2,84],
+          borderColor: '#6c757d',
+          backgroundColor: 'rgba(108,117,125,.08)',
+          tension: .35,
+          fill: true,
+          pointRadius: 3
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Add check-in: update table + chart + overview stat
+    document.getElementById('checkInForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const weight = parseFloat(form.weight.value);
+      const bf = form.body_fat.value ? parseFloat(form.body_fat.value) : null;
+      const notes = form.notes.value || "";
+      if (isNaN(weight)) return;
+
+      const today = new Date();
+      const label = today.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+      weightChart.data.labels.push(label);
+      weightChart.data.datasets[0].data.push(weight);
+      weightChart.update();
+
+      document.getElementById('wStart').textContent = weightChart.data.datasets[0].data[0].toFixed(1);
+      document.getElementById('wEnd').textContent = weight.toFixed(1);
+      document.getElementById('ovWeight').textContent = weight.toFixed(1);
+
+      const tbody = document.querySelector('#checkinsTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${today.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td>${weight.toFixed(1)}</td>
+        <td>${bf !== null ? bf.toFixed(1) : '—'}</td>
+        <td class="text-muted-small">${notes || ''}</td>
+      `;
+      tbody.prepend(tr);
+
+      form.reset();
+      bootstrap.Modal.getInstance(document.getElementById('checkInModal')).hide();
+    });
+  </script>
+{% endblock %}

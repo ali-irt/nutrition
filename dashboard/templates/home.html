@@ -82,82 +82,81 @@
       <p>At a glance</p>
     </div>
   </section>
-
-  <!-- TOP INFO CARDS -->
-  <section class="container mt-n4">
-    <div class="row g-3">
-      <div class="col-md-4">
-        <div class="info-card">
-          <h6>New leads</h6>
-          <p>Everyone's up to date</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <h6>Missed payments</h6>
-          <p>None</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <h6>Messages</h6>
-          <p>Up to date</p>
-        </div>
+<!-- TOP INFO CARDS -->
+<section class="container mt-n4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="info-card">
+        <h6>New leads</h6>
+        <p>{{ pending_leads }}</p>
       </div>
     </div>
-  </section>
-
-  <!-- BUSINESS OVERVIEW -->
-  <section class="container mt-5">
-    <h5 class="mb-4">Your business at a glance</h5>
-    <div class="row g-3">
-      <div class="col-md-3">
-        <div class="stat-card">
-          <span>0</span>
-          <small>Pending leads</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <span>0</span>
-          <small>Starting clients</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <span>0</span>
-          <small>Active clients</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <span>0</span>
-          <small>Ending clients</small>
-        </div>
+    <div class="col-md-4">
+      <div class="info-card">
+        <h6>Missed payments</h6>
+        <p>{{ missed_payments }}</p>
       </div>
     </div>
-  </section>
-
-  <!-- ADDITIONAL LINKS -->
-  <section class="container mt-4">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="link-card">
-          <small>Browse our feature roadmap 🚀</small>
-          <p class="mb-0 fw-bold">See your payouts</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="link-card">
-          <small>Your Contact Page:</small>
-          <p class="mb-0 fw-bold">
-            https://us.zenfit.io/dashboard/settings/branding
-          </p>
-        </div>
+    <div class="col-md-4">
+      <div class="info-card">
+        <h6>Messages</h6>
+        <p>{{ new_messages }}</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-{%endblock%}
+<!-- BUSINESS OVERVIEW -->
+<section class="container mt-5">
+  <h5 class="mb-4">Your business at a glance</h5>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <span>{{ pending_leads }}</span>
+        <small>Pending leads</small>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <span>{{ starting_clients }}</span>
+        <small>Starting clients</small>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <span>{{ active_clients }}</span>
+        <small>Active clients</small>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <span>{{ ending_clients }}</span>
+        <small>Ending clients</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADDITIONAL LINKS -->
+<section class="container mt-4">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="link-card">
+        <small>Browse our feature roadmap 🚀</small>
+        <p class="mb-0 fw-bold">See your payouts</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="link-card">
+        <small>Your Contact Page:</small>
+        <p class="mb-0 fw-bold">
+          https://us.zenfit.io/dashboard/settings/branding
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

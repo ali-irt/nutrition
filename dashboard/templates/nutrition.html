@@ -1,53 +1,78 @@
 {% extends "base.html" %}
 {% block content %}
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
+<!-- Nutrition Section -->
+<section class="bg-black text-white py-8 px-6">
+  <h1 class="text-4xl font-bold">Nutrition</h1>
+  <div class="flex space-x-8 mt-4 text-gray-300">
+    <a href="{% url 'nutrition_recipes' %}" class="hover:text-white {% if active_tab == 'recipes' %}border-b-2 border-white text-white{% endif %}">Recipes</a>
+    <a href="{% url 'nutrition' %}" class="hover:text-white {% if active_tab == 'ingredients' %}border-b-2 border-white text-white{% endif %}">Ingredients</a>
+    <a href="{% url 'nutrition_templates' %}" class="hover:text-white {% if active_tab == 'templates' %}border-b-2 border-white text-white{% endif %}">Templates</a>
+  </div>
+</section>
 
-  <!-- Nutrition Section -->
-  <section class="bg-black text-white py-8 px-6">
-    <h1 class="text-4xl font-bold">Nutrition</h1>
-    <div class="flex space-x-8 mt-4 text-gray-300">
-      <a href="{% url 'nutrition_recipes'%}" class="hover:text-white">Recipes</a>
-      <a href="{% url 'nutrition'%}" class="border-b-2 border-white text-white">ingredients</a>
-      <a href="{% url 'nutrition_templates' %}" class="hover:text-white">Templates</a>
+<!-- Main Content -->
+<main class="bg-gray-50 px-8 py-12 min-h-screen">
+  <!-- Top row -->
+  <div class="flex justify-between items-center mb-6">
+    <p class="text-sm font-semibold">Showing {{ meals|length }} ingredients</p>
+    <button id="openModalBtn" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
+      Create ingredient
+    </button>
+  </div>
+
+  {% if meals %}
+  <!-- Table -->
+  <div class="bg-white rounded-lg shadow-sm">
+    <table class="w-full text-left">
+      <thead class="border-b">
+        <tr>
+          <th class="py-3 px-4 font-semibold">Name</th>
+          <th class="py-3 px-4 font-semibold">Meal Type</th>
+          <th class="py-3 px-4 font-semibold">Protein (g)</th>
+          <th class="py-3 px-4 font-semibold">Carbs (g)</th>
+          <th class="py-3 px-4 font-semibold">Fat (g)</th>
+          <th class="py-3 px-4 font-semibold">Calories</th>
+          <th class="py-3 px-4 font-semibold">Prep Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for meal in meals %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="py-3 px-4">
+            <div class="font-medium">{{ meal.name }}</div>
+            <div class="text-sm text-gray-500">{{ meal.description|truncatewords:10 }}</div>
+          </td>
+          <td class="py-3 px-4 capitalize">{{ meal.meal_type }}</td>
+          <td class="py-3 px-4">{{ meal.protein }}g</td>
+          <td class="py-3 px-4">{{ meal.carbs }}g</td>
+          <td class="py-3 px-4">{{ meal.fats }}g</td>
+          <td class="py-3 px-4">{{ meal.calories }}</td>
+          <td class="py-3 px-4">
+            {% if meal.preparation_time %}
+              {{ meal.preparation_time }} min
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <!-- Empty state -->
+  <div class="flex flex-col items-center mt-16 text-center">
+    <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
+      ?
     </div>
-  </section>
+    <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
+    <p class="text-sm text-gray-500">Try adding a new ingredient</p>
+  </div>
+  {% endif %}
+</main>
 
-  <!-- Main Content -->
-  <main class="bg-gray-50 px-8 py-12 min-h-screen">
-    <!-- Top row -->
-    <div class="flex justify-between items-center mb-6">
-      <p class="text-sm font-semibold">Showing 0 recipes</p>
-      <button id="openModalBtn" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
-        Create ingredient
-      </button>
-    </div>
-
-    <!-- Table -->
-    <div class="bg-white rounded-lg shadow-sm">
-      <table class="w-full text-left">
-        <thead class="border-b">
-          <tr>
-            <th class="py-3 px-4 font-semibold">Name</th>
-            <th class="py-3 px-4 font-semibold">Language</th>
-            <th class="py-3 px-4 font-semibold">Protein</th>
-            <th class="py-3 px-4 font-semibold">Carbohydrates</th>
-            <th class="py-3 px-4 font-semibold">Fat</th>
-            <th class="py-3 px-4 font-semibold">Calories</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-
-    <!-- Empty state -->
-    <div class="flex flex-col items-center mt-16 text-center">
-      <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
-        ?
-      </div>
-      <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
-      <p class="text-sm text-gray-500">Try adding a new ingredient</p>
-    </div>
-  </main>
 
   <!-- MODAL -->
   <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">

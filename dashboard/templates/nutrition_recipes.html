@@ -1,6 +1,6 @@
-{% extends 'base.html'%}
+{% extends "base.html" %}
 {% block content %}
-  <style>
+ <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -148,51 +148,93 @@
       font-size: 14px;
     }
   </style>
-</head>
-<body>
-
-  <!-- Nutrition Section -->
-  <section class="bg-black text-white py-8 px-6">
-    <h1 class="text-4xl font-bold">Nutrition</h1>
-    <div class="flex space-x-8 mt-4 text-gray-300">
-      <a href="{% url 'nutrition_recipes'%}" class="hover:text-white">Recipes</a>
-      <a href="{% url 'nutrition'%}" class="border-b-2 border-white text-white">ingredients</a>
-      <a href="{% url 'nutrition_templates' %}" class="hover:text-white">Templates</a>
-    </div>
-  </section>
-    <div class="recipes-topbar">
-      <div>
-        <input type="text" placeholder="Search">
-        <select>
-          <option>Tag</option>
-        </select>
-      </div>
-      <button class="btn" onclick="openModal()">Create a Recipes</button>
-    </div>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Language</th>
-          <th>Library</th>
-          <th>Macro split</th>
-          <th>Calories</th>
-          <th>Time</th>
-          <th>Meal type</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="7" class="empty">
-            <div style="font-size:24px;">❓</div>
-            <strong>No clients found</strong>
-            <p>Recipes are the foundation of your nutrition plans. You can mark recipes from your nutrition plans as favorites to see them here</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<!-- Nutrition Section -->
+<section class="bg-black text-white py-8 px-6">
+  <h1 class="text-4xl font-bold">Nutrition</h1>
+  <div class="flex space-x-8 mt-4 text-gray-300">
+    <a href="{% url 'nutrition_recipes' %}" class="hover:text-white {% if active_tab == 'recipes' %}border-b-2 border-white text-white{% endif %}">Recipes</a>
+    <a href="{% url 'nutrition' %}" class="hover:text-white {% if active_tab == 'ingredients' %}border-b-2 border-white text-white{% endif %}">Ingredients</a>
+    <a href="{% url 'nutrition_templates' %}" class="hover:text-white {% if active_tab == 'templates' %}border-b-2 border-white text-white{% endif %}">Templates</a>
   </div>
+</section>
+
+<div class="container">
+  <div class="recipes-topbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; gap: 10px;">
+      <input type="text" placeholder="Search" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+      <select style="padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+        <option>Tag</option>
+        <option>Breakfast</option>
+        <option>Lunch</option>
+        <option>Dinner</option>
+        <option>Snack</option>
+      </select>
+    </div>
+    <button class="btn" onclick="openModal()">Create a Recipe</button>
+  </div>
+
+  {% if meals %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Meal Type</th>
+        <th>Protein (g)</th>
+        <th>Carbs (g)</th>
+        <th>Fat (g)</th>
+        <th>Calories</th>
+        <th>Prep Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meal in meals %}
+      <tr>
+        <td>
+          <strong>{{ meal.name }}</strong>
+          <div style="font-size: 12px; color: #666;">{{ meal.description|truncatewords:8 }}</div>
+        </td>
+        <td class="capitalize">{{ meal.meal_type }}</td>
+        <td>{{ meal.protein }}g</td>
+        <td>{{ meal.carbs }}g</td>
+        <td>{{ meal.fats }}g</td>
+        <td>{{ meal.calories }}</td>
+        <td>
+          {% if meal.preparation_time %}
+            {{ meal.preparation_time }} min
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Language</th>
+        <th>Library</th>
+        <th>Macro split</th>
+        <th>Calories</th>
+        <th>Time</th>
+        <th>Meal type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="7" class="empty">
+          <div style="font-size:24px;">❓</div>
+          <strong>No recipes found</strong>
+          <p>Recipes are the foundation of your nutrition plans. You can mark recipes from your nutrition plans as favorites to see them here</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
 
   <!-- Modal -->
   <div class="modal" id="recipeModal">

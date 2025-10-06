@@ -254,3 +254,444 @@ class MyAPIView(APIView):
         except Exception as e:
             logger.error(log_request_context(request, f"MyAPIView error: {e}"), exc_info=True)
             return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# Add these ViewSets to your existing views.py file
+
+# =====================================
+# Nutrition ViewSet
+# =====================================
+class NutritionViewSet(LoggedModelViewSet):
+    serializer_class = NutritionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching nutrition entries"))
+        return Nutrition.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving nutrition entry"))
+        serializer.save(user=self.request.user)
+
+
+# =====================================
+# Lead Management ViewSet
+# =====================================
+class LeadViewSet(LoggedModelViewSet):
+    queryset = Lead.objects.all()
+    serializer_class = LeadSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching leads"))
+        # Only staff can see all leads
+        if self.request.user.is_staff:
+            return Lead.objects.all()
+        return Lead.objects.none()
+
+
+# =====================================
+# OTP ViewSet (Read-only for users)
+# =====================================
+class LoginOTPViewSet(LoggedModelViewSet):
+    serializer_class = LoginOTPSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'head', 'options']  # Read-only
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching OTP records"))
+        return LoginOTP.objects.filter(user=self.request.user)
+
+
+# =====================================
+# Macro Planning ViewSets
+# =====================================
+class MacroPlanViewSet(LoggedModelViewSet):
+    serializer_class = MacroPlanSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching macro plans"))
+        return MacroPlan.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving macro plan"))
+        serializer.save(user=self.request.user)
+
+
+class DailyMacroTargetViewSet(LoggedModelViewSet):
+    serializer_class = DailyMacroTargetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching daily macro targets"))
+        return DailyMacroTarget.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving daily macro target"))
+        serializer.save(user=self.request.user)
+
+
+# =====================================
+# Activity Tracking ViewSets
+# =====================================
+class WaterLogViewSet(LoggedModelViewSet):
+    serializer_class = WaterLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching water logs"))
+        return WaterLog.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving water log"))
+        serializer.save(user=self.request.user)
+
+
+class DailyActivitySummaryViewSet(LoggedModelViewSet):
+    serializer_class = DailyActivitySummarySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching activity summaries"))
+        return DailyActivitySummary.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving activity summary"))
+        serializer.save(user=self.request.user)
+
+
+class HeartRateSampleViewSet(LoggedModelViewSet):
+    serializer_class = HeartRateSampleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching heart rate samples"))
+        return HeartRateSample.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving heart rate sample"))
+        serializer.save(user=self.request.user)
+
+
+# =====================================
+# Check-in ViewSets
+# =====================================
+class CheckinFormViewSet(LoggedModelViewSet):
+    queryset = CheckinForm.objects.all()
+    serializer_class = CheckinFormSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CheckinQuestionViewSet(LoggedModelViewSet):
+    queryset = CheckinQuestion.objects.all()
+    serializer_class = CheckinQuestionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CheckinViewSet(LoggedModelViewSet):
+    serializer_class = CheckinSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching check-ins"))
+        return Checkin.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving check-in"))
+        serializer.save(user=self.request.user)
+
+
+class CheckinAnswerViewSet(LoggedModelViewSet):
+    serializer_class = CheckinAnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching check-in answers"))
+        return CheckinAnswer.objects.filter(checkin__user=self.request.user)
+
+
+class CheckinPhotoViewSet(LoggedModelViewSet):
+    serializer_class = CheckinPhotoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching check-in photos"))
+        return CheckinPhoto.objects.filter(checkin__user=self.request.user)
+
+
+# =====================================
+# Food Library ViewSets
+# =====================================
+class FoodBrandViewSet(LoggedModelViewSet):
+    queryset = FoodBrand.objects.all()
+    serializer_class = FoodBrandSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class FoodViewSet(LoggedModelViewSet):
+    serializer_class = FoodSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching foods"))
+        # Show all non-custom foods + user's custom foods
+        return Food.objects.filter(
+            models.Q(is_custom=False) | models.Q(created_by=self.request.user)
+        )
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving food"))
+        serializer.save(created_by=self.request.user, is_custom=True)
+
+
+class FoodBarcodeViewSet(LoggedModelViewSet):
+    queryset = FoodBarcode.objects.all()
+    serializer_class = FoodBarcodeSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class FoodPortionViewSet(LoggedModelViewSet):
+    queryset = FoodPortion.objects.all()
+    serializer_class = FoodPortionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class RecipeViewSet(LoggedModelViewSet):
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching recipes"))
+        # Show public recipes + user's own recipes
+        return Recipe.objects.filter(
+            models.Q(is_public=True) | models.Q(created_by=self.request.user)
+        )
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving recipe"))
+        serializer.save(created_by=self.request.user)
+
+
+class RecipeIngredientViewSet(LoggedModelViewSet):
+    serializer_class = RecipeIngredientSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching recipe ingredients"))
+        return RecipeIngredient.objects.filter(
+            models.Q(recipe__is_public=True) | models.Q(recipe__created_by=self.request.user)
+        )
+
+
+class FoodDiaryEntryViewSet(LoggedModelViewSet):
+    serializer_class = FoodDiaryEntrySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching food diary entries"))
+        return FoodDiaryEntry.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving food diary entry"))
+        serializer.save(user=self.request.user)
+
+
+# =====================================
+# Exercise Library ViewSets
+# =====================================
+class MuscleViewSet(LoggedModelViewSet):
+    queryset = Muscle.objects.all()
+    serializer_class = MuscleSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ExerciseViewSet(LoggedModelViewSet):
+    queryset = Exercise.objects.all()
+    serializer_class = ExerciseSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class WorkoutExerciseViewSet(LoggedModelViewSet):
+    serializer_class = WorkoutExerciseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching workout exercises"))
+        return WorkoutExercise.objects.filter(workout__user=self.request.user)
+
+
+class SetLogViewSet(LoggedModelViewSet):
+    serializer_class = SetLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching set logs"))
+        return SetLog.objects.filter(session__user=self.request.user)
+
+
+# =====================================
+# Cardio ViewSet
+# =====================================
+class CardioSessionViewSet(LoggedModelViewSet):
+    serializer_class = CardioSessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching cardio sessions"))
+        return CardioSession.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving cardio session"))
+        serializer.save(user=self.request.user)
+
+
+# =====================================
+# Address & Subscription ViewSets
+# =====================================
+class AddressViewSet(LoggedModelViewSet):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching addresses"))
+        return Address.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving address"))
+        serializer.save(user=self.request.user)
+
+
+class ProductViewSet(LoggedModelViewSet):
+    queryset = Product.objects.filter(active=True)
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class PlanViewSet(LoggedModelViewSet):
+    queryset = Plan.objects.all()
+    serializer_class = PlanSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class SubscriptionViewSet(LoggedModelViewSet):
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching subscriptions"))
+        return Subscription.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving subscription"))
+        serializer.save(user=self.request.user)
+
+
+class PaymentMethodViewSet(LoggedModelViewSet):
+    serializer_class = PaymentMethodSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching payment methods"))
+        return PaymentMethod.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving payment method"))
+        serializer.save(user=self.request.user)
+
+
+class InvoiceViewSet(LoggedModelViewSet):
+    serializer_class = InvoiceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching invoices"))
+        return Invoice.objects.filter(user=self.request.user)
+
+
+class PaymentViewSet(LoggedModelViewSet):
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching payments"))
+        return Payment.objects.filter(invoice__user=self.request.user)
+
+
+# =====================================
+# Meal Subscription ViewSets
+# =====================================
+class MealSubscriptionViewSet(LoggedModelViewSet):
+    serializer_class = MealSubscriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching meal subscriptions"))
+        return MealSubscription.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving meal subscription"))
+        serializer.save(user=self.request.user)
+
+
+class WeeklyMealSelectionViewSet(LoggedModelViewSet):
+    serializer_class = WeeklyMealSelectionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching weekly meal selections"))
+        return WeeklyMealSelection.objects.filter(subscription__user=self.request.user)
+
+
+class DeliveryViewSet(LoggedModelViewSet):
+    serializer_class = DeliverySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching deliveries"))
+        return Delivery.objects.filter(subscription__user=self.request.user)
+
+
+# =====================================
+# Chat & Files ViewSets
+# =====================================
+class ChatThreadViewSet(LoggedModelViewSet):
+    serializer_class = ChatThreadSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching chat threads"))
+        return ChatThread.objects.filter(participants=self.request.user)
+
+
+class ChatMessageViewSet(LoggedModelViewSet):
+    serializer_class = ChatMessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching chat messages"))
+        return ChatMessage.objects.filter(thread__participants=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving chat message"))
+        serializer.save(sender=self.request.user)
+
+
+class ChatAttachmentViewSet(LoggedModelViewSet):
+    serializer_class = ChatAttachmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching chat attachments"))
+        return ChatAttachment.objects.filter(message__thread__participants=self.request.user)
+
+
+class UserFileViewSet(LoggedModelViewSet):
+    serializer_class = UserFileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        logger.debug(log_request_context(self.request, "Fetching user files"))
+        return UserFile.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        logger.info(log_request_context(self.request, "Saving user file"))
+        serializer.save(user=self.request.user)

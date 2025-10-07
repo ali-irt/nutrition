@@ -451,7 +451,7 @@ def workouts(request):
     if muscle:
         exercises = exercises.filter(primary_muscle__group=muscle)
     if library == "pre":
-        exercises = exercises.filter(created_by__isnull=True)
+        exercises = exercises.fir(created_by__isnull=True)
     elif library == "own":
         exercises = exercises.filter(created_by=request.user)
 

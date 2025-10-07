@@ -17,7 +17,7 @@
   <!-- Top row -->
   <div class="flex justify-between items-center mb-6">
     <p class="text-sm font-semibold">Showing {{ meals|length }} ingredients</p>
-    <button id="openModalBtn" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
+    <button data-modal-open="#modalOverlay" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
       Create ingredient
     </button>
   </div>
@@ -64,94 +64,123 @@
   {% else %}
   <!-- Empty state -->
   <div class="flex flex-col items-center mt-16 text-center">
-    <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
-      ?
-    </div>
+    <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">?</div>
     <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
     <p class="text-sm text-gray-500">Try adding a new ingredient</p>
   </div>
   {% endif %}
 </main>
 
+<!-- MODAL -->
+<div id="modalOverlay" class="modal-overlay fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+  <div class="relative bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button type="button" aria-label="Close" class="absolute right-4 top-4 text-gray-500 hover:text-black" data-modal-close="#modalOverlay">✕</button>
+    <h2 id="modalTitle" class="text-2xl font-bold mb-6">Create recipe</h2>
 
-  <!-- MODAL -->
-  <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-      <h2 class="text-2xl font-bold mb-6">Create recipe</h2>
+    <!-- Upload + Name -->
+    <div class="flex items-start space-x-4 mb-6">
+      <div class="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded-lg">⬆️</div>
+      <input type="text" placeholder="Recipe name" class="flex-1 p-2 border rounded bg-gray-50"/>
+    </div>
 
-      <!-- Upload + Name -->
-      <div class="flex items-start space-x-4 mb-6">
-        <div class="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded-lg">
-          ⬆️
-        </div>
-        <input type="text" placeholder="Recipe name" class="flex-1 p-2 border rounded bg-gray-50"/>
-      </div>
+    <!-- Macro counts -->
+    <div class="flex space-x-4 mb-6 text-sm">
+      <span class="text-pink-600">Protein 0g</span>
+      <span class="text-green-600">Carbs 0g</span>
+      <span class="text-blue-600">Fat 0g</span>
+    </div>
 
-      <!-- Macro counts -->
-      <div class="flex space-x-4 mb-6 text-sm">
-        <span class="text-pink-600">Protein 0g</span>
-        <span class="text-green-600">Carbs 0g</span>
-        <span class="text-blue-600">Fat 0g</span>
-      </div>
+    <!-- Search -->
+    <div class="relative mb-4">
+      <input type="text" placeholder="Search ingredients and spices" class="w-full border rounded p-2"/>
+      <span class="absolute right-3 top-2.5">⬇️</span>
+    </div>
 
-      <!-- Search -->
-      <div class="relative mb-4">
-        <input type="text" placeholder="Search ingredients and spices" class="w-full border rounded p-2"/>
-        <span class="absolute right-3 top-2.5">⬇️</span>
-      </div>
+    <!-- Ingredients list -->
+    <div class="border rounded p-3 text-sm mb-6">
+      Ingredients will show here
+    </div>
 
-      <!-- Ingredients list -->
-      <div class="border rounded p-3 text-sm mb-6">
-        Ingredients will show here
-      </div>
+    <!-- Flexible toggle -->
+    <div class="flex items-center space-x-3 mb-6">
+      <span class="text-2xl">🔓</span>
+      <p class="text-sm">Flexible ingredient amounts <br>
+      <span class="text-gray-500">Calories and ingredient amounts will scale to fit clients calories intake</span></p>
+    </div>
 
-      <!-- Flexible toggle -->
-      <div class="flex items-center space-x-3 mb-6">
-        <span class="text-2xl">🔓</span>
-        <p class="text-sm">Flexible ingredient amounts <br>
-        <span class="text-gray-500">Calories and ingredient amounts will scale to fit clients calories intake</span></p>
-      </div>
+    <!-- Instructions -->
+    <textarea rows="4" placeholder="Instructions" class="w-full border rounded p-3 bg-gray-50 mb-6"></textarea>
 
-      <!-- Instructions -->
-      <textarea rows="4" placeholder="Instructions" class="w-full border rounded p-3 bg-gray-50 mb-6"></textarea>
+    <!-- Times -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <input type="number" placeholder="Preparation time (min)" class="border p-2 rounded"/>
+      <input type="number" placeholder="Cooking time (min)" class="border p-2 rounded"/>
+    </div>
 
-      <!-- Times -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
-        <input type="number" placeholder="Preparation time (min)" class="border p-2 rounded"/>
-        <input type="number" placeholder="Cooking time (min)" class="border p-2 rounded"/>
-      </div>
+    <!-- Dropdowns -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <select class="border p-2 rounded">
+        <option>Preparation time</option>
+      </select>
+      <select class="border p-2 rounded">
+        <option>Kind</option>
+      </select>
+      <select class="border p-2 rounded">
+        <option>English (US)</option>
+      </select>
+    </div>
 
-      <!-- Dropdowns -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <select class="border p-2 rounded">
-          <option>Preparation time</option>
-        </select>
-        <select class="border p-2 rounded">
-          <option>Kind</option>
-        </select>
-        <select class="border p-2 rounded">
-          <option>English (US)</option>
-        </select>
-      </div>
-
-      <!-- Footer Buttons -->
-      <div class="flex justify-end space-x-4">
-        <button id="closeModalBtn" class="hover:underline">Cancel</button>
-        <button class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Submit</button>
-      </div>
+    <!-- Footer Buttons -->
+    <div class="flex justify-end space-x-4">
+      <button type="button" data-modal-close="#modalOverlay" class="hover:underline">Cancel</button>
+      <button class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Submit</button>
     </div>
   </div>
+</div>
 
-  <!-- Script -->
-  <script>
-    const openBtn = document.getElementById("openModalBtn");
-    const closeBtn = document.getElementById("closeModalBtn");
-    const modal = document.getElementById("modalOverlay");
+<!-- Universal modal toggler -->
+<script>
+  // Usage: data-modal-open="#modalId" and data-modal-close="#modalId"
+  document.addEventListener('click', (e) => {
+    const openBtn = e.target.closest('[data-modal-open]');
+    const closeBtn = e.target.closest('[data-modal-close]');
 
-    openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
-    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.add("hidden");
-    });
-  </script>
-{%endblock%}
+    if (openBtn) {
+      const sel = openBtn.getAttribute('data-modal-open');
+      const el = document.querySelector(sel);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('is-open');
+      }
+    }
+
+    if (closeBtn) {
+      const sel = closeBtn.getAttribute('data-modal-close');
+      const el = sel ? document.querySelector(sel) : null;
+      const target = el || e.target.closest('[role="dialog"], .is-open');
+      if (target) {
+        // Hide the overlay container
+        const overlay = target.classList.contains('modal-overlay') ? target : target.closest('.modal-overlay') || target;
+        overlay.classList.add('hidden');
+        overlay.classList.remove('is-open');
+      }
+    }
+
+    // Click outside (overlay) closes
+    if (e.target.classList?.contains('modal-overlay')) {
+      e.target.classList.add('hidden');
+      e.target.classList.remove('is-open');
+    }
+  });
+
+  // ESC to close any open modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.is-open').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('is-open');
+      });
+    }
+  });
+</script>
+{% endblock %}

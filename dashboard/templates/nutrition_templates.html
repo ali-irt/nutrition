@@ -1,127 +1,142 @@
 {% extends "base.html" %}
 {% block content %}
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
+<!-- Nutrition Section -->
+<section class="bg-black text-white py-8 px-6">
+  <h1 class="text-4xl font-bold">Nutrition</h1>
+  <div class="flex space-x-8 mt-4 text-gray-300">
+    <a href="{% url 'nutrition_recipes' %}" class="hover:text-white {% if active_tab == 'recipes' %}border-b-2 border-white text-white{% endif %}">Recipes</a>
+    <a href="{% url 'nutrition' %}" class="hover:text-white {% if active_tab == 'ingredients' %}border-b-2 border-white text-white{% endif %}">Ingredients</a>
+    <a href="{% url 'nutrition_templates' %}" class="hover:text-white {% if active_tab == 'templates' %}border-b-2 border-white text-white{% endif %}">Templates</a>
+  </div>
+</section>
 
-  <!-- Nutrition Section -->
-  <section class="bg-black text-white py-8 px-6">
-    <h1 class="text-4xl font-bold">Nutrition</h1>
-    <div class="flex space-x-8 mt-4 text-gray-300">
-      <a href="{% url 'nutrition_recipes'%}" class="hover:text-white">Recipes</a>
-      <a href="{% url 'nutrition'%}" class="hover:text-white">ingredients</a>
-      <a href="{% url 'nutrition_templates' %}" class="border-b-2 border-white text-white">Templates</a>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <main class="bg-gray-50 px-8 py-12 min-h-screen">
-    <!-- Top row -->
-    <div class="flex justify-between items-center mb-6">
-      <p class="text-sm font-semibold">Showing 0 recipes</p>
-      <button id="openModalBtn" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
-        Create ingredient
-      </button>
-    </div>
-
-    <!-- Table -->
-    <div class="bg-white rounded-lg shadow-sm">
-      <table class="w-full text-left">
-        <thead class="border-b">
-          <tr>
-            <th class="py-3 px-4 font-semibold">Name</th>
-            <th class="py-3 px-4 font-semibold">Language</th>
-            <th class="py-3 px-4 font-semibold">Protein</th>
-            <th class="py-3 px-4 font-semibold">Carbohydrates</th>
-            <th class="py-3 px-4 font-semibold">Fat</th>
-            <th class="py-3 px-4 font-semibold">Calories</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-
-    <!-- Empty state -->
-    <div class="flex flex-col items-center mt-16 text-center">
-      <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
-        ?
-      </div>
-      <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
-      <p class="text-sm text-gray-500">Try adding a new ingredient</p>
-    </div>
-  </main>
-
-      <!-- Upload + Name -->
-      <div class="flex items-start space-x-4 mb-6">
-        <div class="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded-lg">
-          ⬆️
-        </div>
-        <input type="text" placeholder="Recipe name" class="flex-1 p-2 border rounded bg-gray-50"/>
-      </div>
-
-      <!-- Macro counts -->
-      <div class="flex space-x-4 mb-6 text-sm">
-        <span class="text-pink-600">Protein 0g</span>
-        <span class="text-green-600">Carbs 0g</span>
-        <span class="text-blue-600">Fat 0g</span>
-      </div>
-
-      <!-- Search -->
-      <div class="relative mb-4">
-        <input type="text" placeholder="Search ingredients and spices" class="w-full border rounded p-2"/>
-        <span class="absolute right-3 top-2.5">⬇️</span>
-      </div>
-
-      <!-- Ingredients list -->
-      <div class="border rounded p-3 text-sm mb-6">
-        Ingredients will show here
-      </div>
-
-      <!-- Flexible toggle -->
-      <div class="flex items-center space-x-3 mb-6">
-        <span class="text-2xl">🔓</span>
-        <p class="text-sm">Flexible ingredient amounts <br>
-        <span class="text-gray-500">Calories and ingredient amounts will scale to fit clients calories intake</span></p>
-      </div>
-
-      <!-- Instructions -->
-      <textarea rows="4" placeholder="Instructions" class="w-full border rounded p-3 bg-gray-50 mb-6"></textarea>
-
-      <!-- Times -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
-        <input type="number" placeholder="Preparation time (min)" class="border p-2 rounded"/>
-        <input type="number" placeholder="Cooking time (min)" class="border p-2 rounded"/>
-      </div>
-
-      <!-- Dropdowns -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <select class="border p-2 rounded">
-          <option>Preparation time</option>
-        </select>
-        <select class="border p-2 rounded">
-          <option>Kind</option>
-        </select>
-        <select class="border p-2 rounded">
-          <option>English (US)</option>
-        </select>
-      </div>
-
-      <!-- Footer Buttons -->
-      <div class="flex justify-end space-x-4">
-        <button id="closeModalBtn" class="hover:underline">Cancel</button>
-        <button class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Submit</button>
-      </div>
-    </div>
+<!-- Main Content -->
+<main class="bg-gray-50 px-8 py-12 min-h-screen">
+  <!-- Top row -->
+  <div class="flex justify-between items-center mb-6">
+    <p class="text-sm font-semibold">Showing 0 recipes</p>
+    <button data-modal-open="#ingredientModal" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
+      Create ingredient
+    </button>
   </div>
 
-  <!-- Script -->
-  <script>
-    const openBtn = document.getElementById("openModalBtn");
-    const closeBtn = document.getElementById("closeModalBtn");
-    const modal = document.getElementById("modalOverlay");
+  <!-- Table -->
+  <div class="bg-white rounded-lg shadow-sm">
+    <table class="w-full text-left">
+      <thead class="border-b">
+        <tr>
+          <th class="py-3 px-4 font-semibold">Name</th>
+          <th class="py-3 px-4 font-semibold">Language</th>
+          <th class="py-3 px-4 font-semibold">Protein</th>
+          <th class="py-3 px-4 font-semibold">Carbohydrates</th>
+          <th class="py-3 px-4 font-semibold">Fat</th>
+          <th class="py-3 px-4 font-semibold">Calories</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
 
-    openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
-    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.add("hidden");
-    });
-  </script>
-{%endblock%}
+  <!-- Empty state -->
+  <div class="flex flex-col items-center mt-16 text-center">
+    <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">?</div>
+    <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
+    <p class="text-sm text-gray-500">Try adding a new ingredient</p>
+  </div>
+</main>
+
+<!-- Modal (Tailwind overlay) -->
+<div id="ingredientModal" class="modal-overlay fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+  <div class="relative bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="ingredientModalTitle">
+    <button type="button" aria-label="Close" data-modal-close="#ingredientModal"
+            class="absolute right-4 top-4 text-gray-500 hover:text-black">✕</button>
+
+    <h2 id="ingredientModalTitle" class="text-2xl font-bold mb-6">Create ingredient</h2>
+
+    <!-- Upload + Name -->
+    <div class="flex items-start space-x-4 mb-6">
+      <div class="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded-lg">⬆️</div>
+      <input type="text" placeholder="Ingredient name" class="flex-1 p-2 border rounded bg-gray-50"/>
+    </div>
+
+    <!-- Macro counts -->
+    <div class="flex space-x-4 mb-6 text-sm">
+      <span class="text-pink-600">Protein 0g</span>
+      <span class="text-green-600">Carbs 0g</span>
+      <span class="text-blue-600">Fat 0g</span>
+    </div>
+
+    <!-- Search -->
+    <div class="relative mb-4">
+      <input type="text" placeholder="Search ingredients and spices" class="w-full border rounded p-2"/>
+      <span class="absolute right-3 top-2.5">⬇️</span>
+    </div>
+
+    <!-- Ingredients list -->
+    <div class="border rounded p-3 text-sm mb-6">Ingredients will show here</div>
+
+    <!-- Flexible toggle -->
+    <div class="flex items-center space-x-3 mb-6">
+      <span class="text-2xl">🔓</span>
+      <p class="text-sm">
+        Flexible ingredient amounts<br>
+        <span class="text-gray-500">Calories and ingredient amounts will scale to fit clients calories intake</span>
+      </p>
+    </div>
+
+    <!-- Instructions -->
+    <textarea rows="4" placeholder="Instructions" class="w-full border rounded p-3 bg-gray-50 mb-6"></textarea>
+
+    <!-- Times -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <input type="number" placeholder="Preparation time (min)" class="border p-2 rounded"/>
+      <input type="number" placeholder="Cooking time (min)" class="border p-2 rounded"/>
+    </div>
+
+    <!-- Dropdowns -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <select class="border p-2 rounded"><option>Preparation time</option></select>
+      <select class="border p-2 rounded"><option>Kind</option></select>
+      <select class="border p-2 rounded"><option>English (US)</option></select>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="flex justify-end space-x-4">
+      <button type="button" data-modal-close="#ingredientModal" class="hover:underline">Cancel</button>
+      <button class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Minimal, reusable modal toggler -->
+<script>
+  document.addEventListener('click', (e) => {
+    const opener = e.target.closest('[data-modal-open]');
+    if (opener) {
+      const sel = opener.getAttribute('data-modal-open');
+      const el = document.querySelector(sel);
+      if (el) el.classList.remove('hidden');
+    }
+
+    const closer = e.target.closest('[data-modal-close]');
+    if (closer) {
+      const sel = closer.getAttribute('data-modal-close');
+      const el = document.querySelector(sel);
+      if (el) el.classList.add('hidden');
+    }
+
+    // Click on overlay closes (requires modal-overlay on wrapper)
+    if (e.target.classList?.contains('modal-overlay')) {
+      e.target.classList.add('hidden');
+    }
+  });
+
+  // ESC closes any open modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden'));
+    }
+  });
+</script>
+{% endblock %}

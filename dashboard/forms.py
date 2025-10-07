@@ -32,12 +32,18 @@ WorkoutExerciseFormSet = inlineformset_factory(
     extra=2,
     can_delete=True,
 )
-
-
 class FileForm(forms.ModelForm):
     class Meta:
         model = File
-        fields = ['title', 'description', 'file']
+        fields = ['title', 'description', 'file', 'video']
+
+    def clean_video(self):
+        video = self.cleaned_data.get('video')
+        if video:
+            allowed_types = ['video/mp4', 'video/mpeg', 'video/quicktime', 'video/x-msvideo']
+            if video.content_type not in allowed_types:
+                raise forms.ValidationError("Please upload a valid video file (MP4, MOV, AVI, or MPEG).")
+        return video
 
 class LessonForm(forms.ModelForm):
     class Meta:

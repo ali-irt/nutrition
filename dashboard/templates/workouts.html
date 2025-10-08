@@ -1,171 +1,147 @@
-{% extends 'base.html'%}
+{% extends "base.html" %}
+{% load form_extras %}
 {% block content %}
- <style>
+<script src="https://cdn.tailwindcss.com"></script>
 
-   
-
-    /* Page Header */
-    .page-header {
-      padding: 25px 30px 10px;
-    }
-    .tabs {
-      display: flex;
-      gap: 25px;
-      margin-top: 15px;
-    }
-    .tabs button {
-      background: none;
-      border: none;
-      font-size: 16px;
-      font-weight: 500;
-      padding: 10px 0;
-      cursor: pointer;
-      color: #555;
-      transition: all .2s;
-    }
-    .tabs button.active {
-      color: #000;
-      border-bottom: 3px solid black;
-      font-weight: bold;
-    }
-
-    /* Filters */
-    .filters {
-      display: flex;
-      gap: 15px;
-      padding: 20px 30px;
-      align-items: center;
-    }
-    .filters input,
-    .filters select {
-      flex: 1;
-      max-width: 250px;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    .filters button {
-      background: black;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .filters button:hover { opacity: 0.9; }
-
-    /* Main content area */
-    main { padding: 20px 0; min-height: 70vh; }
-
-    /* Tables */
-    table {
-      width: 94%;
-      margin: 0 auto 40px;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    thead {
-      background: #f6f6f6;
-    }
-    th, td {
-      text-align: left;
-      padding: 14px 16px;
-      font-size: 14px;
-      border-bottom: 1px solid #eee;
-    }
-    tbody tr:hover {
-      background: #fafafa;
-    }
-    td img {
-      width: 28px;
-      height: 28px;
-      margin-right: 10px;
-      vertical-align: middle;
-    }
-    .bg-black{
-        background-color: #000;
-        color :#fff
-    }
-    .bg-black a{
-      color: #bbb !important}
-    .bg-black a:hover{
-      color: #fff;}
-    
-    .badge {
-      display: inline-block;
-      background: #eee;
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-    }
-
-    /* Hide inactive tab content */
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-  </style>
-
-  <!-- Workouts Header -->
-  <section class=" bg-black page-header">
-    <h1 style="margin:0;">Workouts</h1>
-    <div class="tabs">
-      <button class="active" style="color: white;" onclick="loadContent('exercises')">Exercises</button>
-      <button style="color: white;" onclick="loadContent('templates')">Templates</button>
+<!-- Header -->
+<section class="bg-black text-white py-8 px-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-bold">Workouts</h1>
+      <div class="flex gap-8 mt-4 text-gray-300">
+        <a href="{% url 'workouts' %}?tab=templates"
+           class="hover:text-white {% if active_tab == 'templates' %}border-b-2 border-white text-white{% endif %}">
+          Templates
+        </a>
+        <a href="{% url 'workouts' %}?tab=exercises"
+           class="hover:text-white {% if active_tab == 'exercises' %}border-b-2 border-white text-white{% endif %}">
+          Exercises
+        </a>
+      </div>
     </div>
-  </section>
+   
+  </div>
+</section>
 
-  <!-- Placeholder for dynamic content -->
-  <main id="content"></main>
-
-  <script>
-    function loadContent(type) {
-      let content = "";
-      if(type === "exercises") {
-        content = `
-          <div class="filters">
-            <input type="text" placeholder="Search">
-            <select><option>Muscle groups</option></select>
-            <select><option>Library</option></select>
-            <button>Add exercises</button>
+<main class="bg-gray-50 px-6 md:px-8 py-8 min-h-screen">
+  {% if active_tab == 'templates' %}
+   <a href="{% url 'workouts' %}?tab=templates&new=1&name=New%20Program"
+       class="bg-white text-black px-4 py-2 rounded-lg text-sm hover:bg-gray-200">
+      Create template
+    </a>
+  <div class="grid grid-cols-1  gap-6">
+    <!-- Left list -->
+    <div class="lg:col-span-1">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm font-semibold">Showing {{ templates_count }} templates</p>
+        <form method="get" class="flex items-center gap-2">
+          <input type="hidden" name="tab" value="templates">
+          <div class="relative">
+            <input type="text" name="q_tpl" value="{{ q_tpl }}" placeholder="Search"
+                   class="pl-9 pr-3 py-2 border rounded-lg text-sm bg-white" />
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.3-4.3M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+            </svg>
           </div>
-          <table>
-            <thead><tr><th>Name</th><th>Muscle group</th><th>Equipment</th><th>Library</th></tr></thead>
-            <tbody>
-              <tr><td><img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Workout_icon.png">1/2 Barbell Squat</td><td>Gluteus</td><td>Barbell</td><td><span class="badge">Pre-made</span></td></tr>
-              <tr><td><img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Workout_icon.png">Bench Press</td><td>Chest</td><td>Barbell</td><td><span class="badge">Pre-made</span></td></tr>
-            </tbody>
-          </table>`;
-      }
-      else if(type === "templates") {
-        content = `
-          <div class="filters">
-            <span style="font-size:14px; color:#555;">Showing 17 templates</span>
-            <input type="text" placeholder="Search">
-            <button>Add workout template</button>
-          </div>
-          <table>
-            <thead><tr><th>Name</th><th>Sessions</th></tr></thead>
-            <tbody>
-              <tr><td>2 Split - Upper Body / Lower Body</td><td>2</td></tr>
-              <tr><td>2 Split - Upper Body / Lower Body (Women)</td><td>2</td></tr>
-              <tr><td>3 Split - Push / Pull / Legs</td><td>2</td></tr>
-              <tr><td>4 Split - Legs / Chest / Back / Arms</td><td>2</td></tr>
-              <tr><td>6.2 mi Build Up - Beginner</td><td>2</td></tr>
-            </tbody>
-          </table>`;
-      }
-      document.getElementById("content").innerHTML = content;
+          <button class="px-3 py-2 border rounded text-sm">Filter</button>
+        </form>
+      </div>
 
-      // Update tab highlight
-      document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <table class="w-full text-left">
+          <thead class="bg-gray-50 border-b">
+            <tr class="text-sm">
+              <th class="py-3 px-4 font-semibold">Name</th>
+              <th class="py-3 px-4 font-semibold">Sessions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if templates %}
+              {% for t in templates %}
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-3 px-4">
+                <a href="{% url 'workout_template_detail' t.first_id %}" class="block font-medium hover:underline">
+  {{ t.name }}
+</a>
+                </td>
+                <td class="py-3 px-4 text-sm">{{ t.sessions }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="2" class="py-10 text-center text-gray-500">No templates yet</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+        <!-- Session tabs -->
+        {% if sessions %}
+        <div class="flex ">
+          {% for s in sessions %}
+            <a href="{% url 'workouts' %}?tab=templates&pk={{ s.pk }}"
+               class="px-3 py-1.5 rounded border text-sm hover:bg-gray-50 {% if editor_workout and s.pk == editor_workout.pk %}bg-gray-100{% endif %}">
+              Session {{ forloop.counter }}
+            </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+       
+    </div>
+  </div>
+  {% endif %}
+
+  {% if active_tab == 'exercises' %}
+    {# Render your exercises table here like before #}
+  {% endif %}
+</main>
+
+<script>
+  // Formset add/remove
+  (function(){
+    const rows = document.getElementById('rows');
+    if (!rows) return;
+    const tpl = document.getElementById('empty-row');
+    const total = document.querySelector('input[name$="-TOTAL_FORMS"]');
+
+    function renumber() {
+      let i = 1;
+      rows.querySelectorAll('.ex-row').forEach(r => {
+        if (!r.classList.contains('hidden')) {
+          const order = r.querySelector('input[name$="-order"]');
+          if (order) order.value = i++;
+        }
+      });
     }
 
-    // Load default
-    window.onload = () => loadContent('exercises');
-  </script>
+    function bindRemove(btn) {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.ex-row');
+        const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+        if (del) { del.checked = true; row.classList.add('hidden'); }
+        else {
+          row.remove();
+          total.value = (parseInt(total.value||'0',10) - 1).toString();
+        }
+        renumber();
+      });
+    }
+
+    document.querySelectorAll('.btn-remove').forEach(bindRemove);
+
+    document.getElementById('addRowBtn')?.addEventListener('click', () => {
+      const idx = parseInt(total.value || '0', 10);
+      const html = tpl.innerHTML.replace(/__prefix__/g, idx);
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html.trim();
+      const row = wrap.firstElementChild;
+      rows.appendChild(row);
+      total.value = idx + 1;
+      bindRemove(row.querySelector('.btn-remove'));
+      renumber();
+      row.querySelector('select[name$="-exercise"], input[name$="-exercise"]')?.focus();
+    });
+  })();
+</script>
 {% endblock %}

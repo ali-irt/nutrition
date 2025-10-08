@@ -3,7 +3,6 @@ from app.models import *
 from django.forms import inlineformset_factory
 from django.utils.timezone import localdate
 
-
 class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead
@@ -45,8 +44,42 @@ class FileForm(forms.ModelForm):
                 raise forms.ValidationError("Please upload a valid video file (MP4, MOV, AVI, or MPEG).")
         return video
 
+class MultiFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
 class LessonForm(forms.ModelForm):
+    attachments = forms.FileField(
+        required=False,
+        widget=MultiFileInput(),  # <- not ClearableFileInput with attrs
+        help_text="Upload additional files (optional)",
+    )
     class Meta:
         model = Lesson
-        fields = ['title', 'subtitle', 'message']
+        fields = ["title", "subtitle", "message", "video", "image", "files"]
+class IngredientForm(forms.ModelForm):
+    class Meta:
+        model = Nutrition
+        fields = ["name", "description", "protein", "carbs", "fats", "calories"]
+    # enforce kind in the view
 
+class RecipeForm(forms.ModelForm):
+    class Meta:
+        model = Nutrition
+        fields = [
+            "name", "description", "meal_type",
+            "protein", "carbs", "fats", "calories",
+            "preparation_time", "cooking_time", "instructions",
+        ]
+
+    def clean(self):
+        cleaned = super().clean()
+        # Optional: basic non-negative guard
+        for f in ["protein", "carbs", "fats", "calories", "preparation_time", "cooking_time"]:
+            v = cleaned.get(f)
+            if v is not None and float(v) < 0:
+                self.add_error(f, "Must be zero or greater.")
+        return cleaned
+class NutritionTemplateForm(forms.ModelForm):
+    class Meta:
+        model = NutritionTemplate
+        fields = ["name", "language", "meals_per_day", "target_calories"]

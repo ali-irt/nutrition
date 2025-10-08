@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime, date
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.conf import settings
 
 # ---------------------------
 # Shared helpers and enums
@@ -272,39 +272,32 @@ class UserWorkoutLog(models.Model):
     def __str__(self):
         status = "Completed" if self.completed else "Planned"
         return f"{self.user.username} - {self.workout.name} ({self.date}) - {status}"
-
+# models.py
+from django.db import models
 
 class Nutrition(models.Model):
-  
-    CATEGORY_CHOICES = [
-        ('medical', 'Medical Nutrition'),
-        ('women', 'Women’s Nutrition'),
-        ('child', 'Child & Adolescent Nutrition'),
-        ('corporate', 'Corporate Nutrition'),
-        ('personalized', 'Personalized Diet Plan'),
-        ('fitness', 'Expert Fitness Program'),
-    ]
+    KIND_CHOICES = (("ingredient", "Ingredient"), ("recipe", "Recipe"))
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES, default="ingredient")
 
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    title = models.CharField(max_length=150)
-    short_description = models.CharField(max_length=255, blank=True)
-    long_description = models.TextField()
-    image = models.ImageField(upload_to='nutrition/', blank=True, null=True)
-    duration_weeks = models.PositiveIntegerField(default=4)
-    calories_per_day = models.FloatField(default=0)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    meal_type = models.CharField(max_length=50, blank=True)  # breakfast/lunch/dinner/snack
+    protein = models.FloatField(default=0)
+    carbs = models.FloatField(default=0)
+    fats = models.FloatField(default=0)
+    calories = models.IntegerField(default=0)
+    preparation_time = models.PositiveIntegerField(null=True, blank=True)
+    cooking_time = models.PositiveIntegerField(null=True, blank=True)
+    instructions = models.TextField(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ['title']
-        verbose_name = 'Nutrition Program'
-        verbose_name_plural = 'Nutrition Programs'
-
-    def __str__(self):
-        return self.title
-
+class NutritionTemplate(models.Model):
+    name = models.CharField(max_length=255)
+    language = models.CharField(max_length=50, blank=True)
+    meals_per_day = models.PositiveIntegerField(null=True, blank=True)
+    target_calories = models.PositiveIntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 class UserMealLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='meal_logs')
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
@@ -939,6 +932,20 @@ class ProteinPreference(models.TextChoices):
     MEAT_ONLY = "meat_only", "Meat Only"
     VEGAN_ONLY = "vegan_only", "Vegan Only"
 
+class MealPlan(models.Model):
+    PLAN_TYPES = (
+        ("standard", "Standard"),
+        ("vegan", "Vegan"),
+        ("keto", "Keto"),
+        ("custom", "Custom"),
+    )
+    name = models.CharField(max_length=120)
+    plan_type = models.CharField(max_length=20, choices=PLAN_TYPES, default="standard")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    calories_per_day = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 class MealSubscription(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_subscriptions")
@@ -1033,12 +1040,62 @@ class File(models.Model):
 
     def __str__(self):
         return self.title
+class LessonFile(models.Model):
+    file = models.FileField(upload_to="lesson_files/")
+    name = models.CharField(max_length=255, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name or self.file.name
 
 class Lesson(models.Model):
     title = models.CharField(max_length=100)
     subtitle = models.CharField(max_length=200, blank=True)
     message = models.TextField(blank=True)
+    video = models.FileField(upload_to='lesson_videos/', blank=True, null=True)
+    image = models.ImageField(upload_to='lesson_images/', blank=True, null=True)
+    files = models.ManyToManyField(LessonFile, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+class MealOrder(models.Model):
+    STATUS = (
+        ("preparing", "Preparing"),
+        ("on_delivery", "On Delivery"),
+        ("delivered", "Delivered"),
+        ("cancelled", "Cancelled"),
+    )
+
+    # If you have a Client model, change to: client = models.ForeignKey("clients.Client", ...)
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    plan = models.ForeignKey(MealPlan, on_delete=models.PROTECT, related_name="orders")
+
+    order_no = models.CharField(max_length=32, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS, default="preparing")
+
+    # For the table in the mock
+    shipping_name = models.CharField(max_length=120, blank=True)
+    shipping_address = models.TextField(blank=True)
+
+    items_count = models.PositiveIntegerField(default=0)  # sum of item quantities
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    scheduled_date = models.DateField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"#{self.order_no} {self.plan.name}"
+
+class MealOrderItem(models.Model):
+    order = models.ForeignKey(MealOrder, on_delete=models.CASCADE, related_name="items")
+    name = models.CharField(max_length=120)  # meal/dish name
+    quantity = models.PositiveIntegerField(default=1)
+    day = models.DateField(null=True, blank=True)  # for kitchen prep scheduling
+
+    def __str__(self):
+        return f"{self.name} x{self.quantity}"

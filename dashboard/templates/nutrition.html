@@ -2,7 +2,7 @@
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Nutrition Section -->
+<!-- Header -->
 <section class="bg-black text-white py-8 px-6">
   <h1 class="text-4xl font-bold">Nutrition</h1>
   <div class="flex space-x-8 mt-4 text-gray-300">
@@ -12,174 +12,285 @@
   </div>
 </section>
 
-<!-- Main Content -->
+<!-- Main -->
 <main class="bg-gray-50 px-8 py-12 min-h-screen">
-  <!-- Top row -->
-  <div class="flex justify-between items-center mb-6">
+  <!-- Topbar -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
     <p class="text-sm font-semibold">Showing {{ meals|length }} ingredients</p>
-    <button data-modal-open="#modalOverlay" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
-      Create ingredient
-    </button>
+
+    <div class="flex items-center gap-2">
+      <div class="relative">
+        <input type="text" placeholder="Search" class="pl-9 pr-3 py-2 border rounded-lg text-sm bg-white" />
+        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.3-4.3M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+        </svg>
+      </div>
+      <button data-modal-open="#ingredientModal" class="bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800">
+        Create ingredient
+      </button>
+    </div>
   </div>
 
-  {% if meals %}
   <!-- Table -->
-  <div class="bg-white rounded-lg shadow-sm">
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
     <table class="w-full text-left">
-      <thead class="border-b">
-        <tr>
+      <thead class="bg-gray-50 border-b">
+        <tr class="text-sm">
           <th class="py-3 px-4 font-semibold">Name</th>
-          <th class="py-3 px-4 font-semibold">Meal Type</th>
-          <th class="py-3 px-4 font-semibold">Protein (g)</th>
-          <th class="py-3 px-4 font-semibold">Carbs (g)</th>
-          <th class="py-3 px-4 font-semibold">Fat (g)</th>
+          <th class="py-3 px-4 font-semibold">Language</th>
+          <th class="py-3 px-4 font-semibold">Protein</th>
+          <th class="py-3 px-4 font-semibold">Carbohydrates</th>
+          <th class="py-3 px-4 font-semibold">Fat</th>
           <th class="py-3 px-4 font-semibold">Calories</th>
-          <th class="py-3 px-4 font-semibold">Prep Time</th>
         </tr>
       </thead>
-      <tbody>
-        {% for meal in meals %}
-        <tr class="border-b hover:bg-gray-50">
-          <td class="py-3 px-4">
-            <div class="font-medium">{{ meal.name }}</div>
-            <div class="text-sm text-gray-500">{{ meal.description|truncatewords:10 }}</div>
-          </td>
-          <td class="py-3 px-4 capitalize">{{ meal.meal_type }}</td>
-          <td class="py-3 px-4">{{ meal.protein }}g</td>
-          <td class="py-3 px-4">{{ meal.carbs }}g</td>
-          <td class="py-3 px-4">{{ meal.fats }}g</td>
-          <td class="py-3 px-4">{{ meal.calories }}</td>
-          <td class="py-3 px-4">
-            {% if meal.preparation_time %}
-              {{ meal.preparation_time }} min
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
+      <tbody id="ingredientsBody">
+        {% if meals %}
+          {% for ing in meals %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3 px-4">
+              <div class="font-medium">{{ ing.name }}</div>
+              <div class="text-xs text-gray-500">{{ ing.description|default_if_none:""|truncatewords:14 }}</div>
+            </td>
+            <td class="py-3 px-4 text-sm">{{ ing.language|default:"—" }}</td>
+            <td class="py-3 px-4 text-sm">{{ ing.protein|default:0 }}g</td>
+            <td class="py-3 px-4 text-sm">{{ ing.carbs|default:0 }}g</td>
+            <td class="py-3 px-4 text-sm">{{ ing.fats|default:0 }}g</td>
+            <td class="py-3 px-4 text-sm">{{ ing.calories|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr id="ingredientsEmptyRow">
+            <td colspan="6" class="py-16 text-center">
+              <div class="mx-auto w-10 h-10 flex items-center justify-center bg-black text-white rounded-full mb-4">?</div>
+              <div class="font-semibold">No Ingredients found</div>
+              <div class="text-sm text-gray-500">Try adding a new ingredient</div>
+            </td>
+          </tr>
+        {% endif %}
       </tbody>
     </table>
   </div>
-  {% else %}
-  <!-- Empty state -->
-  <div class="flex flex-col items-center mt-16 text-center">
-    <div class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">?</div>
-    <p class="mt-4 text-lg font-semibold">No Ingredients found</p>
-    <p class="text-sm text-gray-500">Try adding a new ingredient</p>
-  </div>
-  {% endif %}
 </main>
 
-<!-- MODAL -->
-<div id="modalOverlay" class="modal-overlay fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
-  <div class="relative bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button type="button" aria-label="Close" class="absolute right-4 top-4 text-gray-500 hover:text-black" data-modal-close="#modalOverlay">✕</button>
-    <h2 id="modalTitle" class="text-2xl font-bold mb-6">Create recipe</h2>
+<!-- Create ingredient modal (matching reference) -->
+<div id="ingredientModal" class="modal-overlay fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+  <div class="relative bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="ingredientTitle">
+    <button type="button" aria-label="Close" data-modal-close="#ingredientModal" class="absolute right-4 top-4 text-gray-500 hover:text-black">✕</button>
 
-    <!-- Upload + Name -->
-    <div class="flex items-start space-x-4 mb-6">
-      <div class="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded-lg">⬆️</div>
-      <input type="text" placeholder="Recipe name" class="flex-1 p-2 border rounded bg-gray-50"/>
-    </div>
+    <h2 id="ingredientTitle" class="text-2xl font-bold mb-4">Add ingredient</h2>
+    <div id="ingredientErrors" class="bg-red-50 text-red-700 border border-red-200 rounded p-3 text-sm mb-4 hidden"></div>
 
-    <!-- Macro counts -->
-    <div class="flex space-x-4 mb-6 text-sm">
-      <span class="text-pink-600">Protein 0g</span>
-      <span class="text-green-600">Carbs 0g</span>
-      <span class="text-blue-600">Fat 0g</span>
-    </div>
+    <form id="ingredientForm" method="post" action="{% url 'ingredient_create' %}">
+      {% csrf_token %}
 
-    <!-- Search -->
-    <div class="relative mb-4">
-      <input type="text" placeholder="Search ingredients and spices" class="w-full border rounded p-2"/>
-      <span class="absolute right-3 top-2.5">⬇️</span>
-    </div>
+      <!-- Top: name + language -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="text-xs text-gray-500">Name</label>
+          <input name="name" type="text" class="border p-2 rounded w-full" placeholder="e.g., Brown Rice" required>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Language</label>
+          <select name="language" class="border p-2 rounded w-full">
+            <option value="">English (US)</option>
+            <option>English (UK)</option>
+            <option>Spanish</option>
+            <option>French</option>
+          </select>
+        </div>
+      </div>
 
-    <!-- Ingredients list -->
-    <div class="border rounded p-3 text-sm mb-6">
-      Ingredients will show here
-    </div>
+      <!-- Display category (optional UI-only) -->
+      <div class="mb-4">
+        <details class="border rounded-lg">
+          <summary class="px-3 py-2 text-sm text-gray-700 cursor-pointer">Display in shopping list category</summary>
+          <div class="p-3">
+            <select class="border p-2 rounded w-full">
+              <option>Uncategorized</option>
+              <option>Produce</option>
+              <option>Meat & Fish</option>
+              <option>Dairy</option>
+              <option>Bakery</option>
+              <option>Pantry</option>
+            </select>
+          </div>
+        </details>
+      </div>
 
-    <!-- Flexible toggle -->
-    <div class="flex items-center space-x-3 mb-6">
-      <span class="text-2xl">🔓</span>
-      <p class="text-sm">Flexible ingredient amounts <br>
-      <span class="text-gray-500">Calories and ingredient amounts will scale to fit clients calories intake</span></p>
-    </div>
+      <!-- Nutritional value -->
+      <div class="mb-2 flex items-center gap-2 text-xs text-gray-600">
+        <input type="checkbox" checked disabled>
+        <span>Please make sure to input the correct macronutrient values (per 100g). You won’t be able to edit them after save.</span>
+      </div>
 
-    <!-- Instructions -->
-    <textarea rows="4" placeholder="Instructions" class="w-full border rounded p-3 bg-gray-50 mb-6"></textarea>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+        <div>
+          <label class="text-xs text-gray-500">Protein/100g</label>
+          <input id="p100" name="protein" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Carbs/100g</label>
+          <input id="c100" name="carbs" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Fat/100g</label>
+          <input id="f100" name="fats" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
+        </div>
+      </div>
 
-    <!-- Times -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <input type="number" placeholder="Preparation time (min)" class="border p-2 rounded"/>
-      <input type="number" placeholder="Cooking time (min)" class="border p-2 rounded"/>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="text-xs text-gray-500">Calories/100g</label>
+          <input id="k100" name="calories" type="number" step="1" class="border p-2 rounded w-full" value="0" required>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Description (optional)</label>
+          <input name="description" type="text" class="border p-2 rounded w-full" placeholder="Short note">
+        </div>
+      </div>
 
-    <!-- Dropdowns -->
-    <div class="grid grid-cols-3 gap-4 mb-8">
-      <select class="border p-2 rounded">
-        <option>Preparation time</option>
-      </select>
-      <select class="border p-2 rounded">
-        <option>Kind</option>
-      </select>
-      <select class="border p-2 rounded">
-        <option>English (US)</option>
-      </select>
-    </div>
+      <!-- Micronutrients toggle (optional UI) -->
+      <div class="mb-4">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="microToggle" type="checkbox" class="rounded"> Specify micronutrient information
+        </label>
+        <div id="microFields" class="mt-3 hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="number" step="0.1" class="border p-2 rounded" placeholder="Fiber (g)">
+          <input type="number" step="0.1" class="border p-2 rounded" placeholder="Sodium (mg)">
+          <input type="number" step="0.1" class="border p-2 rounded" placeholder="Sugar (g)">
+        </div>
+      </div>
 
-    <!-- Footer Buttons -->
-    <div class="flex justify-end space-x-4">
-      <button type="button" data-modal-close="#modalOverlay" class="hover:underline">Cancel</button>
-      <button class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Submit</button>
-    </div>
+      <!-- Units -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="text-xs text-gray-500">Unit</label>
+          <select class="border p-2 rounded w-full">
+            <option>Portion</option>
+            <option>100 g</option>
+            <option>100 ml</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Unit size</label>
+          <input type="number" step="0.1" class="border p-2 rounded w-full" placeholder="e.g., 1 portion = 50 g">
+        </div>
+      </div>
+
+      <!-- Allergies & preferences (UI only) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="text-xs text-gray-500">Allergies & intolerances</label>
+          <select class="border p-2 rounded w-full">
+            <option>Contains</option>
+            <option>Free from</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Preference</label>
+          <select class="border p-2 rounded w-full">
+            <option>None</option>
+            <option>Halal</option>
+            <option>Kosher</option>
+            <option>Vegan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button type="button" data-modal-close="#ingredientModal" class="hover:underline">Cancel</button>
+        <button id="ingredientSubmitBtn" class="bg-black text-white px-5 py-2 rounded">Create</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- Universal modal toggler -->
 <script>
-  // Usage: data-modal-open="#modalId" and data-modal-close="#modalId"
+  // Modal open/close
   document.addEventListener('click', (e) => {
-    const openBtn = e.target.closest('[data-modal-open]');
-    const closeBtn = e.target.closest('[data-modal-close]');
+    const opener = e.target.closest('[data-modal-open]');
+    if (opener) document.querySelector(opener.getAttribute('data-modal-open'))?.classList.remove('hidden');
+    const closer = e.target.closest('[data-modal-close]');
+    if (closer) document.querySelector(closer.getAttribute('data-modal-close'))?.classList.add('hidden');
+    if (e.target.classList?.contains('modal-overlay')) e.target.classList.add('hidden');
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden')); });
 
-    if (openBtn) {
-      const sel = openBtn.getAttribute('data-modal-open');
-      const el = document.querySelector(sel);
-      if (el) {
-        el.classList.remove('hidden');
-        el.classList.add('is-open');
-      }
-    }
-
-    if (closeBtn) {
-      const sel = closeBtn.getAttribute('data-modal-close');
-      const el = sel ? document.querySelector(sel) : null;
-      const target = el || e.target.closest('[role="dialog"], .is-open');
-      if (target) {
-        // Hide the overlay container
-        const overlay = target.classList.contains('modal-overlay') ? target : target.closest('.modal-overlay') || target;
-        overlay.classList.add('hidden');
-        overlay.classList.remove('is-open');
-      }
-    }
-
-    // Click outside (overlay) closes
-    if (e.target.classList?.contains('modal-overlay')) {
-      e.target.classList.add('hidden');
-      e.target.classList.remove('is-open');
-    }
+  // Micronutrient toggle
+  document.getElementById('microToggle')?.addEventListener('change', (e) => {
+    document.getElementById('microFields')?.classList.toggle('hidden', !e.target.checked);
   });
 
-  // ESC to close any open modal
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.is-open').forEach(el => {
-        el.classList.add('hidden');
-        el.classList.remove('is-open');
+  // Auto-calc calories from macros
+  const p100 = document.getElementById('p100');
+  const c100 = document.getElementById('c100');
+  const f100 = document.getElementById('f100');
+  const k100 = document.getElementById('k100');
+  function recalcKcal() {
+    const p = parseFloat(p100.value || 0), c = parseFloat(c100.value || 0), f = parseFloat(f100.value || 0);
+    k100.value = Math.max(0, Math.round(p*4 + c*4 + f*9));
+  }
+  p100.addEventListener('input', recalcKcal);
+  c100.addEventListener('input', recalcKcal);
+  f100.addEventListener('input', recalcKcal);
+
+  // Submit via AJAX
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('#ingredientForm');
+    if (!form) return;
+    e.preventDefault();
+
+    // sync calories
+    recalcKcal();
+
+    const btn = document.getElementById('ingredientSubmitBtn');
+    const errBox = document.getElementById('ingredientErrors');
+    errBox.classList.add('hidden'); errBox.innerHTML='';
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: new FormData(form)
       });
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        const errs = data.errors || {};
+        errBox.innerHTML = Object.entries(errs).map(([f, m]) => `<div><strong>${f}</strong>: ${Array.isArray(m)?m.join(', '):m}</div>`).join('') || 'Failed to save.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      // Remove empty row if first insert
+      document.getElementById('ingredientsEmptyRow')?.remove();
+
+      // Prepend new row
+      const tb = document.getElementById('ingredientsBody');
+      const tr = document.createElement('tr');
+      tr.className = 'border-b hover:bg-gray-50';
+      tr.innerHTML = `
+        <td class="py-3 px-4">
+          <div class="font-medium">${data.row.name}</div>
+          <div class="text-xs text-gray-500">${(data.row.description || '').slice(0, 100)}</div>
+        </td>
+        <td class="py-3 px-4 text-sm">${data.row.language || '—'}</td>
+        <td class="py-3 px-4 text-sm">${data.row.protein}g</td>
+        <td class="py-3 px-4 text-sm">${data.row.carbs}g</td>
+        <td class="py-3 px-4 text-sm">${data.row.fats}g</td>
+        <td class="py-3 px-4 text-sm">${data.row.calories}</td>
+      `;
+      tb?.prepend(tr);
+
+      form.reset();
+      document.getElementById('ingredientModal')?.classList.add('hidden');
+    } catch (err) {
+      errBox.textContent = 'Unexpected error. Please try again.';
+      errBox.classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create';
     }
   });
 </script>

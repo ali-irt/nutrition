@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+{% load form_extras %}
+{% block content %}
+<style>
+    .bg{
+        background-color: black;
+        color:white !important;
+            margin-left: -55px;
+    padding-left: 30px;
+    margin-right: -55px;
+    margin-top: -30px;
+    padding-top: 1in;
+       
+    }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Main Content -->
+    <div class="px-8 py-6">
+        <!-- Header -->
+        <div class="mb-8 bg">
+            <h1 class="text-3xl font-bold mb-4">2 Split - Upper Body / Lower Body</h1>
+            <div class="flex items-center space-x-6">
+                <button class="flex items-center space-x-2 text-white border-b-2 border-white pb-1">
+                    <span class="font-medium">Upper Body</span>
+                    <i class="fas fa-pencil text-sm"></i>
+                </button>
+                <button class="flex items-center space-x-2 text-gray-400 hover:text-white pb-1">
+                    <span>Lower Body</span>
+                </button>
+                <button class="text-gray-400 hover:text-white">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <div class="ml-auto flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white flex items-center space-x-2">
+                        <span>Actions</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white flex items-center space-x-2">
+                        <i class="fas fa-pencil text-sm"></i>
+                        <span>Edit plan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Content -->
+        <div class="bg-white text-black rounded-lg p-6">
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Left Sidebar - Exercise List -->
+                <div class="col-span-3 border-r border-gray-200 pr-4">
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Search" class="w-full px-4 py-2 pl-10 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 flex items-center space-x-2">
+                        <select class="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black">
+                            <option>Muscle groups</option>
+                            <option>Chest</option>
+                            <option>Back</option>
+                            <option>Shoulders</option>
+                            <option>Arms</option>
+                            <option>Legs</option>
+                        </select>
+                        <select class="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black">
+                            <option>Equipment</option>
+                            <option>Barbell</option>
+                            <option>Dumbbell</option>
+                            <option>Machine</option>
+                            <option>Bodyweight</option>
+                        </select>
+                    </div>
+
+                    <label class="flex items-center text-sm text-gray-600 mb-4 cursor-pointer">
+                        <input type="checkbox" class="mr-2">
+                        <span>Only own exercises</span>
+                    </label>
+
+                    <!-- Exercise Items -->
+                    <div class="space-y-2">
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Running</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-walking text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Walking</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                <i class="fas fa-dumbbell text-gray-600"></i>
+                            </div>
+                            <span class="text-sm font-medium">Bench Press</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content - Workout Plan -->
+                <div class="col-span-9">
+                    <!-- Exercise 1 -->
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-dumbbell text-gray-600"></i>
+                                </div>
+                                <span class="font-medium">Bench Press</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sets</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Repetition</span>
+                                    <select class="bg-white border border-gray-200 rounded px-2 py-1">
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Rest</span>
+                                    <span class="font-medium bg-white border border-gray-200 rounded px-3 py-1">60</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercise 2 -->
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-dumbbell text-gray-600"></i>
+                                </div>
+                                <span class="font-medium">Military Press</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sets</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Repetition</span>
+                                    <select class="bg-white border border-gray-200 rounded px-2 py-1">
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Rest</span>
+                                    <span class="font-medium bg-white border border-gray-200 rounded px-3 py-1">60</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercise 3 -->
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-dumbbell text-gray-600"></i>
+                                </div>
+                                <span class="font-medium">Barbell Bent Over Row</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sets</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Repetition</span>
+                                    <select class="bg-white border border-gray-200 rounded px-2 py-1">
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Rest</span>
+                                    <span class="font-medium bg-white border border-gray-200 rounded px-3 py-1">60</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercise 4 -->
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-dumbbell text-gray-600"></i>
+                                </div>
+                                <span class="font-medium">Standing Cable Fly</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sets</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Repetition</span>
+                                    <select class="bg-white border border-gray-200 rounded px-2 py-1">
+                                        <option>10-12</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Rest</span>
+                                    <span class="font-medium bg-white border border-gray-200 rounded px-3 py-1">60</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercise 5 -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-dumbbell text-gray-600"></i>
+                                </div>
+                                <span class="font-medium">Pull Up</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sets</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Repetition</span>
+                                    <select class="bg-white border border-gray-200 rounded px-2 py-1">
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Rest</span>
+                                    <span class="font-medium bg-white border border-gray-200 rounded px-3 py-1">60</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Superset Section -->
+                    <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-layer-group text-gray-600"></i>
+                                <span class="font-medium">Superset</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                <span>4</span>
+                                <span>Rounds</span>
+                                <button class="ml-4 text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Superset Exercise 1 -->
+                        <div class="mb-3 p-3 bg-white rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-dumbbell text-gray-500 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-sm">Standing Cable Fly</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-gray-600">Repetition</span>
+                                        <select class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs">
+                                            <option>10-12</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-gray-600">Rest</span>
+                                        <span class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs">60</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Superset Exercise 2 -->
+                        <div class="p-3 bg-white rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-dumbbell text-gray-500 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-sm">Pull Up</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-gray-600">Repetition</span>
+                                        <select class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs">
+                                            <option>3</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-gray-600">Rest</span>
+                                        <span class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs">60</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock%}

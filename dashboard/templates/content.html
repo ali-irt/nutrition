@@ -2,6 +2,38 @@
 {% block active_page %}content{% endblock %}
 {% block content %}
 <style>
+  /* Utilities (if Bootstrap isn’t loaded in base.html) */
+  .d-none{ display:none !important; }
+  .w-100{ width:100% !important; }
+  .d-flex{ display:flex !important; }
+  .gap-2{ gap:.5rem !important; }
+  .ms-auto{ margin-left:auto !important; }
+  .btn{ border:none; border-radius:8px; padding:8px 12px; font-size:13px; cursor:pointer; }
+  .btn-light{ background:#eee; color:#000; }
+  .btn-dark{ background:#000; color:#fff; }
+  .btn-outline-secondary{ background:#f2f2f2; color:#000; border:1px solid #ddd; }
+  .btn-outline-secondary:hover{ background:#eaeaea; }
+  .btn-sm{ padding:6px 10px; font-size:12px; }
+
+  /* Design-style upload blocks (optional) */
+  .upload-block{ display:flex; align-items:center; gap:12px; background:#f6f7f9; border:1px solid #eee; border-radius:12px; padding:14px; cursor:pointer; margin-bottom:10px; }
+  .ub-icon{ width:36px; height:36px; background:#fff; border:1px solid #eee; border-radius:8px; display:grid; place-items:center; font-size:18px; }
+  .ub-title{ font-weight:600; font-size:14px; color:#111; }
+  .ub-sub{ font-size:12px; color:#888; }
+
+  /* Recorder layout: two cards side-by-side (wrap on small screens) */
+  .rec-grid{ display:grid; grid-template-columns: 1fr; gap:16px; }
+  @media (min-width: 768px){ .rec-grid{ grid-template-columns: 1fr 1fr; } }
+
+  .rec-card{ background:#fff; border:1px solid #eee; border-radius:12px; padding:12px; }
+  .rec-title{ font-weight:600; font-size:14px; margin-bottom:8px; }
+  .rec-live, .rec-prev{ width:100%; aspect-ratio:16/9; background:#f2f2f2; border-radius:8px; }
+  .rec-audio{ width:100%; }
+
+  /* Hide raw inputs if you want the clean design */
+  #id_image, #id_attachments { display:none; }
+</style>
+<style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -276,16 +308,39 @@
     </form>
   </div>
 
-  <div id="addLessonModal" class="modal">
-    <form action="{% url 'add_lesson' %}" method="post">
-      {% csrf_token %}
-      <h2>Add Lesson</h2>
-      {{ lesson_form.as_p }}
-      <button type="submit">Save</button>
-      <button type="button" onclick="closeModal('addLessonModal')">Cancel</button>
-    </form>
-  </div>
+ <div id="addLessonModal" class="modal">
+  <form id="addLessonForm" action="{% url 'add_lesson' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2>Add Lesson</h2>
 
+    <!-- Your Django form (keeps id_video, id_image, id_files, id_attachments) -->
+    {{ lesson_form.as_p }}
+
+    <!-- Recording UI -->
+    <div class="rec-grid" style="gap:16px; margin-top: 8px;">
+     <!-- Pretty upload blocks (click = open inputs) -->
+<div class="upload-block" onclick="document.getElementById('id_image').click()">
+  <div class="ub-icon">🖼️</div>
+  <div>
+    <div class="ub-title">Image</div>
+    <div class="ub-sub">Drop or click to select an image</div>
+  </div>
+</div>
+
+<div class="upload-block" onclick="document.getElementById('id_attachments').click()">
+  <div class="ub-icon">📎</div>
+  <div>
+    <div class="ub-title">Upload file(s)</div>
+    <div class="ub-sub">You can select multiple files</div>
+  </div>
+</div>
+
+    <div class="d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-dark">Save</button>
+      <button type="button" onclick="closeModal('addLessonModal')" class="btn btn-light">Cancel</button>
+    </div>
+  </form>
+</div>
   <div id="editLessonModal" class="modal">
     <form id="editLessonForm" method="post">
       {% csrf_token %}
@@ -329,4 +384,143 @@
       openModal('editLessonModal');
     }
   </script>
+  <script>
+  // Utilities
+  const fmt = ms => {
+    const s = Math.floor(ms/1000);
+    return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  };
+  const toFile = (blob, base) => {
+    const t = blob.type || 'application/octet-stream';
+    let ext = 'bin';
+    if (t.includes('webm')) ext = 'webm';
+    else if (t.includes('mp4')) ext = 'mp4';
+    else if (t.includes('ogg')) ext = 'ogg';
+    else if (t.includes('mpeg')) ext = 'mpg';
+    const name = `${base}_${Date.now()}.${ext}`;
+    return new File([blob], name, { type: t });
+  };
+  const setFileInput = (input, file) => {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+  };
+  const pickMime = (types) => {
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+    for (const t of types) if (MediaRecorder.isTypeSupported(t)) return t;
+    return '';
+  };
+
+  // Scope everything to the Add Lesson modal
+  (function () {
+    const modal = document.getElementById('addLessonModal');
+    if (!modal) return;
+
+    // Grab form inputs (rendered by Django)
+    const videoInput = document.getElementById('id_video');          // Lesson.video
+    const attInput   = document.getElementById('id_attachments');    // LessonForm.attachments (MultiFileInput)
+
+    // Timers
+    let vTick=null, aTick=null;
+
+    // -------- Video recording --------
+    const camStart = modal.querySelector('#lr_cam_start');
+    const vidRec   = modal.querySelector('#lr_vid_rec');
+    const vidStop  = modal.querySelector('#lr_vid_stop');
+    const vTimer   = modal.querySelector('#lr_vid_timer');
+    const vLive    = modal.querySelector('#lr_video_live');
+    const vPrev    = modal.querySelector('#lr_video_prev');
+
+    let vStream=null, vRecorder=null, vChunks=[], vStart=null;
+
+    camStart?.addEventListener('click', async () => {
+      try {
+        vStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+        vLive.srcObject = vStream;
+        vidRec.disabled = false;
+        camStart.disabled = true;
+      } catch (e) {
+        alert('Camera/mic not available or permission denied.');
+        console.error(e);
+      }
+    });
+
+    vidRec?.addEventListener('click', () => {
+      try {
+        vChunks = [];
+        const mime = pickMime(['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/mp4;codecs=h264,aac','video/webm']);
+        vRecorder = new MediaRecorder(vStream, mime ? { mimeType: mime } : {});
+        vRecorder.ondataavailable = e => { if (e.data?.size) vChunks.push(e.data); };
+        vRecorder.onstop = () => {
+          const blob = new Blob(vChunks, { type: vRecorder.mimeType || 'video/webm' });
+          const file = toFile(blob, 'lesson_video');
+          if (videoInput) setFileInput(videoInput, file);
+
+          vPrev.src = URL.createObjectURL(blob);
+          vPrev.classList.remove('d-none');
+          vLive.classList.add('d-none');
+        };
+        vRecorder.start();
+        vStart = Date.now();
+        vTick = setInterval(()=> vTimer.textContent = fmt(Date.now()-vStart), 250);
+        vidRec.disabled = true; vidStop.disabled = false;
+      } catch (e) {
+        alert('Video recording not supported in this browser.');
+        console.error(e);
+      }
+    });
+
+    vidStop?.addEventListener('click', () => {
+      try {
+        clearInterval(vTick);
+        vidStop.disabled = true;
+        if (vRecorder && vRecorder.state !== 'inactive') vRecorder.stop();
+        if (vStream) vStream.getTracks().forEach(t => t.stop());
+      } catch (e) { console.error(e); }
+    });
+
+    // -------- Audio recording --------
+    const audStart = modal.querySelector('#lr_aud_start');
+    const audStop  = modal.querySelector('#lr_aud_stop');
+    const aTimer   = modal.querySelector('#lr_aud_timer');
+    const aPlayer  = modal.querySelector('#lr_audio_player');
+
+    let aStream=null, aRecorder=null, aChunks=[], aStart=null;
+
+    audStart?.addEventListener('click', async () => {
+      try {
+        aStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+        aChunks = [];
+        const mime = pickMime(['audio/webm;codecs=opus','audio/mp4;codecs=aac','audio/ogg;codecs=opus','audio/webm']);
+        aRecorder = new MediaRecorder(aStream, mime ? { mimeType: mime } : {});
+        aRecorder.ondataavailable = e => { if (e.data?.size) aChunks.push(e.data); };
+        aRecorder.onstop = () => {
+          const blob = new Blob(aChunks, { type: aRecorder.mimeType || 'audio/webm' });
+          const file = toFile(blob, 'lesson_audio');
+          if (attInput) setFileInput(attInput, file);  // attachments
+
+          aPlayer.src = URL.createObjectURL(blob);
+          aPlayer.classList.remove('d-none');
+        };
+        aRecorder.start();
+        aStart = Date.now();
+        aTick = setInterval(()=> aTimer.textContent = fmt(Date.now()-aStart), 250);
+        audStart.disabled = true; audStop.disabled = false;
+      } catch (e) {
+        alert('Mic not available or permission denied.');
+        console.error(e);
+      }
+    });
+
+    audStop?.addEventListener('click', () => {
+      try {
+        clearInterval(aTick);
+        audStop.disabled = true;
+        if (aRecorder && aRecorder.state !== 'inactive') aRecorder.stop();
+        if (aStream) aStream.getTracks().forEach(t => t.stop());
+        audStart.disabled = false;
+      } catch (e) { console.error(e); }
+    });
+  })();
+</script>
 {% endblock %}

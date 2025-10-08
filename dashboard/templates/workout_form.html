@@ -1,134 +1,279 @@
 {% extends "base.html" %}
+{% load static %}
+{% load form_extras %} {# add the simple add_class filter shown below #}
 {% block content %}
-<style>
-  .page-header { padding: 25px 30px 10px; }
-  .card { background:#fff; border:1px solid #eee; border-radius:8px; padding:18px; margin-bottom:18px; }
-  .btn { display:inline-block; background:#000; color:#fff; padding:10px 16px; border-radius:6px; text-decoration:none; border:0; cursor:pointer; }
-  .btn.secondary { background:#f5f5f5; color:#333; }
-  .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
-  .row { border:1px solid #eee; border-radius:6px; padding:12px; margin-bottom:10px; }
-  .row h4 { margin:0 0 8px 0; font-size:14px; }
-  .muted { color:#666; font-size:13px; }
-  .errors { background:#fff4f4; border:1px solid #f3c2c2; color:#8b1a1a; padding:10px; border-radius:6px; margin-bottom:12px; }
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
 
-<section class="page-header">
-  <h1 style="margin:0;">{% if workout %}Edit{% else %}New{% endif %} Workout</h1>
+<!-- Header -->
+<section class="bg-black text-white py-8 px-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-bold">Workouts</h1>
+      <div class="flex gap-8 mt-4 text-gray-300">
+        <a href="{% url 'workouts' %}?tab=templates" class="hover:text-white">Templates</a>
+        <a href="{% url 'workouts' %}?tab=exercises" class="hover:text-white">Exercises</a>
+      </div>
+    </div>
+    {% if workout %}
+    <div class="flex items-center gap-2">
+      <form method="post" action="{% url 'workout_toggle_complete' workout.pk %}">
+        {% csrf_token %}<button class="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm">
+          {% if workout.completed %}Mark incomplete{% else %}Mark complete{% endif %}
+        </button>
+      </form>
+      <form method="post" action="{% url 'workout_duplicate' workout.pk %}">
+        {% csrf_token %}<button class="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm">Duplicate</button>
+      </form>
+      <button data-modal-open="#deleteModal" class="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm">Delete</button>
+    </div>
+    {% endif %}
+  </div>
 </section>
 
-<form method="post" class="container" style="width:94%; margin:auto;">
-  {% csrf_token %}
-
-  {% if form.non_field_errors %}
-    <div class="errors">{{ form.non_field_errors }}</div>
-  {% endif %}
-
-  <div class="card">
-    <h3 style="margin:0 0 10px 0;">Workout details</h3>
-    {{ form.as_p }}
-  </div>
-
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h3 style="margin:0;">Exercises</h3>
-      <button type="button" class="btn secondary" id="add-row">Add exercise row</button>
-    </div>
-
-    {{ formset.management_form }}
-
-    <div id="rows">
-      {% for f in formset %}
-        <div class="row">
-          {% if f.non_field_errors %}
-            <div class="errors">{{ f.non_field_errors }}</div>
-          {% endif %}
-          <div class="grid">
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.order.label_tag }} {{ f.order }}</div>
-            <div class="col-span-4" style="grid-column:span 4;">{{ f.exercise.label_tag }} {{ f.exercise }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.sets.label_tag }} {{ f.sets }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps.label_tag }} {{ f.reps }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.rest_seconds.label_tag }} {{ f.rest_seconds }}</div>
-
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps_min.label_tag }} {{ f.reps_min }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.reps_max.label_tag }} {{ f.reps_max }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.rpe_min.label_tag }} {{ f.rpe_min }}</div>
-            <div class="col-span-2" style="grid-column:span 2;">{{ f.rpe_max.label_tag }} {{ f.rpe_max }}</div>
-            <div class="col-span-4" style="grid-column:span 4;">{{ f.tempo.label_tag }} {{ f.tempo }}</div>
-
-            <div class="col-span-12" style="grid-column:span 12;">{{ f.notes.label_tag }} {{ f.notes }}</div>
-            <div class="col-span-12 muted" style="grid-column:span 12;">
-              {{ f.time_seconds.label_tag }} {{ f.time_seconds }} &nbsp; • &nbsp; {{ f.distance_m.label_tag }} {{ f.distance_m }}
-            </div>
-
-            {% if f.instance.pk %}
-              <div class="col-span-12" style="grid-column:span 12;">
-                {{ f.DELETE }} <label>Delete this row</label>
-              </div>
-            {% else %}
-              <div class="col-span-12" style="grid-column:span 12;">
-                {{ f.DELETE }} <label>Delete this row</label>
-              </div>
-            {% endif %}
-          </div>
+<main class="bg-gray-50 px-6 md:px-8 py-10 min-h-screen">
+  <form method="post" class="max-w-6xl mx-auto">
+    {% csrf_token %}
+    <!-- Details -->
+    <div class="bg-white rounded-2xl shadow-sm border p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold">{% if workout %}Edit workout: {{ workout.name }}{% else %}Create workout{% endif %}</h2>
+          <p class="text-sm text-gray-500">Set basic info and add exercises below.</p>
         </div>
-      {% empty %}
-        <p class="muted">No exercises yet. Click “Add exercise row”.</p>
-      {% endfor %}
-    </div>
+        <div class="flex items-center gap-2">
+          <button type="submit" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">Save</button>
+          <a href="{% url 'workouts' %}" class="px-5 py-2 rounded border">Cancel</a>
+        </div>
+      </div>
 
-    <!-- Hidden empty form template -->
-    <div id="empty-row" style="display:none;">
-      <div class="row">
-        <div class="grid">
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.order.label_tag }} {{ formset.empty_form.order }}</div>
-          <div class="col-span-4" style="grid-column:span 4;">{{ formset.empty_form.exercise.label_tag }} {{ formset.empty_form.exercise }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.sets.label_tag }} {{ formset.empty_form.sets }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps.label_tag }} {{ formset.empty_form.reps }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rest_seconds.label_tag }} {{ formset.empty_form.rest_seconds }}</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-2">
+          <label class="text-sm text-gray-600">Name</label>
+          {{ form.name|add_class:"border rounded p-2 w-full" }}
+          {% if form.name.errors %}<div class="text-sm text-red-600 mt-1">{{ form.name.errors }}</div>{% endif %}
 
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps_min.label_tag }} {{ formset.empty_form.reps_min }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.reps_max.label_tag }} {{ formset.empty_form.reps_max }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rpe_min.label_tag }} {{ formset.empty_form.rpe_min }}</div>
-          <div class="col-span-2" style="grid-column:span 2;">{{ formset.empty_form.rpe_max.label_tag }} {{ formset.empty_form.rpe_max }}</div>
-          <div class="col-span-4" style="grid-column:span 4;">{{ formset.empty_form.tempo.label_tag }} {{ formset.empty_form.tempo }}</div>
-
-          <div class="col-span-12" style="grid-column:span 12;">{{ formset.empty_form.notes.label_tag }} {{ formset.empty_form.notes }}</div>
-          <div class="col-span-12 muted" style="grid-column:span 12;">
-            {{ formset.empty_form.time_seconds.label_tag }} {{ formset.empty_form.time_seconds }} &nbsp; • &nbsp; {{ formset.empty_form.distance_m.label_tag }} {{ formset.empty_form.distance_m }}
+          <label class="text-sm text-gray-600 mt-4 block">Description</label>
+          {{ form.description|add_class:"border rounded p-2 w-full" }}
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-gray-600">Date</label>
+            {{ form.date|add_class:"border rounded p-2 w-full" }}
           </div>
-          <div class="col-span-12" style="grid-column:span 12;">
-            {{ formset.empty_form.DELETE }} <label>Delete this row</label>
+          <div>
+            <label class="text-sm text-gray-600">Duration (min)</label>
+            {{ form.duration|add_class:"border rounded p-2 w-full" }}
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Level</label>
+            {{ form.level|add_class:"border rounded p-2 w-full" }}
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Calories burned</label>
+            {{ form.calories_burned|add_class:"border rounded p-2 w-full" }}
+          </div>
+          <div class="col-span-2 flex items-center gap-2 mt-2">
+            {{ form.completed }} <label class="text-sm text-gray-600">Completed</label>
           </div>
         </div>
       </div>
+
+      {% if form.user.is_hidden %}{{ form.user }}{% else %}
+      <div class="mt-4">
+        <label class="text-sm text-gray-600">User</label>
+        {{ form.user|add_class:"border rounded p-2 w-full" }}
+      </div>
+      {% endif %}
     </div>
 
-  </div>
+    <!-- Exercises / Formset -->
+    <div class="bg-white rounded-2xl shadow-sm border p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Exercises</h3>
+        <button type="button" id="addRowBtn" class="px-4 py-2 rounded bg-black text-white text-sm hover:bg-gray-800">
+          Add exercise
+        </button>
+      </div>
 
-  <div style="display:flex; gap:10px;">
-    <button type="submit" class="btn">Save</button>
-    <a href="{% url 'workouts' %}" class="btn secondary">Cancel</a>
+      <div id="formset-management" class="hidden">
+        {{ formset.management_form }}
+      </div>
+
+      <div id="rows" class="space-y-3">
+        {% for f in formset.forms %}
+        <div class="ex-row border rounded-xl p-3" data-index="{{ forloop.counter0 }}">
+          {{ f.id }}
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="cursor-grab select-none text-gray-400">⋮⋮</span>
+              <input type="number" min="1" name="{{ f.order.html_name }}" value="{{ f.order.value|default:forloop.counter }}" class="w-16 border rounded p-2 text-center" />
+              <span class="text-sm text-gray-500">Order</span>
+            </div>
+            <button type="button" class="text-red-600 hover:underline btn-remove">Remove</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+            <div class="md:col-span-2">
+              <label class="text-xs text-gray-500">Exercise</label>
+              {{ f.exercise|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Sets</label>
+              {{ f.sets|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Tempo</label>
+              {{ f.tempo|add_class:"border rounded p-2 w-full" }}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
+            <div><label class="text-xs text-gray-500">Reps</label>{{ f.reps|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Reps min</label>{{ f.reps_min|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Reps max</label>{{ f.reps_max|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Time (sec)</label>{{ f.time_seconds|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Distance (m)</label>{{ f.distance_m|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Rest (sec)</label>{{ f.rest_seconds|add_class:"border rounded p-2 w-full" }}</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+            <div><label class="text-xs text-gray-500">RPE min</label>{{ f.rpe_min|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">RPE max</label>{{ f.rpe_max|add_class:"border rounded p-2 w-full" }}</div>
+          </div>
+
+          <div class="mt-3">
+            <label class="text-xs text-gray-500">Notes</label>
+            {{ f.notes|add_class:"border rounded p-2 w-full" }}
+          </div>
+
+          <div class="hidden">
+            {% if formset.can_delete %}{{ f.DELETE }}{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Empty form template -->
+      <template id="empty-row">
+        <div class="ex-row border rounded-xl p-3" data-index="__prefix__">
+          {{ formset.empty_form.id }}
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="cursor-grab select-none text-gray-400">⋮⋮</span>
+              {{ formset.empty_form.order|add_class:"w-16 border rounded p-2 text-center" }}
+              <span class="text-sm text-gray-500">Order</span>
+            </div>
+            <button type="button" class="text-red-600 hover:underline btn-remove">Remove</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+            <div class="md:col-span-2">
+              <label class="text-xs text-gray-500">Exercise</label>
+              {{ formset.empty_form.exercise|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <div><label class="text-xs text-gray-500">Sets</label>{{ formset.empty_form.sets|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Tempo</label>{{ formset.empty_form.tempo|add_class:"border rounded p-2 w-full" }}</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
+            <div><label class="text-xs text-gray-500">Reps</label>{{ formset.empty_form.reps|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Reps min</label>{{ formset.empty_form.reps_min|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Reps max</label>{{ formset.empty_form.reps_max|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Time (sec)</label>{{ formset.empty_form.time_seconds|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Distance (m)</label>{{ formset.empty_form.distance_m|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">Rest (sec)</label>{{ formset.empty_form.rest_seconds|add_class:"border rounded p-2 w-full" }}</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+            <div><label class="text-xs text-gray-500">RPE min</label>{{ formset.empty_form.rpe_min|add_class:"border rounded p-2 w-full" }}</div>
+            <div><label class="text-xs text-gray-500">RPE max</label>{{ formset.empty_form.rpe_max|add_class:"border rounded p-2 w-full" }}</div>
+          </div>
+
+          <div class="mt-3">
+            <label class="text-xs text-gray-500">Notes</label>
+            {{ formset.empty_form.notes|add_class:"border rounded p-2 w-full" }}
+          </div>
+
+          <div class="hidden">
+            {% if formset.can_delete %}{{ formset.empty_form.DELETE }}{% endif %}
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <div class="max-w-6xl mx-auto mt-6 flex items-center justify-end gap-2">
+      <button type="submit" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">Save workout</button>
+      <a href="{% url 'workouts' %}" class="px-6 py-2 rounded border">Cancel</a>
+    </div>
+  </form>
+</main>
+
+<!-- Delete modal -->
+<div id="deleteModal" class="modal-overlay fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+  <div class="relative bg-white rounded-2xl w-full max-w-md p-6" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+    <button type="button" data-modal-close="#deleteModal" class="absolute right-4 top-4 text-gray-500 hover:text-black">✕</button>
+    <h3 id="delTitle" class="text-lg font-semibold mb-2">Delete workout</h3>
+    <p class="text-sm text-gray-600 mb-4">This action cannot be undone.</p>
+    <form method="post" action="{% if workout %}{% url 'workout_delete' workout.pk %}{% endif %}">
+      {% csrf_token %}
+      <div class="flex justify-end gap-2">
+        <button type="button" data-modal-close="#deleteModal" class="px-4 py-2 rounded border">Cancel</button>
+        <button class="px-4 py-2 rounded bg-red-600 text-white">Delete</button>
+      </div>
+    </form>
   </div>
-</form>
+</div>
 
 <script>
-  // Generic dynamic formset adder (works with any formset prefix)
-  (function(){
-    const rows = document.getElementById("rows");
-    const empty = document.getElementById("empty-row").innerHTML;
-    const addBtn = document.getElementById("add-row");
-    const totalInput = document.querySelector('input[name$="-TOTAL_FORMS"]'); // e.g. workoutexercise_set-TOTAL_FORMS
-    if (!rows || !empty || !totalInput || !addBtn) return;
+  // Open/close modals
+  document.addEventListener('click', (e) => {
+    const open = e.target.closest('[data-modal-open]');
+    if (open) document.querySelector(open.getAttribute('data-modal-open'))?.classList.remove('hidden');
+    const close = e.target.closest('[data-modal-close]');
+    if (close) document.querySelector(close.getAttribute('data-modal-close'))?.classList.add('hidden');
+    if (e.target.classList?.contains('modal-overlay')) e.target.classList.add('hidden');
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden')); });
 
-    addBtn.addEventListener("click", function(){
-      const index = parseInt(totalInput.value, 10);
-      const html = empty.replace(/__prefix__/g, index);
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = html;
-      // move the row (wrapped) into rows container
-      rows.appendChild(wrapper.firstElementChild);
-      totalInput.value = index + 1;
+  // Formset JS
+  const rows = document.getElementById('rows');
+  const emptyTpl = document.getElementById('empty-row');
+  const totalInput = document.querySelector('#formset-management input[name$="-TOTAL_FORMS"]');
+
+  function renumberOrders() {
+    const orderInputs = rows.querySelectorAll('input[name$="-order"]');
+    let i = 1;
+    rows.querySelectorAll('.ex-row').forEach(r => {
+      if (!r.classList.contains('hidden')) {
+        const input = r.querySelector('input[name$="-order"]');
+        if (input) input.value = i++;
+      }
     });
-  })();
+  }
+
+  function bindRowEvents(row) {
+    row.querySelector('.btn-remove')?.addEventListener('click', () => {
+      const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+      if (del) { del.checked = true; row.classList.add('hidden'); }
+      else { row.remove(); }
+      renumberOrders();
+    });
+  }
+
+  // bind existing rows
+  rows.querySelectorAll('.ex-row').forEach(bindRowEvents);
+
+  document.getElementById('addRowBtn')?.addEventListener('click', () => {
+    const idx = parseInt(totalInput.value || '0', 10);
+    const html = emptyTpl.innerHTML.replace(/__prefix__/g, idx);
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html.trim();
+    const newRow = wrap.firstElementChild;
+    rows.appendChild(newRow);
+    totalInput.value = idx + 1;
+    bindRowEvents(newRow);
+    renumberOrders();
+    newRow.querySelector('select[name$="-exercise"], input[name$="-exercise"]')?.focus();
+  });
 </script>
 {% endblock %}

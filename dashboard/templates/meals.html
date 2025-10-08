@@ -1,177 +1,198 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Meals - The Nutri Co.{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="meals-container">
-    <div class="meals-header">
-        <h1>Meals Management</h1>
-        <div class="header-actions">
-            <button class="btn-primary">Create New Meal</button>
-            <button class="btn-secondary">Import Recipes</button>
-        </div>
-    </div>
-    
-    <div class="meals-stats">
-        <div class="stat-card">
-            <h3>Total Meals</h3>
-            <div class="stat-number">342</div>
-            <div class="stat-change">In database</div>
-        </div>
-        
-        <div class="stat-card">
-            <h3>Popular Meals</h3>
-            <div class="stat-number">89</div>
-            <div class="stat-change">Most used</div>
-        </div>
-        
-        <div class="stat-card">
-            <h3>Custom Recipes</h3>
-            <div class="stat-number">156</div>
-            <div class="stat-change">Created by you</div>
-        </div>
-        
-        <div class="stat-card">
-            <h3>Avg Calories</h3>
-            <div class="stat-number">485</div>
-            <div class="stat-change">Per meal</div>
-        </div>
-    </div>
-    
-    <div class="meals-filters">
-        <div class="filter-group">
-            <input type="search" placeholder="Search meals..." class="search-input">
-            <select class="filter-select">
-                <option>All Categories</option>
-                <option>Breakfast</option>
-                <option>Lunch</option>
-                <option>Dinner</option>
-                <option>Snacks</option>
-            </select>
-            <select class="filter-select">
-                <option>All Diets</option>
-                <option>Vegetarian</option>
-                <option>Vegan</option>
-                <option>Keto</option>
-                <option>Paleo</option>
-                <option>Gluten-Free</option>
-            </select>
-        </div>
-        
-        <div class="view-options">
-            <button class="view-btn active">Grid</button>
-            <button class="view-btn">List</button>
-        </div>
-    </div>
-    
-    <div class="meals-grid">
-        <div class="meal-card">
-            <div class="meal-image">
-                <img src="{% static 'dashboard/images/nutrition.png' %}" alt="Grilled Chicken Salad">
-            </div>
-            <div class="meal-content">
-                <h3>Grilled Chicken Salad</h3>
-                <p>Fresh mixed greens with grilled chicken breast, cherry tomatoes, and balsamic dressing</p>
-                <div class="meal-stats">
-                    <span>🔥 420 cal</span>
-                    <span>🥩 35g protein</span>
-                    <span>🍞 12g carbs</span>
-                    <span>🥑 28g fat</span>
-                </div>
-                <div class="meal-tags">
-                    <span class="tag">High Protein</span>
-                    <span class="tag">Low Carb</span>
-                    <span class="tag">Gluten-Free</span>
-                </div>
-                <div class="meal-actions">
-                    <button class="btn-primary">Add to Plan</button>
-                    <button class="btn-secondary">Edit</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="meal-card">
-            <div class="meal-image">
-                <img src="{% static 'dashboard/images/nutrition-1.png' %}" alt="Quinoa Buddha Bowl">
-            </div>
-            <div class="meal-content">
-                <h3>Quinoa Buddha Bowl</h3>
-                <p>Nutritious bowl with quinoa, roasted vegetables, chickpeas, and tahini dressing</p>
-                <div class="meal-stats">
-                    <span>🔥 520 cal</span>
-                    <span>🥩 18g protein</span>
-                    <span>🍞 65g carbs</span>
-                    <span>🥑 22g fat</span>
-                </div>
-                <div class="meal-tags">
-                    <span class="tag">Vegetarian</span>
-                    <span class="tag">High Fiber</span>
-                    <span class="tag">Gluten-Free</span>
-                </div>
-                <div class="meal-actions">
-                    <button class="btn-primary">Add to Plan</button>
-                    <button class="btn-secondary">Edit</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="meal-card">
-            <div class="meal-image">
-                <img src="{% static 'dashboard/images/nutrition-2.png' %}" alt="Salmon with Sweet Potato">
-            </div>
-            <div class="meal-content">
-                <h3>Salmon with Sweet Potato</h3>
-                <p>Baked salmon fillet with roasted sweet potato and steamed broccoli</p>
-                <div class="meal-stats">
-                    <span>🔥 580 cal</span>
-                    <span>🥩 42g protein</span>
-                    <span>🍞 35g carbs</span>
-                    <span>🥑 28g fat</span>
-                </div>
-                <div class="meal-tags">
-                    <span class="tag">High Protein</span>
-                    <span class="tag">Omega-3</span>
-                    <span class="tag">Paleo</span>
-                </div>
-                <div class="meal-actions">
-                    <button class="btn-primary">Add to Plan</button>
-                    <button class="btn-secondary">Edit</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="meal-card">
-            <div class="meal-image">
-                <img src="{% static 'dashboard/images/nutrition-3.png' %}" alt="Avocado Toast">
-            </div>
-            <div class="meal-content">
-                <h3>Avocado Toast</h3>
-                <p>Whole grain toast topped with mashed avocado, cherry tomatoes, and hemp seeds</p>
-                <div class="meal-stats">
-                    <span>🔥 340 cal</span>
-                    <span>🥩 12g protein</span>
-                    <span>🍞 28g carbs</span>
-                    <span>🥑 24g fat</span>
-                </div>
-                <div class="meal-tags">
-                    <span class="tag">Vegetarian</span>
-                    <span class="tag">High Fiber</span>
-                    <span class="tag">Quick</span>
-                </div>
-                <div class="meal-actions">
-                    <button class="btn-primary">Add to Plan</button>
-                    <button class="btn-secondary">Edit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="pagination">
-        <button class="page-btn">← Previous</button>
-        <span class="page-info">Page 1 of 12</span>
-        <button class="page-btn">Next →</button>
-    </div>
-</div>
-{% endblock %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+  :root{ --bg:#f6f7f9; --panel:#fff; --line:#eaeaea; --muted:#6b7280; --radius:20px; }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius: var(--radius); }
+  .pill{ background:#111; color:#fff; border-radius: 20px; }
+  .metric{ display:flex; align-items:center; gap:10px; }
+  .metric .n{ font-weight:700; font-size:20px; }
+  .metric .l{ color:#d1d5db; font-size:12px; }
+</style>
+
+<!-- Header -->
+<section class="bg-black text-white py-8 px-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-semibold">Meals</h1>
+    <div class="mt-3 text-gray-300 flex gap-6 text-sm">
+      <a class="hover:text-white underline underline-offset-4" href="#">Overview</a>
+      <a class="hover:text-white" href="#">Orders</a>
+      <a class="hover:text-white" href="#">Clients</a>
+      <a class="hover:text-white" href="#">Plans</a>
+      <a class="hover:text-white" href="#">Inventory</a>
+      <a class="hover:text-white" href="#">Billing</a>
+      <a class="hover:text-white" href="#">Reports</a>
+    </div>
+  </div>
+</section>
+
+<!-- Content -->
+<section class="px-6 py-8" style="background:var(--bg);">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Metrics pill -->
+    <div class="pill px-5 py-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="metric">
+          <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">👥</div>
+          <div><div class="n">{{ active_clients }}</div><div class="l">Active Clients</div></div>
+        </div>
+        <div class="metric">
+          <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">🥗</div>
+          <div><div class="n">{{ meals_to_prepare }}</div><div class="l">Meals to Prepare</div></div>
+        </div>
+        <div class="metric">
+          <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">💵</div>
+          <div><div class="n">${{ total_revenue|floatformat:0 }}</div><div class="l">Total Revenue</div></div>
+        </div>
+        <div class="metric">
+          <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">🚚</div>
+          <div><div class="n">{{ total_deliveries }}</div><div class="l">Total Deliveries</div></div>
+        </div>
+
+        <!-- range selector -->
+        <form method="get" class="ml-auto">
+          <select name="range" class="bg-white/10 text-white text-sm rounded px-3 py-2">
+            <option value="weekly"  {% if range_kind == "weekly" %}selected{% endif %}>Weekly</option>
+            <option value="monthly" {% if range_kind == "monthly" %}selected{% endif %}>Monthly</option>
+            <option value="quarter" {% if range_kind == "quarter" %}selected{% endif %}>Quarter</option>
+            <option value="year"    {% if range_kind == "year" %}selected{% endif %}>Year</option>
+          </select>
+          <button class="ml-2 bg-white text-black rounded px-3 py-2 text-sm">Apply</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Row: revenue + summary -->
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="card p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-semibold">Revenue</h3>
+            <div class="text-xs text-gray-500">{{ start_date }} – {{ end_date }}</div>
+          </div>
+          <canvas id="revChart" height="120"></canvas>
+        </div>
+
+        <!-- Quick stats list like your first screen -->
+        <div class="mt-6 space-y-3">
+          <div class="card px-4 py-3 flex items-center justify-between">
+            <span class="text-sm text-gray-700">Meals to prepare today</span>
+            <span class="text-sm font-semibold">{{ meals_to_prepare }}</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center justify-between">
+            <span class="text-sm text-gray-700">Deliveries today</span>
+            <span class="text-sm font-semibold">{{ deliveries }}</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center justify-between">
+            <span class="text-sm text-gray-700">Low stock alerts</span>
+            <span class="text-sm font-semibold">—</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center justify-between">
+            <span class="text-sm text-gray-700">Subscription ending soon</span>
+            <span class="text-sm font-semibold">—</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center justify-between">
+            <span class="text-sm text-gray-700">Reviews</span>
+            <span class="text-sm font-semibold">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4">
+        <div class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Order Summary</h3>
+            <span class="text-xs text-gray-500">Range: {{ range_kind|title }}</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="border-b">
+                <tr class="text-gray-500">
+                  <th class="py-2">Name</th>
+                  <th class="py-2">Location</th>
+                  <th class="py-2">Order No.</th>
+                  <th class="py-2">Plan</th>
+                  <th class="py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in summary %}
+                <tr class="border-b last:border-0">
+                  <td class="py-2">{{ r.shipping_name|default:"—" }}</td>
+                  <td class="py-2">
+                    <div class="max-w-[180px] truncate">{{ r.shipping_address|default:"—" }}</div>
+                  </td>
+                  <td class="py-2">{{ r.order_no }}</td>
+                  <td class="py-2">{{ r.plan__name }}</td>
+                  <td class="py-2">
+                    <span class="px-2 py-1 rounded text-xs
+                      {% if r.status == 'delivered' %}bg-green-100 text-green-700
+                      {% elif r.status == 'cancelled' %}bg-red-100 text-red-700
+                      {% elif r.status == 'on_delivery' %}bg-blue-100 text-blue-700
+                      {% else %}bg-gray-100 text-gray-700{% endif %}">
+                      {{ r.status|title }}
+                    </span>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="py-6 text-center text-gray-500">No orders found in range</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Alternate metrics block (like Meals 2/3) -->
+        <div class="pill px-5 py-4 mt-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="metric">
+              <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">🧾</div>
+              <div><div class="n">{{ all_orders }}</div><div class="l">All Orders</div></div>
+            </div>
+            <div class="metric">
+              <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">🥗</div>
+              <div><div class="n">{{ meals_to_prepare }}</div><div class="l">Meals to Prepare</div></div>
+            </div>
+            <div class="metric">
+              <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">🚚</div>
+              <div><div class="n">{{ deliveries }}</div><div class="l">Deliveries</div></div>
+            </div>
+            <div class="metric">
+              <div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">❌</div>
+              <div><div class="n">{{ cancelled }}</div><div class="l">Cancelled</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const data = {{ revenue_json|safe }};
+  const ctx = document.getElementById('revChart')?.getContext('2d');
+  if (ctx && data) {
+    const gradient = ctx.createLinearGradient(0,0,0,220);
+    gradient.addColorStop(0, 'rgba(17,24,39,.15)');
+    gradient.addColorStop(1, 'rgba(17,24,39,0)');
+    data.datasets[0].backgroundColor = gradient;
+
+    new Chart(ctx, {
+      type: 'line',
+      data,
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { ticks: { callback: v => '$' + v }, grid: { color: 'rgba(0,0,0,.05)' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

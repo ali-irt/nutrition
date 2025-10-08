@@ -28,18 +28,26 @@ urlpatterns = [
 path("clients/no-account/", views.clients_no_account, name="clients_no_account"),
     # Client Profile (with tabs)
     path("client/<int:client_id>/", views.client_profile, name="client_profile"),
-
-    # Nutrition
-    path("nutrition/", views.nutrition, name="nutrition"),
     path("nutrition/recipes/", views.nutrition_recipes, name="nutrition_recipes"),
     path("nutrition/templates/", views.nutrition_templates, name="nutrition_templates"),
 
+    # Create endpoints (AJAX-friendly)
+   path("nutrition/", views.nutrition, name="nutrition"),
+    path("nutrition/ingredients/create/", views.ingredient_create, name="ingredient_create"),    path("nutrition/recipes/create/", views.recipe_create, name="recipe_create"),
+    path("nutrition/templates/create/", views.nutrition_template_create, name="nutrition_template_create"),
     # Workouts
-  path("workouts/", views.workouts, name="workouts"),
+   path("workouts/", views.workouts, name="workouts"),
+
+    # Detail page for a template (grouped by workout name, PK of any session)
+    path("workouts/templates/<int:pk>/", views.template_detail, name="workout_template_detail"),
+    path("workouts/templates/<int:pk>/add-session/", views.template_add_session, name="workout_template_add_session"),
+path("workouts/templates/<int:pk>/rename/", views.template_rename, name="workout_template_rename"),
+path("workouts/templates/<int:pk>/add-session/", views.template_add_session, name="workout_template_add_session"),
+    # Existing editor endpoints (can stay as-is)
     path("workouts/new/", views.workout_new, name="workout_new"),
     path("workouts/<int:pk>/edit/", views.workout_edit, name="workout_edit"),
     path("workouts/<int:pk>/delete/", views.workout_delete, name="workout_delete"),
-    path("workouts/<int:pk>/toggle/", views.workout_toggle_complete, name="workout_toggle_complete"),
+    path("workouts/<int:pk>/toggle-complete/", views.workout_toggle_complete, name="workout_toggle_complete"),
     path("workouts/<int:pk>/duplicate/", views.workout_duplicate, name="workout_duplicate"),
     # Progress
     path("progress/", views.progress_list, name="progress_list"),

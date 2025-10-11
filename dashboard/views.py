@@ -439,8 +439,55 @@ def client_profile(request, client_id):
         "current_tab": request.GET.get("tab", "overview"),
     }
     return render(request, "client_profile.html", context)
+def client_nutrition(request, client_id):
+    user = get_object_or_404(User, id=client_id)
+    profile = get_object_or_404(UserProfile, user=user)
 
+    meals = Meal.objects.all().order_by("meal_type")
+    meal_logs = UserMealLog.objects.filter(user=user).order_by("-date")
+    nutrition_entries = Nutrition.objects.filter(kind="ingredient").order_by("name")
+    nutrition_templates = NutritionTemplate.objects.all().order_by("name")
 
+    context = {
+        "client": profile,
+        "meals": meals,
+        "meal_logs": meal_logs,
+        "nutrition_entries": nutrition_entries,
+        "nutrition_templates": nutrition_templates,
+        "current_tab": "nutrition",
+    }
+    return render(request, "client_nutrition.html", context)
+def client_workout(request, client_id):
+    user = get_object_or_404(User, id=client_id)
+    profile = get_object_or_404(UserProfile, user=user)
+
+    workouts = Workout.objects.filter(user=user).order_by("-date")
+    workout_logs = UserWorkoutLog.objects.filter(user=user).order_by("-date")
+    exercises = Exercise.objects.all().order_by("name")
+    muscle_groups = Muscle._meta.get_field("group").choices
+
+    context = {
+        "client": profile,
+        "workouts": workouts,
+        "workout_logs": workout_logs,
+        "exercises": exercises,
+        "muscle_groups": muscle_groups,
+        "current_tab": "workouts",
+    }
+    return render(request, "client_workout.html", context)
+
+def client_progress(request, client_id):
+    user = get_object_or_404(User, id=client_id)
+    profile = get_object_or_404(UserProfile, user=user)
+
+    progress_entries = Progress.objects.filter(user=user).order_by("-date")
+
+    context = {
+        "client": profile,
+        "progress": progress_entries,
+        "current_tab": "progress",
+    }
+    return render(request, "client_progress.html", context)
 # -------------------------
 # Nutrition
 # -------------------------

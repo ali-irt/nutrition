@@ -5,7 +5,7 @@ urlpatterns = [
     # Dashboard Home
     path("", views.dashboard_home, name="dashboard_home"),
 
- path("leads/", views.leads_all, name="leads_all"),
+    path("leads/", views.leads_all, name="leads_all"),
     path("leads/new/", views.leads_new, name="leads_new"),
     path("leads/contacted/", views.leads_contacted, name="leads_contacted"),
     path("leads/dialogue/", views.leads_dialogue, name="leads_dialogue"),
@@ -24,25 +24,23 @@ urlpatterns = [
     path("clients/reminders/", views.clients_reminders, name="clients_reminders"),
     path("clients/ending/", views.clients_completed, name="clients_completed"),  # Changed from clients_completed
     path("clients/no-communication/", views.clients_no_communication, name="clients_no_communication"),
-  path("clients/offer-sent/", views.clients_offer_sent, name="clients_offer_sent"),
-path("clients/no-account/", views.clients_no_account, name="clients_no_account"),
-    # Client Profile (with tabs)
+    path("clients/offer-sent/", views.clients_offer_sent, name="clients_offer_sent"),
+    path("clients/no-account/", views.clients_no_account, name="clients_no_account"),
     path("client/<int:client_id>/", views.client_profile, name="client_profile"),
+   path("client/<int:client_id>/workout/", views.client_workout, name="client_workout"),
+   path("client/<int:client_id>/progress/", views.client_progress, name="client_progress"),
+    path("client/<int:client_id>/nutrition/", views.client_nutrition, name="client_nutrition"),
     path("nutrition/recipes/", views.nutrition_recipes, name="nutrition_recipes"),
     path("nutrition/templates/", views.nutrition_templates, name="nutrition_templates"),
-
-    # Create endpoints (AJAX-friendly)
-   path("nutrition/", views.nutrition, name="nutrition"),
-    path("nutrition/ingredients/create/", views.ingredient_create, name="ingredient_create"),    path("nutrition/recipes/create/", views.recipe_create, name="recipe_create"),
+    path("nutrition/", views.nutrition, name="nutrition"),
+    path("nutrition/ingredients/create/", views.ingredient_create, name="ingredient_create"), 
+    path("nutrition/recipes/create/", views.recipe_create, name="recipe_create"),
     path("nutrition/templates/create/", views.nutrition_template_create, name="nutrition_template_create"),
-    # Workouts
-   path("workouts/", views.workouts, name="workouts"),
-
-    # Detail page for a template (grouped by workout name, PK of any session)
+    path("workouts/", views.workouts, name="workouts"),
     path("workouts/templates/<int:pk>/", views.template_detail, name="workout_template_detail"),
     path("workouts/templates/<int:pk>/add-session/", views.template_add_session, name="workout_template_add_session"),
-path("workouts/templates/<int:pk>/rename/", views.template_rename, name="workout_template_rename"),
-path("workouts/templates/<int:pk>/add-session/", views.template_add_session, name="workout_template_add_session"),
+    path("workouts/templates/<int:pk>/rename/", views.template_rename, name="workout_template_rename"),
+    path("workouts/templates/<int:pk>/add-session/", views.template_add_session, name="workout_template_add_session"),
     # Existing editor endpoints (can stay as-is)
     path("workouts/new/", views.workout_new, name="workout_new"),
     path("workouts/<int:pk>/edit/", views.workout_edit, name="workout_edit"),
@@ -59,7 +57,7 @@ path("workouts/templates/<int:pk>/add-session/", views.template_add_session, nam
     path("wishlist/", views.wishlist_list, name="wishlist"),
 
     # Content
- path('content/', views.content, name='content'),
+    path('content/', views.content, name='content'),
 
     # File CRUD
     path('add-file/', views.add_file, name='add_file'),

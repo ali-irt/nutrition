@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+  <!-- Profile Section -->
+  <section class="bg-white mx-auto mt-8 w-[90%] max-w-5xl p-6 rounded-xl shadow">
+    <div class="flex items-center space-x-4">
+      <div class="bg-gray-200 h-16 w-16 rounded-full flex items-center justify-center text-xl font-semibold">
+        VR
+      </div>
+      <div>
+        <h2 class="font-bold text-lg">Vera Roscoff</h2>
+        <p class="text-sm text-gray-500">@verarose</p>
+      </div>
+    </div>
+  </section>
+    <!-- Check-in Section -->
+    <div class="mt-8">
+      <h3 class="text-xl font-semibold mb-4">Check-in</h3>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-3xl font-bold">3.5</p>
+          <p class="text-gray-500 text-sm">Average rating</p>
+        </div>
+
+        <div class="bg-gray-200 h-32 w-[400px] rounded-lg flex items-center justify-center text-gray-400 text-sm">
+          Chart Placeholder
+        </div>
+
+        <button class="bg-black text-white px-4 py-2 rounded-lg">Download</button>
+      </div>
+
+      <!-- Notes Section -->
+      <div class="mt-8 grid grid-cols-2 gap-6">
+        <div class="bg-gray-100 p-4 rounded-lg h-32">
+          <p class="text-gray-500 text-sm">Trainer notes placeholder...</p>
+        </div>
+        <div class="bg-gray-200 h-32 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+          Photo Placeholder
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Stats -->
+    <div class="mt-12">
+      <h3 class="text-xl font-semibold mb-4">📊 Body Stats</h3>
+      <div class="bg-gray-200 h-48 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+        Body Stats Chart Placeholder
+      </div>
+    </div>
+
+    <!-- Activity -->
+    <div class="mt-12">
+      <h3 class="text-xl font-semibold mb-4">🏋️ Activity</h3>
+      <div class="bg-gray-200 h-48 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+        Activity Chart Placeholder
+      </div>
+    </div>
+
+    <!-- Progress Pictures -->
+    <div class="mt-12">
+      <h3 class="text-xl font-semibold mb-4">📸 Progress Pictures</h3>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+          Front View Placeholder
+        </div>
+        <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+          Side View Placeholder
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

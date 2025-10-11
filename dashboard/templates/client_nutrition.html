@@ -1,0 +1,926 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vera Rossakoff - Nutrition | The Nutri Co.{% endblock %}
+
+{% block extra_css %}
+
+<style>
+/* Client Nutrition Page Specific Styles */
+.client-nutrition-container {
+    margin: 0 auto;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Client Header Section */
+.client-header-section {
+    background: #000;
+    color: white;
+    padding: 20px 0;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 0;
+}
+
+.client-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.client-profile-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.client-avatar-large {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    color: #1a1a1a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.client-name-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-name {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.demo-badge {
+    background-color: white;
+    color: #1a1a1a;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.client-nav-tabs {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.client-nav-tabs a {
+    color: #ccc;
+    text-decoration: none;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.client-nav-tabs a:hover,
+.client-nav-tabs a.active {
+    color: white;
+    border-bottom-color: white;
+}
+
+.client-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.action-icon {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.action-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content Area */
+.nutrition-content {
+    background: white;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Meal Plan Header */
+.meal-plan-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.meal-plan-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.published-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.published-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #000;
+    border-radius: 50%;
+}
+
+.meal-plan-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bookmark-icon {
+    font-size: 16px;
+    color: #666;
+}
+
+.meal-plan-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.actions-dropdown {
+    background: white;
+    border: 1px solid #e9ecef;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.create-plan-btn {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Calorie Summary */
+.calorie-summary {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.calorie-circle {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.calorie-circle svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.calorie-circle-bg {
+    fill: none;
+    stroke: #e9ecef;
+    stroke-width: 6;
+}
+
+.calorie-circle-fill {
+    fill: none;
+    stroke: #20c997;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 220;
+    stroke-dashoffset: 44;
+}
+
+.calorie-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.calorie-number {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.calorie-target {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+.calorie-details h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+}
+
+.calorie-range {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 4px 0;
+}
+
+.calorie-target-text {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+/* Macronutrients */
+.macronutrients {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.macro-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.macro-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    min-width: 60px;
+}
+
+.macro-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    min-width: 80px;
+}
+
+.macro-percentage {
+    font-size: 14px;
+    color: #666;
+    min-width: 40px;
+}
+
+.macro-progress {
+    flex: 1;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.macro-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.macro-progress-fill.protein {
+    background-color: #e91e63;
+    width: 30%;
+}
+
+.macro-progress-fill.carbs {
+    background-color: #20c997;
+    width: 44%;
+}
+
+.macro-progress-fill.fat {
+    background-color: #9c27b0;
+    width: 26%;
+}
+
+/* Meal Sections */
+.meal-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.meal-section {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.meal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.meal-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.meal-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.meal-nutrition {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.meal-calories {
+    text-align: right;
+}
+
+.meal-calories-number {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.meal-calories-target {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+.meal-macros {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+}
+
+.macro-line {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.macro-name {
+    font-weight: 500;
+}
+
+.macro-name.protein {
+    color: #e91e63;
+}
+
+.macro-name.carbs {
+    color: #20c997;
+}
+
+.macro-name.fat {
+    color: #9c27b0;
+}
+
+.meal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.meal-action-btn {
+    width: 32px;
+    height: 32px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.meal-action-btn:hover {
+    background: #333;
+}
+
+/* Recipe Images */
+.recipe-images {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.recipe-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.recipe-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Micronutrients */
+.micronutrients-section {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.micronutrients-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.micronutrients-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.micronutrients-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.micronutrients-bar {
+    width: 200px;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.micronutrients-fill {
+    height: 100%;
+    background-color: #20c997;
+    width: 95%;
+    border-radius: 4px;
+}
+
+.micronutrients-percentage {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* Footer Actions */
+.footer-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e9ecef;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+}
+
+.footer-message {
+    color: #1a1a1a;
+    font-size: 14px;
+    margin: 0;
+}
+
+.footer-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.footer-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.footer-btn.discard {
+    background: white;
+    color: #666;
+    border: 1px solid #e9ecef;
+}
+
+.footer-btn.discard:hover {
+    background: #f8f9fa;
+}
+
+.footer-btn.save {
+    background: white;
+    color: #666;
+    border: 1px solid #e9ecef;
+}
+
+.footer-btn.save:hover {
+    background: #f8f9fa;
+}
+
+.footer-btn.publish {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+}
+
+.footer-btn.publish:hover {
+    background: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .client-header-content {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .calorie-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .meal-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+    .meal-nutrition {
+        align-items: flex-start;
+    }
+    
+    .footer-actions {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="client-nutrition-container">
+    <!-- Client Header Section -->
+    <div class="client-header-section">
+        <div class="client-header-content">
+            <div class="client-profile-info">
+                <div class="client-avatar-large">VR</div>
+                <div class="client-name-section">
+                    <h1 class="client-name">Vera Rossakoff</h1>
+                    <div class="demo-badge">
+                        <span>📅</span>
+                        <span>Demo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="action-icon">💬</button>
+                <button class="action-icon">🕐</button>
+                <button class="action-icon">⋮</button>
+            </div>
+        </div>
+        <div class="client-header-content">
+            <div class="client-nav-tabs">
+<a href="{% url 'client_profile' client.user.id %}">Overview</a>
+<a href="{% url 'client_nutrition' client.user.id %}">Nutrition</a>
+
+                    <a href="{% url 'client_workout' client.user.id %}">Workouts</a>
+                    <a href="#">Progress</a>
+                    <a href="#">Membership</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="nutrition-content">
+        <!-- Meal Plan Header -->
+        <div class="meal-plan-header">
+            <div class="meal-plan-info">
+                <div class="published-info">
+                    <div class="published-dot"></div>
+                    <span>Published 14 days ago</span>
+                </div>
+                <h2 class="meal-plan-title">
+                    Vera's Meal Plan
+                    <span class="bookmark-icon">🔖</span>
+                </h2>
+            </div>
+            <div class="meal-plan-actions">
+                <button class="actions-dropdown">
+                    Actions
+                    <span>▼</span>
+                </button>
+                <button class="create-plan-btn">
+                    Create plan
+                    <span>▼</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Calorie Summary -->
+        <div class="calorie-summary">
+            <div class="calorie-circle">
+                <svg viewBox="0 0 80 80">
+                    <circle class="calorie-circle-bg" cx="40" cy="40" r="35"></circle>
+                    <circle class="calorie-circle-fill" cx="40" cy="40" r="35"></circle>
+                </svg>
+                <div class="calorie-text">
+                    <p class="calorie-number">1949-1961</p>
+                    <p class="calorie-target">Target: 1954</p>
+                </div>
+            </div>
+            <div class="calorie-details">
+                <h3>Total: 1949-1961 calories</h3>
+                <p class="calorie-range">Target: 1954</p>
+            </div>
+            <div class="macronutrients">
+                <div class="macro-item">
+                    <span class="macro-label">Protein</span>
+                    <span class="macro-value">142g</span>
+                    <span class="macro-percentage">30%</span>
+                    <div class="macro-progress">
+                        <div class="macro-progress-fill protein"></div>
+                    </div>
+                </div>
+                <div class="macro-item">
+                    <span class="macro-label">Carbs</span>
+                    <span class="macro-value">209g</span>
+                    <span class="macro-percentage">44%</span>
+                    <div class="macro-progress">
+                        <div class="macro-progress-fill carbs"></div>
+                    </div>
+                </div>
+                <div class="macro-item">
+                    <span class="macro-label">Fat</span>
+                    <span class="macro-value">59g</span>
+                    <span class="macro-percentage">26%</span>
+                    <div class="macro-progress">
+                        <div class="macro-progress-fill fat"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Sections -->
+        <div class="meal-sections">
+            <!-- Breakfast 1 -->
+            <div class="meal-section">
+                <div class="meal-header">
+                    <div class="meal-title-section">
+                        <h3 class="meal-title">Breakfast</h3>
+                        <p class="meal-subtitle">4 Recipes</p>
+                    </div>
+                    <div class="meal-nutrition">
+                        <div class="meal-calories">
+                            <p class="meal-calories-number">490 Kcal</p>
+                            <p class="meal-calories-target">Target: 489</p>
+                        </div>
+                        <div class="meal-macros">
+                            <div class="macro-line">
+                                <span class="macro-name protein">Protein:</span>
+                                <span>31g / 26%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name carbs">Carbs:</span>
+                                <span>65g / 54%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name fat">Fat:</span>
+                                <span>11g / 20%</span>
+                            </div>
+                        </div>
+                        <div class="meal-actions">
+                            <button class="meal-action-btn">+</button>
+                            <button class="meal-action-btn">Q</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe-images">
+                    <div class="recipe-image">🍞</div>
+                    <div class="recipe-image">🥣</div>
+                    <div class="recipe-image">🍳</div>
+                    <div class="recipe-image">🥤</div>
+                </div>
+            </div>
+
+            <!-- Lunch -->
+            <div class="meal-section">
+                <div class="meal-header">
+                    <div class="meal-title-section">
+                        <h3 class="meal-title">Lunch</h3>
+                        <p class="meal-subtitle">4 Recipes</p>
+                    </div>
+                    <div class="meal-nutrition">
+                        <div class="meal-calories">
+                            <p class="meal-calories-number">490 Kcal</p>
+                            <p class="meal-calories-target">Target: 489</p>
+                        </div>
+                        <div class="meal-macros">
+                            <div class="macro-line">
+                                <span class="macro-name protein">Protein:</span>
+                                <span>31g / 26%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name carbs">Carbs:</span>
+                                <span>65g / 54%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name fat">Fat:</span>
+                                <span>11g / 20%</span>
+                            </div>
+                        </div>
+                        <div class="meal-actions">
+                            <button class="meal-action-btn">+</button>
+                            <button class="meal-action-btn">Q</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe-images">
+                    <div class="recipe-image">🍞</div>
+                    <div class="recipe-image">🥣</div>
+                    <div class="recipe-image">🍳</div>
+                    <div class="recipe-image">🥤</div>
+                </div>
+            </div>
+
+            <!-- Dinner -->
+            <div class="meal-section">
+                <div class="meal-header">
+                    <div class="meal-title-section">
+                        <h3 class="meal-title">Dinner</h3>
+                        <p class="meal-subtitle">4 Recipes</p>
+                    </div>
+                    <div class="meal-nutrition">
+                        <div class="meal-calories">
+                            <p class="meal-calories-number">490 Kcal</p>
+                            <p class="meal-calories-target">Target: 489</p>
+                        </div>
+                        <div class="meal-macros">
+                            <div class="macro-line">
+                                <span class="macro-name protein">Protein:</span>
+                                <span>31g / 26%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name carbs">Carbs:</span>
+                                <span>65g / 54%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name fat">Fat:</span>
+                                <span>11g / 20%</span>
+                            </div>
+                        </div>
+                        <div class="meal-actions">
+                            <button class="meal-action-btn">+</button>
+                            <button class="meal-action-btn">Q</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe-images">
+                    <div class="recipe-image">🍞</div>
+                    <div class="recipe-image">🥣</div>
+                    <div class="recipe-image">🍳</div>
+                    <div class="recipe-image">🥤</div>
+                </div>
+            </div>
+
+            <!-- Breakfast 2 -->
+            <div class="meal-section">
+                <div class="meal-header">
+                    <div class="meal-title-section">
+                        <h3 class="meal-title">Breakfast</h3>
+                        <p class="meal-subtitle">4 Recipes</p>
+                    </div>
+                    <div class="meal-nutrition">
+                        <div class="meal-calories">
+                            <p class="meal-calories-number">490 Kcal</p>
+                            <p class="meal-calories-target">Target: 489</p>
+                        </div>
+                        <div class="meal-macros">
+                            <div class="macro-line">
+                                <span class="macro-name protein">Protein:</span>
+                                <span>31g / 26%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name carbs">Carbs:</span>
+                                <span>65g / 54%</span>
+                            </div>
+                            <div class="macro-line">
+                                <span class="macro-name fat">Fat:</span>
+                                <span>11g / 20%</span>
+                            </div>
+                        </div>
+                        <div class="meal-actions">
+                            <button class="meal-action-btn">+</button>
+                            <button class="meal-action-btn">Q</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe-images">
+                    <div class="recipe-image">🍞</div>
+                    <div class="recipe-image">🥣</div>
+                    <div class="recipe-image">🍳</div>
+                    <div class="recipe-image">🥤</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Micronutrients Section -->
+        <div class="micronutrients-section">
+            <div class="micronutrients-header">
+                <h3 class="micronutrients-title">Micronutrients</h3>
+                <div class="micronutrients-progress">
+                    <div class="micronutrients-bar">
+                        <div class="micronutrients-fill"></div>
+                    </div>
+                    <span class="micronutrients-percentage">95%</span>
+                    <span>▼</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="footer-actions">
+        <p class="footer-message">You have unsaved changes</p>
+        <div class="footer-buttons">
+            <button class="footer-btn discard">Discard changes</button>
+            <button class="footer-btn save">Save Changes</button>
+            <button class="footer-btn publish">Publish Changes</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -13,11 +13,13 @@ urlpatterns = [
     path("leads/won/", views.leads_won, name="leads_won"),
     path("leads/lost/", views.leads_lost, name="leads_lost"),
 # urls.py - Fix these patterns
+    path("login/", views.admin_login, name="admin_login"),
 
     path("delete/<int:pk>/", views.delete_lead, name="delete_lead"),
     path("clients/active/", views.clients_active, name="clients_active"),
     path("clients/payment-error/", views.clients_payment_error, name="clients_payment_error"),
     path("clients/just-started/", views.clients_started, name="clients_started"),  # Changed from clients_started
+    path("client/<int:client_id>/membership/", views.client_membership, name="client_membership"),
     path("clients/new-message/", views.clients_new_message, name="clients_new_message"),
     path("clients/new-checkin/", views.clients_new_checkin, name="clients_new_checkin"),
     path("clients/missed-checkin/", views.clients_missed_checkin, name="clients_missed_checkin"),

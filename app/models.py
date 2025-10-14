@@ -1006,6 +1006,7 @@ class ChatThread(TimeStampedModel):
 class ChatMessage(TimeStampedModel):
     thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    reciever = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
     text = models.TextField(blank=True)
     read_at = models.DateTimeField(null=True, blank=True)
 
@@ -1099,3 +1100,5 @@ class MealOrderItem(models.Model):
 
     def __str__(self):
         return f"{self.name} x{self.quantity}"
+    
+    

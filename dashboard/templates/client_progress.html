@@ -1,74 +1,143 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Profile Section -->
-  <section class="bg-white mx-auto mt-8 w-[90%] max-w-5xl p-6 rounded-xl shadow">
-    <div class="flex items-center space-x-4">
-      <div class="bg-gray-200 h-16 w-16 rounded-full flex items-center justify-center text-xl font-semibold">
-        VR
-      </div>
-      <div>
-        <h2 class="font-bold text-lg">Vera Roscoff</h2>
-        <p class="text-sm text-gray-500">@verarose</p>
-      </div>
-    </div>
-  </section>
-    <!-- Check-in Section -->
-    <div class="mt-8">
-      <h3 class="text-xl font-semibold mb-4">Check-in</h3>
+<style>
+.client-header-section {
+  background: #000;
+  color: white;
+  padding: 40px 0;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.client-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.client-avatar-large {
+  width: 80px;
+  height: 80px;
+  background-color: white;
+  color: #1a1a1a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+.client-name {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+.demo-badge {
+  background-color: white;
+  color: #1a1a1a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.client-nav-tabs {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+}
+.client-nav-tabs a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+}
+.client-nav-tabs a.active,
+.client-nav-tabs a:hover {
+  color: white;
+  border-bottom-color: white;
+}
+</style>
 
-      <div class="flex items-center justify-between">
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Client Header -->
+  <div class="client-header-section">
+    <div class="client-header-content px-10 flex justify-between items-center">
+      <div class="client-profile-info">
+        <div class="client-avatar-large">
+          {{ client.user.first_name|default:"U"|first }}{{ client.user.last_name|default:"N"|first }}
+        </div>
         <div>
-          <p class="text-3xl font-bold">3.5</p>
-          <p class="text-gray-500 text-sm">Average rating</p>
+          <h1 class="client-name">
+            {{ client.user.get_full_name|default:client.user.username }}
+          </h1>
+          {% if client.is_demo %}
+          <div class="demo-badge">Demo</div>
+          {% endif %}
         </div>
-
-        <div class="bg-gray-200 h-32 w-[400px] rounded-lg flex items-center justify-center text-gray-400 text-sm">
-          Chart Placeholder
-        </div>
-
-        <button class="bg-black text-white px-4 py-2 rounded-lg">Download</button>
       </div>
-
-      <!-- Notes Section -->
-      <div class="mt-8 grid grid-cols-2 gap-6">
-        <div class="bg-gray-100 p-4 rounded-lg h-32">
-          <p class="text-gray-500 text-sm">Trainer notes placeholder...</p>
-        </div>
-        <div class="bg-gray-200 h-32 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-          Photo Placeholder
-        </div>
+      <div class="client-actions flex gap-3">
+        <button class="action-icon">💬</button>
+        <button class="action-icon">🕐</button>
+        <button class="action-icon">⋮</button>
       </div>
     </div>
 
-    <!-- Body Stats -->
-    <div class="mt-12">
-      <h3 class="text-xl font-semibold mb-4">📊 Body Stats</h3>
-      <div class="bg-gray-200 h-48 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-        Body Stats Chart Placeholder
+    <div class="client-header-content px-10">
+      <div class="client-nav-tabs">
+        <a href="{% url 'client_profile' client.user.id %}" class="{% if current_tab == 'overview' %}active{% endif %}">Overview</a>
+        <a href="{% url 'client_nutrition' client.user.id %}" class="{% if current_tab == 'nutrition' %}active{% endif %}">Nutrition</a>
+        <a href="{% url 'client_workout' client.user.id %}" class="{% if current_tab == 'workout' %}active{% endif %}">Workouts</a>
+        <a href="{% url 'client_progress' client.user.id %}" class="{% if current_tab == 'progress' %}active{% endif %}">Progress</a>
+        <a href="{% url 'client_membership' client.user.id %}" class="{% if current_tab == 'membership' %}active{% endif %}">Membership</a>
       </div>
     </div>
+  </div>
 
-    <!-- Activity -->
-    <div class="mt-12">
-      <h3 class="text-xl font-semibold mb-4">🏋️ Activity</h3>
-      <div class="bg-gray-200 h-48 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-        Activity Chart Placeholder
-      </div>
-    </div>
+  <main class="max-w-7xl mx-auto px-6 py-8">
 
-    <!-- Progress Pictures -->
-    <div class="mt-12">
-      <h3 class="text-xl font-semibold mb-4">📸 Progress Pictures</h3>
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-          Front View Placeholder
+    <!-- Dynamic Progress Entries -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4 flex items-center space-x-2">
+        <span>📊</span> <span>Progress Entries</span>
+      </h2>
+
+      {% if progress %}
+        {% for entry in progress %}
+        <div class="bg-white shadow rounded-2xl p-6 mb-6">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-lg">Progress on {{ entry.date|date:"M d, Y" }}</h3>
+            <p class="text-sm text-gray-500">Weight: {{ entry.weight }} kg</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 text-sm text-gray-700">
+            <div>
+              <p><strong>Body Fat:</strong> {{ entry.body_fat_percentage|default:"—" }}%</p>
+              <p><strong>Muscle Mass:</strong> {{ entry.muscle_mass|default:"—" }} kg</p>
+              <p><strong>BMI:</strong> {{ entry.bmi|default:"—" }}</p>
+            </div>
+            <div>
+              <p><strong>Chest:</strong> {{ entry.chest|default:"—" }} cm</p>
+              <p><strong>Waist:</strong> {{ entry.waist|default:"—" }} cm</p>
+              <p><strong>Hips:</strong> {{ entry.hips|default:"—" }} cm</p>
+            </div>
+            <div>
+              <p><strong>Arms:</strong> {{ entry.arms|default:"—" }} cm</p>
+              <p><strong>Legs:</strong> {{ entry.legs|default:"—" }} cm</p>
+              <p><strong>Notes:</strong> {{ entry.notes|default:"No notes" }}</p>
+            </div>
+          </div>
         </div>
-        <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-          Side View Placeholder
+        {% endfor %}
+      {% else %}
+        <div class="bg-white shadow rounded-2xl p-6 text-center text-gray-500">
+          No progress records yet.
         </div>
-      </div>
-    </div>
-  </section>
+      {% endif %}
+    </section>
+
+  </main>
 {% endblock %}

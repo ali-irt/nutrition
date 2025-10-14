@@ -9,7 +9,6 @@ import re
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from datetime import date
 from .models import *
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -612,3 +611,4 @@ class UserFileSerializer(serializers.ModelSerializer):
         model = UserFile
         fields = ['id', 'name', 'file', 'tag', 'created_at']
         read_only_fields = ['id', 'created_at']
+       

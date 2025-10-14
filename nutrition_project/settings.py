@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_TZ = True
+USE_TZ = True 
 STATIC_URL = '/static/'   # URL prefix
 
 # Where collectstatic will put all files
@@ -144,3 +144,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
+
+STRIPE_PUBLIC_KEY = "pk_test_51SHjpVAm4NBInFX85QPfTBdFdR8grPQreETWXw5YzLWm5NAcJn5hJ9JRtHFP4Ys0aYebY0zJDh7C4x426O5Y8zRy00qafffDmY"
+STRIPE_SECRET_KEY  = 'sk_test_51SHjpVAm4NBInFX8F5f01IgmjSEDK1A1A57aBSzDQCqKtoJkbVL4V7Pl2J4zYGVIQ2CLda2zNu4yWqoGVcgnbG1D00mWpTSKnO'
+STRIPE_WEBHOOK_SECRET = "whsec_9430aafe568f875cc26480e7cf65dae2cef259a1b5640e397692abff59a4da75"

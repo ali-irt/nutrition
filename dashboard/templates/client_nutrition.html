@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Vera Rossakoff - Nutrition | The Nutri Co.{% endblock %}
-
+{% block title %}{{ client.user.username }} - Nutrition | The Nutri Co.{% endblock %}
 {% block extra_css %}
 
 <style>
@@ -19,6 +18,7 @@
     color: white;
     padding: 20px 0;
     margin-left: -20px;
+    padding-top: 30px;
     margin-right: -20px;
     margin-bottom: 0;
 }
@@ -631,19 +631,20 @@
 }
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="client-nutrition-container">
     <!-- Client Header Section -->
     <div class="client-header-section">
         <div class="client-header-content">
             <div class="client-profile-info">
-                <div class="client-avatar-large">VR</div>
+                <div class="client-avatar-large">
+                    {{ client.user.first_name|default:client.user.username|slice:":2"|upper }}
+                </div>
                 <div class="client-name-section">
-                    <h1 class="client-name">Vera Rossakoff</h1>
+                    <h1 class="client-name">{{ client.user.get_full_name|default:client.user.username }}</h1>
                     <div class="demo-badge">
                         <span>📅</span>
-                        <span>Demo</span>
+                        <span>{{ client.created_at|date:"M d, Y" }}</span>
                     </div>
                 </div>
             </div>
@@ -653,273 +654,74 @@
                 <button class="action-icon">⋮</button>
             </div>
         </div>
+
         <div class="client-header-content">
             <div class="client-nav-tabs">
-<a href="{% url 'client_profile' client.user.id %}">Overview</a>
-<a href="{% url 'client_nutrition' client.user.id %}">Nutrition</a>
-
-                    <a href="{% url 'client_workout' client.user.id %}">Workouts</a>
-                    <a href="#">Progress</a>
-                    <a href="#">Membership</a>
+                <a href="{% url 'client_profile' client.user.id %}">Overview</a>
+                <a href="{% url 'client_nutrition' client.user.id %}" class="active">Nutrition</a>
+                <a href="{% url 'client_workout' client.user.id %}">Workouts</a>
+                <a href="{% url 'client_progress' client.user.id %}">Progress</a>
+                <a href="{% url 'client_membership' client.user.id %}">Membership</a>
             </div>
         </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="nutrition-content">
-        <!-- Meal Plan Header -->
         <div class="meal-plan-header">
             <div class="meal-plan-info">
                 <div class="published-info">
                     <div class="published-dot"></div>
-                    <span>Published 14 days ago</span>
+                    <span>Updated {{ client.updated_at|timesince }} ago</span>
                 </div>
                 <h2 class="meal-plan-title">
-                    Vera's Meal Plan
+                    {{ client.user.first_name|default:client.user.username }}'s Meal Plan
                     <span class="bookmark-icon">🔖</span>
                 </h2>
             </div>
-            <div class="meal-plan-actions">
-                <button class="actions-dropdown">
-                    Actions
-                    <span>▼</span>
-                </button>
-                <button class="create-plan-btn">
-                    Create plan
-                    <span>▼</span>
-                </button>
-            </div>
         </div>
 
-        <!-- Calorie Summary -->
-        <div class="calorie-summary">
-            <div class="calorie-circle">
-                <svg viewBox="0 0 80 80">
-                    <circle class="calorie-circle-bg" cx="40" cy="40" r="35"></circle>
-                    <circle class="calorie-circle-fill" cx="40" cy="40" r="35"></circle>
-                </svg>
-                <div class="calorie-text">
-                    <p class="calorie-number">1949-1961</p>
-                    <p class="calorie-target">Target: 1954</p>
-                </div>
-            </div>
-            <div class="calorie-details">
-                <h3>Total: 1949-1961 calories</h3>
-                <p class="calorie-range">Target: 1954</p>
-            </div>
-            <div class="macronutrients">
-                <div class="macro-item">
-                    <span class="macro-label">Protein</span>
-                    <span class="macro-value">142g</span>
-                    <span class="macro-percentage">30%</span>
-                    <div class="macro-progress">
-                        <div class="macro-progress-fill protein"></div>
-                    </div>
-                </div>
-                <div class="macro-item">
-                    <span class="macro-label">Carbs</span>
-                    <span class="macro-value">209g</span>
-                    <span class="macro-percentage">44%</span>
-                    <div class="macro-progress">
-                        <div class="macro-progress-fill carbs"></div>
-                    </div>
-                </div>
-                <div class="macro-item">
-                    <span class="macro-label">Fat</span>
-                    <span class="macro-value">59g</span>
-                    <span class="macro-percentage">26%</span>
-                    <div class="macro-progress">
-                        <div class="macro-progress-fill fat"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Meal Sections -->
+        <!-- Dynamic Meal Sections -->
         <div class="meal-sections">
-            <!-- Breakfast 1 -->
-            <div class="meal-section">
-                <div class="meal-header">
-                    <div class="meal-title-section">
-                        <h3 class="meal-title">Breakfast</h3>
-                        <p class="meal-subtitle">4 Recipes</p>
-                    </div>
-                    <div class="meal-nutrition">
-                        <div class="meal-calories">
-                            <p class="meal-calories-number">490 Kcal</p>
-                            <p class="meal-calories-target">Target: 489</p>
+            {% for meal in meals %}
+                <div class="meal-section">
+                    <div class="meal-header">
+                        <div class="meal-title-section">
+                            <h3 class="meal-title">{{ meal.meal_type|title }}</h3>
+                            <p class="meal-subtitle">{{ meal.description|default:"No description" }}</p>
                         </div>
-                        <div class="meal-macros">
-                            <div class="macro-line">
-                                <span class="macro-name protein">Protein:</span>
-                                <span>31g / 26%</span>
+                        <div class="meal-nutrition">
+                            <div class="meal-calories">
+                                <p class="meal-calories-number">{{ meal.calories|default:"-" }} Kcal</p>
                             </div>
-                            <div class="macro-line">
-                                <span class="macro-name carbs">Carbs:</span>
-                                <span>65g / 54%</span>
+                            <div class="meal-macros">
+                                <div class="macro-line">
+                                    <span class="macro-name protein">Protein:</span>
+                                    <span>{{ meal.protein|default:"0" }}g</span>
+                                </div>
+                                <div class="macro-line">
+                                    <span class="macro-name carbs">Carbs:</span>
+                                    <span>{{ meal.carbs|default:"0" }}g</span>
+                                </div>
+                                <div class="macro-line">
+                                    <span class="macro-name fat">Fat:</span>
+                                    <span>{{ meal.fat|default:"0" }}g</span>
+                                </div>
                             </div>
-                            <div class="macro-line">
-                                <span class="macro-name fat">Fat:</span>
-                                <span>11g / 20%</span>
-                            </div>
-                        </div>
-                        <div class="meal-actions">
-                            <button class="meal-action-btn">+</button>
-                            <button class="meal-action-btn">Q</button>
                         </div>
                     </div>
-                </div>
-                <div class="recipe-images">
-                    <div class="recipe-image">🍞</div>
-                    <div class="recipe-image">🥣</div>
-                    <div class="recipe-image">🍳</div>
-                    <div class="recipe-image">🥤</div>
-                </div>
-            </div>
 
-            <!-- Lunch -->
-            <div class="meal-section">
-                <div class="meal-header">
-                    <div class="meal-title-section">
-                        <h3 class="meal-title">Lunch</h3>
-                        <p class="meal-subtitle">4 Recipes</p>
-                    </div>
-                    <div class="meal-nutrition">
-                        <div class="meal-calories">
-                            <p class="meal-calories-number">490 Kcal</p>
-                            <p class="meal-calories-target">Target: 489</p>
-                        </div>
-                        <div class="meal-macros">
-                            <div class="macro-line">
-                                <span class="macro-name protein">Protein:</span>
-                                <span>31g / 26%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name carbs">Carbs:</span>
-                                <span>65g / 54%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name fat">Fat:</span>
-                                <span>11g / 20%</span>
+                    {% if meal.image %}
+                        <div class="recipe-images">
+                            <div class="recipe-image">
+                                <img src="{{ meal.image.url }}" alt="{{ meal.meal_type }}">
                             </div>
                         </div>
-                        <div class="meal-actions">
-                            <button class="meal-action-btn">+</button>
-                            <button class="meal-action-btn">Q</button>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
-                <div class="recipe-images">
-                    <div class="recipe-image">🍞</div>
-                    <div class="recipe-image">🥣</div>
-                    <div class="recipe-image">🍳</div>
-                    <div class="recipe-image">🥤</div>
-                </div>
-            </div>
-
-            <!-- Dinner -->
-            <div class="meal-section">
-                <div class="meal-header">
-                    <div class="meal-title-section">
-                        <h3 class="meal-title">Dinner</h3>
-                        <p class="meal-subtitle">4 Recipes</p>
-                    </div>
-                    <div class="meal-nutrition">
-                        <div class="meal-calories">
-                            <p class="meal-calories-number">490 Kcal</p>
-                            <p class="meal-calories-target">Target: 489</p>
-                        </div>
-                        <div class="meal-macros">
-                            <div class="macro-line">
-                                <span class="macro-name protein">Protein:</span>
-                                <span>31g / 26%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name carbs">Carbs:</span>
-                                <span>65g / 54%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name fat">Fat:</span>
-                                <span>11g / 20%</span>
-                            </div>
-                        </div>
-                        <div class="meal-actions">
-                            <button class="meal-action-btn">+</button>
-                            <button class="meal-action-btn">Q</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="recipe-images">
-                    <div class="recipe-image">🍞</div>
-                    <div class="recipe-image">🥣</div>
-                    <div class="recipe-image">🍳</div>
-                    <div class="recipe-image">🥤</div>
-                </div>
-            </div>
-
-            <!-- Breakfast 2 -->
-            <div class="meal-section">
-                <div class="meal-header">
-                    <div class="meal-title-section">
-                        <h3 class="meal-title">Breakfast</h3>
-                        <p class="meal-subtitle">4 Recipes</p>
-                    </div>
-                    <div class="meal-nutrition">
-                        <div class="meal-calories">
-                            <p class="meal-calories-number">490 Kcal</p>
-                            <p class="meal-calories-target">Target: 489</p>
-                        </div>
-                        <div class="meal-macros">
-                            <div class="macro-line">
-                                <span class="macro-name protein">Protein:</span>
-                                <span>31g / 26%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name carbs">Carbs:</span>
-                                <span>65g / 54%</span>
-                            </div>
-                            <div class="macro-line">
-                                <span class="macro-name fat">Fat:</span>
-                                <span>11g / 20%</span>
-                            </div>
-                        </div>
-                        <div class="meal-actions">
-                            <button class="meal-action-btn">+</button>
-                            <button class="meal-action-btn">Q</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="recipe-images">
-                    <div class="recipe-image">🍞</div>
-                    <div class="recipe-image">🥣</div>
-                    <div class="recipe-image">🍳</div>
-                    <div class="recipe-image">🥤</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Micronutrients Section -->
-        <div class="micronutrients-section">
-            <div class="micronutrients-header">
-                <h3 class="micronutrients-title">Micronutrients</h3>
-                <div class="micronutrients-progress">
-                    <div class="micronutrients-bar">
-                        <div class="micronutrients-fill"></div>
-                    </div>
-                    <span class="micronutrients-percentage">95%</span>
-                    <span>▼</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer Actions -->
-    <div class="footer-actions">
-        <p class="footer-message">You have unsaved changes</p>
-        <div class="footer-buttons">
-            <button class="footer-btn discard">Discard changes</button>
-            <button class="footer-btn save">Save Changes</button>
-            <button class="footer-btn publish">Publish Changes</button>
+            {% empty %}
+                <p>No meals found for this client.</p>
+            {% endfor %}
         </div>
     </div>
 </div>

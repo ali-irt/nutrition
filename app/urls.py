@@ -78,4 +78,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('register/', register_user, name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
+  
+    path("create-checkout-session/", CreateCheckoutSessionView.as_view(), name="create_checkout_session"),
+    path("webhook/", stripe_webhook, name="stripe_webhook"),
 ]
+

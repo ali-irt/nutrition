@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .admin-header {
+    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .admin-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .admin-header p {
+    color: #9ca3af;
+  }
+
+  .login-card {
+    transition: all 0.3s ease;
+  }
+
+  .login-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .login-input {
+    transition: all 0.2s ease;
+  }
+
+  .login-input:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+  }
+
+  .login-button {
+    background: linear-gradient(90deg, #000 0%, #222 100%);
+    transition: all 0.2s ease;
+  }
+
+  .login-button:hover {
+    background: linear-gradient(90deg, #111 0%, #333 100%);
+    transform: translateY(-1px);
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 1.5rem;
+  }
+
+  .footer-note a {
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .footer-note a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen">
+
+  <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden login-card">
+
+    <!-- Header -->
+    <div class="admin-header">
+      <h1>Admin Login</h1>
+      <p class="text-sm mt-1">Welcome back! Please sign in to continue.</p>
+    </div>
+
+    <!-- Form -->
+    <div class="p-8">
+      {% if error %}
+      <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3 mb-4">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input type="text" name="username" id="username"
+            class="login-input w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-black focus:border-black"
+            placeholder="Enter your username" required>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" name="password" id="password"
+            class="login-input w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-black focus:border-black"
+            placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit"
+          class="login-button w-full text-white font-semibold py-2.5 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+          Sign In
+        </button>
+      </form>
+
+      <div class="footer-note mt-6">
+        © {{ now|date:"Y" }} <a href="#">The Nutri Co.</a> — All rights reserved.
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}

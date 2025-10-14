@@ -1,809 +1,169 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ client.user.get_full_name }} - Overview | The Nutri Co.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/client_profile.css' %}">
+{% endblock %}
+
 {% block content %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: #fff;
-        }
-
-        /* Header */
-        /* Header */
-        .header {
-            border-bottom: 1px solid #000;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #fff;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .logo-text {
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .trial-badge {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-            color: #999;
-        }
-
-        .nav {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            font-size: 14px;
-        }
-
-        .nav a {
-            color: #999;
-            text-decoration: none;
-        }
-
-        .nav a.active {
-            color: #fff;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 14px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #000;
-        }
-
-        /* Client Header */
-        .client-header {
-            margin-top: -16px;
-            margin-left: -30px;
-            margin-right: -30px;
-            padding: 32px 24px;
-            display: flex;
-            background-color: #000;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .client-info {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .client-avatar {
-            width: 112px;
-            height: 112px;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .client-name {
-            font-size: 36px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .client-tabs {
-            display: flex;
-            gap: 24px;
-            font-size: 14px;
-        }
-
-        .client-tabs a {
-            color: #999;
-            text-decoration: none;
-            padding-bottom: 8px;
-            border-bottom: 2px solid transparent;
-        }
-
-        .client-tabs a.active {
-            color: #fff;
-            border-bottom-color: #fff;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #444;
-            border-radius: 6px;
-            background: transparent;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        /* Main Content */
-        .main-content {
-            background: #f5f5f5;
-            min-height: calc(100vh - 200px);
-            padding: 32px 24px;
-        }
-
-        .app-banner {
-            background: #000;
-            border-radius: 12px;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            color: #fff;
-        }
-
-        .app-banner-text {
-            font-size: 14px;
-        }
-
-        .app-banner-link {
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Client Setting Section */
-        .client-setting {
-            background: #fff;
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: #000;
-            margin-bottom: 8px;
-        }
-
-        .section-subtitle {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 32px;
-        }
-
-        .membership-card {
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .membership-text {
-            font-size: 16px;
-            color: #000;
-        }
-
-        .membership-duration {
-            font-weight: 600;
-            color: #7c3aed;
-        }
-
-        .progress-section {
-            margin-bottom: 32px;
-        }
-
-        .progress-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #000;
-            margin-bottom: 16px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e5e5e5;
-            border-radius: 2px;
-            position: relative;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: #000;
-            border-radius: 2px;
-            width: 14%; /* Approx for week 2/14 */
-        }
-
-        .progress-label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* Communications Top */
-        .comms-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            padding: 16px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .comms-top-left {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .task-badge {
-            background: #000;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 48px;
-        }
-
-        .stat-card {
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .stat-icon {
-            color: #999;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .stat-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-            text-align: right;
-        }
-
-        .stat-macro {
-            font-size: 18px;
-            font-weight: 600;
-            color: #000;
-            margin-bottom: 4px;
-        }
-
-        .stat-unit {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* Communications Section */
-        .section-divider {
-            margin-top: 48px;
-            padding-top: 32px;
-            border-top: 1px solid #e5e5e5;
-        }
-
-        .section-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .section-row:last-child {
-            border-bottom: none;
-        }
-
-        .section-row-title {
-            font-size: 16px;
-            color: #000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-row-subtitle {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .section-row-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-button {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #e5e5e5;
-            border-radius: 6px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #999;
-        }
-
-        /* History Table */
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        .history-table th,
-        .history-table td {
-            padding: 12px 0;
-            text-align: left;
-            font-size: 14px;
-            color: #000;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .history-table th {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .history-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .no-lessons {
-            text-align: center;
-            color: #999;
-            padding: 24px;
-            font-size: 14px;
-        }
-
-        /* Dropdown Menu */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 8px;
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            min-width: 180px;
-            z-index: 1000;
-        }
-
-        .dropdown.active .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 16px;
-            color: #000;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .dropdown-menu a:hover {
-            background: #f5f5f5;
-        }
-    </style>
-</head>
-<body>
-        <!-- Client Header -->
-    <div class="client-header">
-        <div class="client-info">
-            <div class="client-avatar">VR</div>
-            <div>
-                <h1 class="client-name">Vera Rossakoff</h1>
-                <div class="client-tabs">
-<a href="{% url 'client_profile' client.user.id %}">Overview</a>
-<a href="{% url 'client_nutrition' client.user.id %}">Nutrition</a>
-
-                    <a href="{% url 'client_workout' client.user.id %}">Workouts</a>
-                    <a href="#">Progress</a>
-                    <a href="#">Membership</a>
-                </div>
-            </div>
+<div class="client-header">
+    <div class="client-info">
+        <div class="client-avatar">
+            {{ client.user.first_name|slice:":1" }}{{ client.user.last_name|slice:":1" }}
         </div>
-        <div class="header-actions">
-            <button class="icon-btn">⊙</button>
-            <button class="icon-btn">💬</button>
-            <button class="icon-btn">⇄</button>
+        <div>
+            <h1 class="client-name">{{ client.user.get_full_name }}</h1>
+            <div class="client-tabs">
+                <a href="{% url 'client_profile' client.user.id %}">Overview</a>
+                <a href="{% url 'client_nutrition' client.user.id %}">Nutrition</a>
+                <a href="{% url 'client_workout' client.user.id %}">Workouts</a>
+                <a href="{% url 'client_progress' client.user.id %}">Progress</a>
+                <a href="{% url 'client_membership' client.user.id %}">Membership</a>
+            </div>
         </div>
     </div>
+    <div class="header-actions">
+        <button class="icon-btn">⊙</button>
+        <button class="icon-btn">💬</button>
+        <button class="icon-btn">⇄</button>
+    </div>
+</div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- App Banner -->
-        <div class="app-banner">
-            <div class="app-banner-text">Try the client app →</div>
-            <a href="#" class="app-banner-link">Show me how →</a>
+<main class="main-content">
+
+    <section class="client-setting">
+        <div class="section-header">
+            <span>Client Settings</span>
+            <span>ℹ️</span>
         </div>
 
-        <!-- Client Setting -->
-        <section class="client-setting">
-            <div class="section-header">
-                <span>Client Setting</span>
-                <span>ℹ️</span>
-            </div>
-            <h2 class="section-title">Great! Vera has a new check-in</h2>
-            <p class="section-subtitle">Doesn't enjoy long workouts</p>
+        <h2 class="section-title">
+            Great! {{ client.user.first_name }} has a new check-in
+        </h2>
+        <p class="section-subtitle">
+            {% if client.bio %}{{ client.bio }}{% else %}No preferences specified{% endif %}
+        </p>
 
-            <!-- Membership -->
-            <div class="membership-card">
-                <div class="membership-text">
-                    Membership <span class="membership-duration">Free</span> for 3 months
-                </div>
-                <span class="stat-icon">🔄</span>
+        <!-- Membership Info -->
+        <div class="membership-card">
+            <div class="membership-text">
+                Membership: 
+                <span class="membership-duration">
+                    {{ client.membership_type|default:"Free" }}
+                </span>
             </div>
+            <span class="stat-icon">🔄</span>
+        </div>
 
-            <!-- Progress -->
-            <div class="progress-section">
-                <div class="progress-title">Free with active app</div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="progress-label">Week 2 — out of 14 weeks</div>
-            </div>
-
-            <!-- Comms Top -->
-            <div class="comms-top">
-                <div class="comms-top-left">
-                    <div>0 unread messages</div>
-                    <div>1 tasks <span class="task-badge">•</span></div>
-                </div>
-                <div>⊞</div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <!-- Weight Card -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Weight</span>
-                        <span class="stat-icon">🔄</span>
+        <!-- Progress -->
+        <div class="progress-section">
+            {% if progress %}
+                {% with latest=progress.first %}
+                    <div class="progress-title">Progress Status</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ latest.weight_change|default:0 }}%;"></div>
                     </div>
+                    <div class="progress-label">
+                        Latest: {{ latest.date|date:"M d, Y" }}
+                    </div>
+                {% endwith %}
+            {% else %}
+                <p>No progress data yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <!-- Weight -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Weight</span>
+                    <span class="stat-icon">⚖️</span>
+                </div>
+                {% with latest=progress.first %}
                     <div class="stat-row">
                         <span>Start</span>
-                        <span class="stat-value">147 <span class="stat-unit">lbs</span></span>
+                        <span class="stat-value">{{ latest.start_weight|default:"—" }} <span class="stat-unit">kg</span></span>
                     </div>
                     <div class="stat-row">
                         <span>Goal</span>
-                        <span class="stat-value">130 <span class="stat-unit">lbs</span></span>
+                        <span class="stat-value">{{ latest.goal_weight|default:"—" }} <span class="stat-unit">kg</span></span>
                     </div>
                     <div class="stat-row">
                         <span>Change</span>
-                        <span class="stat-value">-2.2 <span class="stat-unit">lbs</span></span>
+                        <span class="stat-value">{{ latest.weight_change|default:"—" }} <span class="stat-unit">kg</span></span>
                     </div>
-                </div>
-
-                <!-- Check-in Card -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Check-in</span>
-                        <span class="stat-icon">🔄</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Weight change</span>
-                        <span class="stat-value">-1.5 <span class="stat-unit">lbs</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Steps/day avg</span>
-                        <span class="stat-value">4.5</span>
-                    </div>
-                </div>
-
-                <!-- Nutrition Card -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Nutrition</span>
-                        <span class="stat-icon">🔄</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Protein</span>
-                        <span class="stat-value">143 <span class="stat-unit">g</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Carbs</span>
-                        <span class="stat-value">209 <span class="stat-unit">g</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Fat</span>
-                        <span class="stat-value">59 <span class="stat-unit">g</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Split</span>
-                        <span class="stat-value">30/24/46</span>
-                    </div>
-                </div>
-
-                <!-- Training Card -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Training</span>
-                        <span class="stat-icon">🔄</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Workouts</span>
-                        <span class="stat-value">0 <span class="stat-unit">min</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Other activity</span>
-                        <span class="stat-value">0 <span class="stat-unit">min</span></span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Total</span>
-                        <span class="stat-value">0 <span class="stat-unit">min</span></span>
-                    </div>
-                </div>
+                {% endwith %}
             </div>
 
-            <!-- Communications Section -->
-            <div class="section-divider">
-                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 24px; color: #000;">
-                    Communications & Media
-                </h3>
-
-                <!-- Documents -->
-                <div class="section-row">
-                    <div>
-                        <div class="section-row-title">
-                            <span>📄</span>
-                            <span>Documents</span>
-                        </div>
-                        <div class="section-row-subtitle">0 File uploaded</div>
-                    </div>
-                    <div class="section-row-actions">
-                        <div class="dropdown">
-                            <button class="icon-button" onclick="toggleDropdown(event)">+</button>
-                            <div class="dropdown-menu">
-                                <a href="#" onclick="event.preventDefault(); openModal('addPdfModal'); this.closest('.dropdown').classList.remove('active');">
-                                    Add From library
-                                </a>
-                                <a href="#" onclick="event.preventDefault(); openModal('uploadPdfModal'); this.closest('.dropdown').classList.remove('active');">
-                                    Upload PDF
-                                </a>
-                            </div>
-                        </div>
-                        <button class="icon-button">↓</button>
-                    </div>
+            <!-- Nutrition -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Nutrition</span>
+                    <span class="stat-icon">🥗</span>
                 </div>
-
-                <!-- Lessons -->
-                <div class="section-row">
-                    <div>
-                        <div class="section-row-title">
-                            <span>📚</span>
-                            <span>Lessons</span>
+                {% if meals  %}
+                    {% with meal=meals.first %}
+                        <div class="stat-row">
+                            <span>Protein</span>
+                            <span class="stat-value">{{ meal.total_protein|default:0 }} g</span>
                         </div>
-                        <div class="section-row-subtitle">0 Lessons, 0 Scheduled</div>
-                    </div>
-                    <div class="section-row-actions">
-                        <button class="icon-button">↓</button>
-                    </div>
-                </div>
-                <div class="no-lessons">No lessons found</div>
-
-                <!-- Email & Publishing -->
-                <div class="section-row">
-                    <div>
-                        <div class="section-row-title">
-                            <span>📧</span>
-                            <span>Email & Publishing History</span>
+                        <div class="stat-row">
+                            <span>Carbs</span>
+                            <span class="stat-value">{{ meal.total_carbs|default:0 }} g</span>
                         </div>
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Status</th>
-                                    <th>Sent/scheduled date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Vera's Workout Plan</td>
-                                    <td>sent</td>
-                                    <td>Oct 5</td>
-                                </tr>
-                                <tr>
-                                    <td>Vera's Meal Plan</td>
-                                    <td>sent</td>
-                                    <td>Oct 3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="section-row-actions">
-                        <button class="icon-button">↓</button>
-                    </div>
-                </div>
+                        <div class="stat-row">
+                            <span>Fat</span>
+                            <span class="stat-value">{{ meal.total_fat|default:0 }} g</span>
+                        </div>
+                    {% endwith %}
+                {% else %}
+                    <p>No nutrition data yet.</p>
+                {% endif %}
             </div>
-        </section>
 
-        <!-- Modals -->
-        <!-- Upload PDF Modal -->
-        <div class="modal-overlay" id="uploadPdfModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
-            <div style="background: #fff; border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 24px; border-bottom: 1px solid #e5e5e5;">
-                    <h3 style="font-size: 20px; font-weight: 600; color: #000; margin: 0;">Upload PDF</h3>
+            <!-- Training -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Training</span>
+                    <span class="stat-icon">💪</span>
                 </div>
-                <div style="padding: 24px; overflow-y: auto; flex: 1;">
-                    <div style="border:2px dashed #e5e5e5;border-radius:12px;padding:40px;text-align:center;color:#000;">
-                        <div style="font-size:48px;margin-bottom:12px;">📄</div>
-                        <p style="font-weight:600;margin-bottom:8px;">Drop PDF here or click to upload</p>
-                        <p style="color:#666;font-size:14px;">Maximum file size: 10MB</p>
-                        <input type="file" accept=".pdf" id="pdfInput" style="display:none">
-                        <button style="margin-top:16px; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid #000; background: #000; color: #fff;" onclick="document.getElementById('pdfInput').click()">Browse</button>
-                    </div>
-                </div>
-                <div style="padding: 24px; border-top: 1px solid #e5e5e5; display: flex; justify-content: flex-end; gap: 12px;">
-                    <button style="padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid #e5e5e5; background: #fff; color: #000;" onclick="closeModal('uploadPdfModal')">Cancel</button>
-                    <button style="padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #000; color: #fff;">Upload</button>
-                </div>
+                {% if workout_logs %}
+                    {% with latest_log=workout_logs.first %}
+                        <div class="stat-row">
+                            <span>Last Workout</span>
+                            <span class="stat-value">{{ latest_log.workout.name }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Duration</span>
+                            <span class="stat-value">{{ latest_log.duration_minutes|default:0 }} min</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Calories</span>
+                            <span class="stat-value">{{ latest_log.calories_burned|default:0 }}</span>
+                        </div>
+                    {% endwith %}
+                {% else %}
+                    <p>No workouts logged yet.</p>
+                {% endif %}
             </div>
         </div>
-        
 
-        <!-- Add From Library Modal -->
-        <div class="modal-overlay" id="addPdfModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
-            <div style="background: #fff; border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 24px; border-bottom: 1px solid #e5e5e5;">
-                    <h3 style="font-size: 20px; font-weight: 600; color: #000; margin: 0;">Add PDF from library</h3>
-                </div>
-                <div style="padding: 24px; overflow-y: auto; flex: 1;">
-                    <div style="position: relative; margin-bottom: 24px;">
-                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999;">🔍</span>
-                        <input type="text" placeholder="Search documents..." style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; background: #f9f9f9;" />
-                    </div>
-                    <div style="padding: 40px; text-align: center; color: #999;">
-                        <p>No documents in library yet</p>
-                        <p style="font-size: 14px; margin-top: 8px;">Upload your first PDF to get started</p>
-                    </div>
-                </div>
-                <div style="padding: 24px; border-top: 1px solid #e5e5e5; display: flex; justify-content: flex-end; gap: 12px;">
-                    <button style="padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid #e5e5e5; background: #fff; color: #000;" onclick="closeModal('addPdfModal')">Cancel</button>
-                    <button style="padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #000; color: #fff;">Add</button>
-                </div>
-            </div>
+        <!-- Wishlist -->
+        <div class="wishlist-section">
+            <h3>Wishlist</h3>
+            {% if wishlist %}
+                <ul>
+                    {% for item in wishlist %}
+                        <li>{{ item.name }} (Priority: {{ item.priority }})</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No wishlist items.</p>
+            {% endif %}
         </div>
-    </main>
-
-    <!-- Scripts -->
-    <script>
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            const dropdown = event.target.closest('.dropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        document.addEventListener('click', e => {
-            document.querySelectorAll('.dropdown').forEach(dd => {
-                if (!dd.contains(e.target)) dd.classList.remove('active');
-            });
-        });
-
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-            document.body.style.overflow = '';
-        }
-
-        document.addEventListener('click', e => {
-            if (e.target.classList.contains('modal-overlay')) {
-                e.target.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-        });
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-                document.body.style.overflow = '';
-            }
-        });
-    </script>
+    </section>
+</main>
 {% endblock %}

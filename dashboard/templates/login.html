@@ -1,116 +1,288 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
-<script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Welcome Back</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-  .admin-header {
-    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-    color: white;
-    text-align: center;
-    padding: 40px 0;
-  }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
 
-  .admin-header h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><path d="M0,300 Q300,100 600,300 T1200,300" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><path d="M0,350 Q300,150 600,350 T1200,350" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/><circle cx="200" cy="150" r="50" fill="rgba(255,255,255,0.05)"/><circle cx="900" cy="400" r="70" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+            opacity: 0.3;
+        }
 
-  .admin-header p {
-    color: #9ca3af;
-  }
+        .superhero {
+            position: absolute;
+            width: 200px;
+            height: auto;
+            opacity: 0.15;
+        }
 
-  .login-card {
-    transition: all 0.3s ease;
-  }
+        .superhero-top {
+            top: 50px;
+            right: 100px;
+            transform: rotate(-15deg);
+        }
 
-  .login-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  }
+        .superhero-bottom {
+            bottom: 50px;
+            left: 100px;
+            transform: rotate(15deg) scaleX(-1);
+        }
 
-  .login-input {
-    transition: all 0.2s ease;
-  }
+        .login-container {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 420px;
+            opacity: 0.5;
+            position: relative;
+            z-index: 10;
+        }
 
-  .login-input:focus {
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
-  }
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 30px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 3px solid #f0f0f0;
+        }
 
-  .login-button {
-    background: linear-gradient(90deg, #000 0%, #222 100%);
-    transition: all 0.2s ease;
-  }
+        .logo svg {
+            width: 35px;
+            height: 35px;
+        }
 
-  .login-button:hover {
-    background: linear-gradient(90deg, #111 0%, #333 100%);
-    transform: translateY(-1px);
-  }
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
 
-  .footer-note {
-    text-align: center;
-    font-size: 0.85rem;
-    color: #aaa;
-    margin-top: 1.5rem;
-  }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 35px;
+        }
 
-  .footer-note a {
-    color: #000;
-    font-weight: 500;
-    text-decoration: none;
-  }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-  .footer-note a:hover {
-    text-decoration: underline;
-  }
-</style>
+        label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
 
-<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen">
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
 
-  <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden login-card">
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
 
-    <!-- Header -->
-    <div class="admin-header">
-      <h1>Admin Login</h1>
-      <p class="text-sm mt-1">Welcome back! Please sign in to continue.</p>
-    </div>
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
 
-    <!-- Form -->
-    <div class="p-8">
-      {% if error %}
-      <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3 mb-4">
-        {{ error }}
-      </div>
-      {% endif %}
+        .login-btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
 
-      <form method="POST" class="space-y-6">
-        {% csrf_token %}
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          <input type="text" name="username" id="username"
-            class="login-input w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-black focus:border-black"
-            placeholder="Enter your username" required>
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e5e5;
+        }
+
+        .divider::before {
+            margin-right: 15px;
+        }
+
+        .divider::after {
+            margin-left: 15px;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .google-btn:hover {
+            background: #f8f8f8;
+            border-color: #d0d0d0;
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .brand-text {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            z-index: 5;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .superhero {
+                display: none;
+            }
+            
+            .login-container {
+                margin: 20px;
+                padding: 40px 30px;
+            }
+
+            .brand-text {
+                left: 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <svg class="superhero superhero-top" viewBox="0 0 200 200">
+        <ellipse cx="100" cy="50" rx="25" ry="35" fill="#1a1a1a"/>
+        <rect x="85" y="80" width="30" height="60" rx="5" fill="#1a1a1a"/>
+        <rect x="75" y="100" width="15" height="40" rx="5" fill="#1a1a1a"/>
+        <rect x="110" y="60" width="15" height="50" rx="5" fill="#1a1a1a" transform="rotate(-45 117 85)"/>
+        <polygon points="90,140 110,140 105,180 95,180" fill="#1a1a1a"/>
+        <circle cx="100" cy="100" r="15" fill="#ff4757"/>
+    </svg>
+
+    <svg class="superhero superhero-bottom" viewBox="0 0 200 200">
+        <ellipse cx="100" cy="50" rx="25" ry="35" fill="#1a1a1a"/>
+        <rect x="85" y="80" width="30" height="60" rx="5" fill="#1a1a1a"/>
+        <rect x="75" y="100" width="15" height="40" rx="5" fill="#1a1a1a"/>
+        <rect x="110" y="60" width="15" height="50" rx="5" fill="#1a1a1a" transform="rotate(-45 117 85)"/>
+        <polygon points="90,140 110,140 105,180 95,180" fill="#1a1a1a"/>
+        <circle cx="100" cy="100" r="15" fill="#ff4757"/>
+    </svg>
+
+    <div class="login-container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+                <path d="M12 2L12 12M12 12L12 22M12 12L22 12M12 12L2 12"/>
+                <circle cx="12" cy="12" r="9"/>
+            </svg>
         </div>
+        
+        <h1>WELCOME BACK</h1>
+        <p class="subtitle">Welcome back! Please enter your details.</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+       
 
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input type="password" name="password" id="password"
-            class="login-input w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-black focus:border-black"
-            placeholder="Enter your password" required>
-        </div>
-
-        <button type="submit"
-          class="login-button w-full text-white font-semibold py-2.5 rounded-lg shadow hover:shadow-lg transition-all duration-200">
-          Sign In
-        </button>
-      </form>
-
-      <div class="footer-note mt-6">
-        © {{ now|date:"Y" }} <a href="#">The Nutri Co.</a> — All rights reserved.
-      </div>
-    </div>
-  </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Login functionality would be implemented here!');
+        });
+    </script>
 </body>
-{% endblock %}
+</html>

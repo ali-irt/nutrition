@@ -16,7 +16,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from app.models import *
 import json
-@login_required
+
 def _daterange_for(kind: str):
     today = timezone.localdate()
     if kind == "weekly":
@@ -34,7 +34,6 @@ def _daterange_for(kind: str):
 # -------------------------
 # Dashboard Home
 # -------------------------
-@login_required
 def dashboard_home(request):
     # Prefer a 'status' field if your UserProfile has one; else fall back to activity_level heuristic
     if hasattr(UserProfile, 'status'):
@@ -71,7 +70,7 @@ def dashboard_home(request):
         "new_messages": 0,
     }
     return render(request, "home.html", context)
-@login_required
+
 def leads_all(request):
     leads = Lead.objects.all().order_by("-created_at")
 
@@ -96,39 +95,39 @@ def leads_all(request):
         "form": form,
     })
 
-@login_required
+
 def delete_lead(request, pk):
     lead = get_object_or_404(Lead, pk=pk)
     lead.delete()
     return redirect("leads_all")
-@login_required
+
 def leads_new(request):
     leads = Lead.objects.filter(status="New").order_by("-created_at")
     return render(request, "leads.html", {"status": "New", "leads": leads})
-@login_required
+
 def leads_contacted(request):
     leads = Lead.objects.filter(status="Contacted").order_by("-created_at")
     return render(request, "leads.html", {"status": "Contacted", "leads": leads})
-@login_required
+
 def leads_dialogue(request):
     leads = Lead.objects.filter(status="In Dialogue").order_by("-created_at")
     return render(request, "leads.html", {"status": "In Dialogue", "leads": leads})
-@login_required
+
 def leads_onhold(request):
     leads = Lead.objects.filter(status="On Hold").order_by("-created_at")
     return render(request, "leads.html", {"status": "On Hold", "leads": leads})
-@login_required
+
 def leads_won(request):
     leads = Lead.objects.filter(status="Won").order_by("-created_at")
     return render(request, "leads.html", {"status": "Won", "leads": leads})
-@login_required
+
 def leads_lost(request):
     leads = Lead.objects.filter(status="Lost").order_by("-created_at")
     return render(request, "leads.html", {"status": "Lost", "leads": leads})
 # -------------------------
 # Clients
 # -------------------------
-@login_required
+
 def clients_active(request):
     """Show active clients - you'll need to define what 'active' means"""
     # Example: clients created in last 90 days and have a phone number
@@ -155,7 +154,7 @@ def clients_active(request):
         })
     
     return render(request, "clients.html", {"status": "Active", "clients": clients})
-@login_required
+
 def clients_payment_error(request):
     """Clients with payment issues"""
     profiles = UserProfile.objects.filter(
@@ -181,7 +180,7 @@ def clients_payment_error(request):
         })
     
     return render(request, "clients.html", {"status": "Payment Error", "clients": clients})
-@login_required
+
 def clients_started(request):
     """Show clients who are just starting"""
     profiles = UserProfile.objects.filter(
@@ -210,7 +209,7 @@ def clients_started(request):
         "clients": clients
     })
 # views.py
-@login_required
+
 def clients_offer_sent(request):
     """Show clients with offers sent"""
     profiles = UserProfile.objects.filter(
@@ -235,7 +234,7 @@ def clients_offer_sent(request):
         "status": "Offer Sent",
         "clients": clients
     })
-@login_required
+
 def clients_no_account(request):
     """Show clients with no account"""
     profiles = UserProfile.objects.filter(
@@ -260,7 +259,7 @@ def clients_no_account(request):
         "status": "No Account",
         "clients": clients
     })
-@login_required
+
 def clients_completed(request):
     """Show clients who completed programs"""
     # Filter based on your completion logic - add a 'status' or 'program_completed' field
@@ -288,7 +287,7 @@ def clients_completed(request):
         "status": "Ended",
         "clients": clients
     })
-@login_required
+
 def clients_new_message(request):
     """Clients with new messages"""
     profiles = UserProfile.objects.filter(
@@ -314,7 +313,7 @@ def clients_new_message(request):
         })
     
     return render(request, "clients.html", {"status": "New Message", "clients": clients})
-@login_required
+
 def clients_new_checkin(request):
     """Clients with new check-ins pending"""
     profiles = UserProfile.objects.filter(
@@ -339,7 +338,7 @@ def clients_new_checkin(request):
         })
     
     return render(request, "clients.html", {"status": "New Check-In", "clients": clients})
-@login_required
+
 def clients_missed_checkin(request):
     """Clients who missed check-ins"""
     profiles = UserProfile.objects.filter(
@@ -364,7 +363,7 @@ def clients_missed_checkin(request):
         })
     
     return render(request, "clients.html", {"status": "Missed Check-In", "clients": clients})
-@login_required
+
 def clients_reminders(request):
     """Clients with pending reminders"""
     profiles = UserProfile.objects.filter(
@@ -389,7 +388,7 @@ def clients_reminders(request):
         })
     
     return render(request, "clients.html", {"status": "Reminders", "clients": clients})
-@login_required
+
 def clients_no_communication(request):
     """Clients with no recent communication"""
     profiles = UserProfile.objects.filter(
@@ -422,7 +421,7 @@ def clients_no_communication(request):
 # -------------------------
 # Client Profile (with tabs)
 # -------------------------
-@login_required
+
 def client_profile(request, client_id):
     user = get_object_or_404(User, id=client_id)
     profile = get_object_or_404(UserProfile, user=user)
@@ -444,7 +443,7 @@ def client_profile(request, client_id):
     }
     print(context)
     return render(request, "client_profile.html", context)
-@login_required
+
 def client_nutrition(request, client_id):
     user = get_object_or_404(User, id=client_id)
     profile = get_object_or_404(UserProfile, user=user)
@@ -463,7 +462,7 @@ def client_nutrition(request, client_id):
         "current_tab": "nutrition",
     }
     return render(request, "client_nutrition.html", context)
-@login_required
+
 def client_workout(request, client_id):
     # Get client and related data
     user = get_object_or_404(User, id=client_id)
@@ -484,7 +483,7 @@ def client_workout(request, client_id):
         "current_tab": "workouts",
     }
     return render(request, "client_workout.html", context)
-@login_required
+
 def client_progress(request, client_id):
     user = get_object_or_404(User, id=client_id)
     profile = get_object_or_404(UserProfile, user=user)
@@ -497,7 +496,7 @@ def client_progress(request, client_id):
         "current_tab": "progress",
     }
     return render(request, "client_progress.html", context)
-@login_required
+
 def client_membership(request, client_id):
     user = get_object_or_404(User, id=client_id)
     profile = get_object_or_404(UserProfile, user=user)
@@ -513,25 +512,25 @@ def client_membership(request, client_id):
 # -------------------------
 # Nutrition
 # -------------------------
-@login_required
+
 def _is_ajax(request):
     return request.headers.get("x-requested-with") == "XMLHttpRequest"
 
 # Pages
-@login_required
+
 def nutrition_recipes(request):
     # Recipes page
     meals = Nutrition.objects.filter(kind="recipe").order_by("-created_at")
     return render(request, "nutrition_recipes.html", {"meals": meals, "active_tab": "recipes"})
-@login_required
+
 def nutrition_templates(request):
     templates = NutritionTemplate.objects.all().order_by("name")
     return render(request, "nutrition_templates.html", {"templates": templates, "active_tab": "templates"})
-@login_required
+
 def nutrition(request):
     meals = Nutrition.objects.filter(kind="ingredient").order_by("name")
     return render(request, "nutrition.html", {"meals": meals, "active_tab": "ingredients"})
-@login_required
+
 @require_POST
 def ingredient_create(request):
     form = IngredientForm(request.POST, request.FILES)
@@ -563,7 +562,7 @@ def ingredient_create(request):
         return JsonResponse({"ok": False, "errors": form.errors}, status=400)
 
     return redirect("nutrition")
-@login_required
+
 @require_POST
 def recipe_create(request):
     form = RecipeForm(request.POST, request.FILES)
@@ -591,7 +590,7 @@ def recipe_create(request):
         return JsonResponse({"ok": False, "errors": form.errors}, status=400)
    
     return redirect("nutrition_recipes")
-@login_required
+
 @require_POST
 def nutrition_template_create(request):
     form = NutritionTemplateForm(request.POST)
@@ -626,7 +625,7 @@ def _back_to_templates(pk=None):
         qs["pk"] = pk
     return f"{reverse('workouts')}?{urlencode(qs)}"
 
-@login_required
+
 def workouts(request):
     active_tab = request.GET.get("tab", "templates")
 
@@ -679,7 +678,7 @@ def workouts(request):
             "q_tpl": q_tpl,
         },
     )
-@login_required
+
 def template_detail(request, pk):
     """
     Separate page showing all sessions that share the same template name as 'pk' workout.
@@ -724,7 +723,7 @@ def template_detail(request, pk):
             "formset": formset,
         },
     )
-@login_required
+
 def template_add_session(request, pk):
     """
     Create a new empty session in this template (same name + user) and redirect to detail page.
@@ -903,10 +902,17 @@ def progress_list(request):
 # -------------------------
 # Meals
 # -------------------------
+ 
+
 def meals(request):
     meals = Meal.objects.all()
-    return render(request, "meals.html", {"meals": meals})
-
+    stats = {
+        "total_meals": meals.count(),
+        "avg_calories": round(meals.aggregate(models.Avg('calories'))['calories__avg'] or 0),
+        "vegan_count": meals.filter(is_vegan=True).count(),
+        "vegetarian_count": meals.filter(is_vegetarian=True).count(),
+    }
+    return render(request, "meals.html", {"meals": meals, "stats": stats})
 
 # -------------------------
 # Wishlist

@@ -202,6 +202,9 @@ class UserProfile(models.Model):
         return f"{self.user.username}'s Profile"
 
 
+# models.py
+from django.db import models
+
 class Meal(models.Model):
     MEAL_TYPE_CHOICES = [
         ('breakfast', 'Breakfast'),
@@ -210,25 +213,34 @@ class Meal(models.Model):
         ('snack', 'Snack'),
     ]
 
+    DIFFICULTY_CHOICES = [
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
+    ]
+
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)
-    calories = models.PositiveIntegerField()
-    protein = models.FloatField(help_text="Protein in grams")
-    carbs = models.FloatField(help_text="Carbs in grams")
-    fats = models.FloatField(help_text="Fats in grams")
-    fiber = models.FloatField(help_text="Fiber in grams", default=0)
+    calories = models.PositiveIntegerField(help_text="Calories per serving")
+    protein = models.FloatField(help_text="Protein (g)")
+    carbs = models.FloatField(help_text="Carbohydrates (g)")
+    fats = models.FloatField(help_text="Fats (g)")
+    fiber = models.FloatField(default=0, help_text="Fiber (g)")
+    
+    # Dietary flags
     is_vegan = models.BooleanField(default=False)
     is_vegetarian = models.BooleanField(default=False)
     is_gluten_free = models.BooleanField(default=False)
     is_dairy_free = models.BooleanField(default=False)
-    preparation_time = models.PositiveIntegerField(help_text="Preparation time in minutes", null=True, blank=True)
-    difficulty = models.CharField(
-        max_length=20,
-        choices=[('easy', 'Easy'), ('medium', 'Medium'), ('hard', 'Hard')],
-        default='medium'
-    )
+
+    # Extras
+    preparation_time = models.PositiveIntegerField(null=True, blank=True, help_text="Preparation time (minutes)")
+    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='medium')
     image = models.ImageField(upload_to='meal_images/', null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['meal_type', 'name']
@@ -238,6 +250,16 @@ class Meal(models.Model):
     def __str__(self):
         return f"{self.get_meal_type_display()}: {self.name}"
 
+    @property
+    def macros_ratio(self):
+        total = self.protein + self.carbs + self.fats
+        if total == 0:
+            return {"protein": 0, "carbs": 0, "fats": 0}
+        return {
+            "protein": round((self.protein / total) * 100, 1),
+            "carbs": round((self.carbs / total) * 100, 1),
+            "fats": round((self.fats / total) * 100, 1),
+        }
 
 class UserWorkoutLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workout_logs')

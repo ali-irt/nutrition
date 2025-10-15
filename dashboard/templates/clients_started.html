@@ -293,13 +293,13 @@
 <section class="page-header bg-black text-white py-5 px-4" aria-label="Page header">
       <div class="black-sec" >
 
-  <h1>
+  <h1  >
     <span>Clients</span> / <strong>Starting</strong>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </h1>
- <nav class="tabs" aria-label="Client status tabs">
+ <nav class="tabs" aria-label="Client status tabs" >
   <a href="{% url 'clients_started' %}" class="{% if status == 'Starting' %}active{% endif %}" tabindex="0">
     All Starting({{ clients|length }})
   </a>

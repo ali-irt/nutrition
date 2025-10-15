@@ -28,8 +28,8 @@
 </style>
 
 <section class="header-sec">
-  <h1>Clients / {{ status }}</h1>
-  <div class="tabs mt-4 d-flex flex-wrap">
+  <h1  style="padding-left: 2in;">Clients / {{ status }}</h1>
+  <div  style="padding-left: 2in;" class="tabs mt-4 d-flex flex-wrap">
     <a href="{% url 'clients_active' %}" class="{% if status == 'Active' %}active{% endif %}">All Active({{ clients|length }})</a>
     <a href="{% url 'clients_payment_error' %}" class="{% if status == 'Payment Error' %}active{% endif %}">Payment Error({{ clients|length }})</a>
     <a href="{% url 'clients_started' %}" class="{% if status == 'Just Started' %}active{% endif %}">Just Started({{ clients|length }})</a>

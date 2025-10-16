@@ -1,0 +1,1767 @@
+
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "john_doe",
+      "email": "john@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-01-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "jane_smith",
+      "email": "jane@example.com",
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-02-20T11:30:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "mike_wilson",
+      "email": "mike@example.com",
+      "first_name": "Mike",
+      "last_name": "Wilson",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-03-10T09:15:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "sarah_jones",
+      "email": "sarah@example.com",
+      "first_name": "Sarah",
+      "last_name": "Jones",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-04-05T14:20:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "username": "admin_user",
+      "email": "admin@example.com",
+      "first_name": "Admin",
+      "last_name": "User",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2024-01-01T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.userprofile",
+    "pk": 1,
+    "fields": {
+      "date_of_birth": "1990-05-15",
+      "age": 34,
+      "gender": "male",
+      "height": "175.00",
+      "weight": "80.00",
+      "unit_system": "metric",
+      "goal": "Lose weight",
+      "target_weight": "75.00",
+      "dietary_preferences": "meat_veg",
+      "activity_level": "moderate",
+      "phone": "+923001234567",
+      "source": "google",
+      "status": "active",
+      "checkin_status": "completed",
+      "workouts_per_week": 4,
+      "goal_rate_lbs_per_week": "1.00",
+      "daily_step_goal": 10000,
+      "daily_water_goal_ml": 2500,
+      "sleep_goal_hours": "8.0",
+      "timezone": "Asia/Karachi",
+      "onboarding_completed": true,
+      "phone_verified": true,
+      "email_verified": true,
+      "created_at": "2024-01-15T10:00:00Z",
+      "last_updated": "2024-10-16T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.userprofile",
+    "pk": 2,
+    "fields": {
+      "date_of_birth": "1995-08-22",
+      "age": 29,
+      "gender": "female",
+      "height": "165.00",
+      "weight": "60.00",
+      "unit_system": "metric",
+      "goal": "Gain muscle",
+      "target_weight": "65.00",
+      "dietary_preferences": "veg",
+      "activity_level": "active",
+      "phone": "+923009876543",
+      "source": "instagram",
+      "status": "active",
+      "checkin_status": "pending",
+      "workouts_per_week": 5,
+      "goal_rate_lbs_per_week": "0.50",
+      "daily_step_goal": 12000,
+      "daily_water_goal_ml": 3000,
+      "sleep_goal_hours": "7.5",
+      "timezone": "Asia/Karachi",
+      "onboarding_completed": true,
+      "phone_verified": true,
+      "email_verified": true,
+      "created_at": "2024-02-20T11:30:00Z",
+      "last_updated": "2024-10-16T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.userprofile",
+    "pk": 3,
+    "fields": {
+      "date_of_birth": "1988-12-03",
+      "age": 35,
+      "gender": "male",
+      "height": "180.00",
+      "weight": "90.00",
+      "unit_system": "metric",
+      "goal": "Maintain weight",
+      "target_weight": "90.00",
+      "dietary_preferences": "keto",
+      "activity_level": "light",
+      "phone": "+923005551234",
+      "source": "friend",
+      "status": "active",
+      "checkin_status": "completed",
+      "workouts_per_week": 3,
+      "goal_rate_lbs_per_week": "0.00",
+      "daily_step_goal": 8000,
+      "daily_water_goal_ml": 2000,
+      "sleep_goal_hours": "7.0",
+      "timezone": "Asia/Karachi",
+      "onboarding_completed": true,
+      "phone_verified": false,
+      "email_verified": true,
+      "created_at": "2024-03-10T09:15:00Z",
+      "last_updated": "2024-10-16T09:30:00Z"
+    }
+  },
+  {
+    "model": "app.userprofile",
+    "pk": 4,
+    "fields": {
+      "date_of_birth": "1992-07-18",
+      "age": 32,
+      "gender": "female",
+      "height": "170.00",
+      "weight": "68.00",
+      "unit_system": "metric",
+      "goal": "Lose weight",
+      "target_weight": "62.00",
+      "dietary_preferences": "vegan",
+      "activity_level": "moderate",
+      "phone": "+923007778899",
+      "source": "tiktok",
+      "status": "active",
+      "checkin_status": "pending",
+      "workouts_per_week": 4,
+      "goal_rate_lbs_per_week": "1.50",
+      "daily_step_goal": 11000,
+      "daily_water_goal_ml": 2500,
+      "sleep_goal_hours": "8.5",
+      "timezone": "Asia/Karachi",
+      "onboarding_completed": true,
+      "phone_verified": true,
+      "email_verified": true,
+      "created_at": "2024-04-05T14:20:00Z",
+      "last_updated": "2024-10-16T14:00:00Z"
+    }
+  },
+  {
+    "model": "app.userprofile",
+    "pk": 5,
+    "fields": {
+      "date_of_birth": "1985-03-25",
+      "age": 39,
+      "gender": "male",
+      "height": "178.00",
+      "weight": "85.00",
+      "unit_system": "metric",
+      "goal": "Get fit",
+      "target_weight": "80.00",
+      "dietary_preferences": "meat",
+      "activity_level": "extreme",
+      "phone": "+923001112233",
+      "source": "youtube",
+      "status": "active",
+      "checkin_status": "completed",
+      "workouts_per_week": 6,
+      "goal_rate_lbs_per_week": "1.00",
+      "daily_step_goal": 15000,
+      "daily_water_goal_ml": 3500,
+      "sleep_goal_hours": "7.0",
+      "timezone": "Asia/Karachi",
+      "onboarding_completed": true,
+      "phone_verified": true,
+      "email_verified": true,
+      "created_at": "2024-01-01T08:00:00Z",
+      "last_updated": "2024-10-16T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.workout",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "Upper Body Strength",
+      "description": "Comprehensive upper body workout focusing on chest, back, and arms",
+      "duration": "01:00:00",
+      "level": "intermediate",
+      "calories_burned": 350,
+      "date": "2024-10-15",
+      "completed": true,
+      "created_at": "2024-10-14T18:00:00Z",
+      "updated_at": "2024-10-15T19:00:00Z"
+    }
+  },
+  {
+    "model": "app.workout",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "name": "Leg Day",
+      "description": "Lower body workout targeting quads, hamstrings, and glutes",
+      "duration": "00:45:00",
+      "level": "advanced",
+      "calories_burned": 420,
+      "date": "2024-10-15",
+      "completed": true,
+      "created_at": "2024-10-14T17:00:00Z",
+      "updated_at": "2024-10-15T18:30:00Z"
+    }
+  },
+  {
+    "model": "app.workout",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "name": "Cardio Session",
+      "description": "High-intensity interval training for cardiovascular health",
+      "duration": "00:30:00",
+      "level": "beginner",
+      "calories_burned": 280,
+      "date": "2024-10-16",
+      "completed": false,
+      "created_at": "2024-10-16T06:00:00Z",
+      "updated_at": "2024-10-16T06:00:00Z"
+    }
+  },
+  {
+    "model": "app.workout",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "name": "Core Strength",
+      "description": "Focused core workout for abs and obliques",
+      "duration": "00:25:00",
+      "level": "intermediate",
+      "calories_burned": 180,
+      "date": "2024-10-14",
+      "completed": true,
+      "created_at": "2024-10-13T20:00:00Z",
+      "updated_at": "2024-10-14T20:30:00Z"
+    }
+  },
+  {
+    "model": "app.workout",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "name": "Full Body Circuit",
+      "description": "Complete body workout with compound movements",
+      "duration": "01:15:00",
+      "level": "advanced",
+      "calories_burned": 550,
+      "date": "2024-10-16",
+      "completed": false,
+      "created_at": "2024-10-16T07:00:00Z",
+      "updated_at": "2024-10-16T07:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 1,
+    "fields": {
+      "name": "Grilled Chicken Salad",
+      "description": "Fresh mixed greens with grilled chicken breast, cherry tomatoes, and balsamic dressing",
+      "meal_type": "lunch",
+      "calories": 350,
+      "protein": 35.0,
+      "carbs": 25.0,
+      "fats": 12.0,
+      "fiber": 8.0,
+      "is_vegan": false,
+      "is_vegetarian": false,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 20,
+      "difficulty": "easy",
+      "created_at": "2024-10-01T10:00:00Z",
+      "updated_at": "2024-10-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 2,
+    "fields": {
+      "name": "Oatmeal with Berries",
+      "description": "Steel-cut oats topped with fresh blueberries, strawberries, and honey",
+      "meal_type": "breakfast",
+      "calories": 280,
+      "protein": 10.0,
+      "carbs": 48.0,
+      "fats": 6.0,
+      "fiber": 9.0,
+      "is_vegan": true,
+      "is_vegetarian": true,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 15,
+      "difficulty": "easy",
+      "created_at": "2024-10-01T11:00:00Z",
+      "updated_at": "2024-10-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 3,
+    "fields": {
+      "name": "Salmon with Quinoa",
+      "description": "Pan-seared salmon fillet served with quinoa and steamed broccoli",
+      "meal_type": "dinner",
+      "calories": 520,
+      "protein": 42.0,
+      "carbs": 38.0,
+      "fats": 22.0,
+      "fiber": 6.0,
+      "is_vegan": false,
+      "is_vegetarian": false,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 30,
+      "difficulty": "medium",
+      "created_at": "2024-10-01T12:00:00Z",
+      "updated_at": "2024-10-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 4,
+    "fields": {
+      "name": "Greek Yogurt Parfait",
+      "description": "Layers of Greek yogurt, granola, and fresh fruit",
+      "meal_type": "snack",
+      "calories": 220,
+      "protein": 15.0,
+      "carbs": 30.0,
+      "fats": 5.0,
+      "fiber": 4.0,
+      "is_vegan": false,
+      "is_vegetarian": true,
+      "is_gluten_free": false,
+      "is_dairy_free": false,
+      "preparation_time": 5,
+      "difficulty": "easy",
+      "created_at": "2024-10-01T13:00:00Z",
+      "updated_at": "2024-10-01T13:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 5,
+    "fields": {
+      "name": "Tofu Stir Fry",
+      "description": "Crispy tofu with mixed vegetables in soy-ginger sauce",
+      "meal_type": "dinner",
+      "calories": 380,
+      "protein": 20.0,
+      "carbs": 42.0,
+      "fats": 14.0,
+      "fiber": 7.0,
+      "is_vegan": true,
+      "is_vegetarian": true,
+      "is_gluten_free": false,
+      "is_dairy_free": true,
+      "preparation_time": 25,
+      "difficulty": "medium",
+      "created_at": "2024-10-01T14:00:00Z",
+      "updated_at": "2024-10-01T14:00:00Z"
+    }
+  },
+  {
+    "model": "app.userworkoutlog",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "workout": 1,
+      "date": "2024-10-15",
+      "start_time": "18:00:00",
+      "end_time": "19:00:00",
+      "completed": true,
+      "satisfaction": 5,
+      "notes": "Great session, felt strong on all exercises",
+      "calories_burned": 350
+    }
+  },
+  {
+    "model": "app.userworkoutlog",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "workout": 2,
+      "date": "2024-10-15",
+      "start_time": "17:00:00",
+      "end_time": "17:45:00",
+      "completed": true,
+      "satisfaction": 4,
+      "notes": "Legs are sore but good workout",
+      "calories_burned": 420
+    }
+  },
+  {
+    "model": "app.userworkoutlog",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "workout": 4,
+      "date": "2024-10-14",
+      "start_time": "20:00:00",
+      "end_time": "20:25:00",
+      "completed": true,
+      "satisfaction": 5,
+      "notes": "Perfect core workout",
+      "calories_burned": 180
+    }
+  },
+  {
+    "model": "app.userworkoutlog",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "workout": 3,
+      "date": "2024-10-16",
+      "start_time": null,
+      "end_time": null,
+      "completed": false,
+      "satisfaction": null,
+      "notes": "Scheduled for evening",
+      "calories_burned": null
+    }
+  },
+  {
+    "model": "app.userworkoutlog",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "workout": 5,
+      "date": "2024-10-16",
+      "start_time": null,
+      "end_time": null,
+      "completed": false,
+      "satisfaction": null,
+      "notes": "Morning session planned",
+      "calories_burned": null
+    }
+  },
+  {
+    "model": "app.nutrition",
+    "pk": 1,
+    "fields": {
+      "kind": "ingredient",
+      "name": "Brown Rice",
+      "description": "Whole grain brown rice, uncooked",
+      "meal_type": "",
+      "protein": 7.5,
+      "carbs": 77.0,
+      "fats": 2.0,
+      "calories": 370,
+      "preparation_time": null,
+      "cooking_time": null,
+      "instructions": "",
+      "created_at": "2024-09-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutrition",
+    "pk": 2,
+    "fields": {
+      "kind": "ingredient",
+      "name": "Chicken Breast",
+      "description": "Skinless, boneless chicken breast",
+      "meal_type": "",
+      "protein": 31.0,
+      "carbs": 0.0,
+      "fats": 3.6,
+      "calories": 165,
+      "preparation_time": null,
+      "cooking_time": null,
+      "instructions": "",
+      "created_at": "2024-09-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutrition",
+    "pk": 3,
+    "fields": {
+      "kind": "recipe",
+      "name": "Protein Smoothie",
+      "description": "Post-workout protein shake with banana and berries",
+      "meal_type": "snack",
+      "protein": 25.0,
+      "carbs": 35.0,
+      "fats": 5.0,
+      "calories": 285,
+      "preparation_time": 5,
+      "cooking_time": 0,
+      "instructions": "Blend protein powder, banana, berries, and almond milk",
+      "created_at": "2024-09-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutrition",
+    "pk": 4,
+    "fields": {
+      "kind": "ingredient",
+      "name": "Sweet Potato",
+      "description": "Raw sweet potato",
+      "meal_type": "",
+      "protein": 1.6,
+      "carbs": 20.0,
+      "fats": 0.1,
+      "calories": 86,
+      "preparation_time": null,
+      "cooking_time": null,
+      "instructions": "",
+      "created_at": "2024-09-01T13:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutrition",
+    "pk": 5,
+    "fields": {
+      "kind": "ingredient",
+      "name": "Almonds",
+      "description": "Raw almonds",
+      "meal_type": "",
+      "protein": 21.0,
+      "carbs": 22.0,
+      "fats": 49.0,
+      "calories": 579,
+      "preparation_time": null,
+      "cooking_time": null,
+      "instructions": "",
+      "created_at": "2024-09-01T14:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutritiontemplate",
+    "pk": 1,
+    "fields": {
+      "name": "Weight Loss - 1500 Cal",
+      "language": "English",
+      "meals_per_day": 4,
+      "target_calories": 1500,
+      "created_at": "2024-09-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutritiontemplate",
+    "pk": 2,
+    "fields": {
+      "name": "Muscle Gain - 2500 Cal",
+      "language": "English",
+      "meals_per_day": 5,
+      "target_calories": 2500,
+      "created_at": "2024-09-15T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutritiontemplate",
+    "pk": 3,
+    "fields": {
+      "name": "Maintenance - 2000 Cal",
+      "language": "English",
+      "meals_per_day": 4,
+      "target_calories": 2000,
+      "created_at": "2024-09-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutritiontemplate",
+    "pk": 4,
+    "fields": {
+      "name": "Keto - 1800 Cal",
+      "language": "English",
+      "meals_per_day": 3,
+      "target_calories": 1800,
+      "created_at": "2024-09-15T13:00:00Z"
+    }
+  },
+  {
+    "model": "app.nutritiontemplate",
+    "pk": 5,
+    "fields": {
+      "name": "Vegan - 2200 Cal",
+      "language": "English",
+      "meals_per_day": 5,
+      "target_calories": 2200,
+      "created_at": "2024-09-15T14:00:00Z"
+    }
+  },
+  {
+    "model": "app.usermeallog",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "meal": 1,
+      "date": "2024-10-15",
+      "consumed_at": "13:00:00",
+      "servings": 1.0,
+      "satisfaction": 5,
+      "notes": "Delicious and filling"
+    }
+  },
+  {
+    "model": "app.usermeallog",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "meal": 2,
+      "date": "2024-10-16",
+      "consumed_at": "08:00:00",
+      "servings": 1.5,
+      "satisfaction": 4,
+      "notes": "Extra hungry this morning"
+    }
+  },
+  {
+    "model": "app.usermeallog",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "meal": 3,
+      "date": "2024-10-15",
+      "consumed_at": "19:30:00",
+      "servings": 1.0,
+      "satisfaction": 5,
+      "notes": "Perfect dinner"
+    }
+  },
+  {
+    "model": "app.usermeallog",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "meal": 4,
+      "date": "2024-10-16",
+      "consumed_at": "15:00:00",
+      "servings": 1.0,
+      "satisfaction": 4,
+      "notes": "Good snack option"
+    }
+  },
+  {
+    "model": "app.usermeallog",
+    "pk": 5,
+    "fields": {
+      "user": 2,
+      "meal": 5,
+      "date": "2024-10-15",
+      "consumed_at": "20:00:00",
+      "servings": 1.0,
+      "satisfaction": 5,
+      "notes": "Love the tofu texture"
+    }
+  },
+  {
+    "model": "app.progress",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-01",
+      "weight": "80.00",
+      "body_fat_percentage": "18.5",
+      "muscle_mass": "34.50",
+      "waist_circumference": "85.00",
+      "hip_circumference": "98.00",
+      "notes": "Starting measurements"
+    }
+  },
+  {
+    "model": "app.progress",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-15",
+      "weight": "78.50",
+      "body_fat_percentage": "17.8",
+      "muscle_mass": "35.00",
+      "waist_circumference": "83.00",
+      "hip_circumference": "97.00",
+      "notes": "Great progress in two weeks"
+    }
+  },
+  {
+    "model": "app.progress",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "date": "2024-10-10",
+      "weight": "61.00",
+      "body_fat_percentage": "22.0",
+      "muscle_mass": "23.50",
+      "waist_circumference": "68.00",
+      "hip_circumference": "92.00",
+      "notes": "Muscle gain progress"
+    }
+  },
+  {
+    "model": "app.progress",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "date": "2024-10-12",
+      "weight": "90.00",
+      "body_fat_percentage": "20.5",
+      "muscle_mass": "38.00",
+      "waist_circumference": "90.00",
+      "hip_circumference": "102.00",
+      "notes": "Maintenance phase"
+    }
+  },
+  {
+    "model": "app.progress",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "date": "2024-10-14",
+      "weight": "66.50",
+      "body_fat_percentage": "24.5",
+      "muscle_mass": "25.00",
+      "waist_circumference": "72.00",
+      "hip_circumference": "95.00",
+      "notes": "Down 1.5kg this month"
+    }
+  },
+  {
+    "model": "app.wishlistitem",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "Nike Training Shoes",
+      "description": "High-performance cross-training shoes",
+      "category": "shoes",
+      "priority": 3,
+      "estimated_price": "12500.00",
+      "url": "https://nike.com/training-shoes",
+      "added_on": "2024-10-08T16:00:00Z",
+      "is_purchased": false,
+      "purchased_on": null
+    }
+  },
+  {
+    "model": "app.wishlistitem",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "name": "Fitness Tracker Watch",
+      "description": "Smart fitness watch with heart rate monitor",
+      "category": "electronics",
+      "priority": 2,
+      "estimated_price": "15000.00",
+      "url": "https://garmin.com/fitness-watch",
+      "added_on": "2024-09-20T11:00:00Z",
+      "is_purchased": false,
+      "purchased_on": null
+    }
+  },
+  {
+    "model": "app.lead",
+    "pk": 1,
+    "fields": {
+      "first_name": "Ahmed",
+      "last_name": "Khan",
+      "email": "ahmed.khan@example.com",
+      "phone": "+923001234567",
+      "country": "Pakistan",
+      "notes": "Interested in personal training package",
+      "status": "New",
+      "created_at": "2024-10-14T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.lead",
+    "pk": 2,
+    "fields": {
+      "first_name": "Fatima",
+      "last_name": "Ali",
+      "email": "fatima.ali@example.com",
+      "phone": "+923009876543",
+      "country": "Pakistan",
+      "notes": "Looking for nutrition coaching",
+      "status": "Contacted",
+      "created_at": "2024-10-12T14:30:00Z"
+    }
+  },
+  {
+    "model": "app.lead",
+    "pk": 3,
+    "fields": {
+      "first_name": "Hassan",
+      "last_name": "Malik",
+      "email": "hassan.malik@example.com",
+      "phone": "+923005551234",
+      "country": "Pakistan",
+      "notes": "Interested in 3-month meal plan",
+      "status": "In Dialogue",
+      "created_at": "2024-10-10T09:15:00Z"
+    }
+  },
+  {
+    "model": "app.lead",
+    "pk": 4,
+    "fields": {
+      "first_name": "Zainab",
+      "last_name": "Ahmed",
+      "email": "zainab.ahmed@example.com",
+      "phone": "+923007778899",
+      "country": "Pakistan",
+      "notes": "Wants weight loss program",
+      "status": "Won",
+      "created_at": "2024-10-05T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.lead",
+    "pk": 5,
+    "fields": {
+      "first_name": "Bilal",
+      "last_name": "Raza",
+      "email": "bilal.raza@example.com",
+      "phone": "+923001112233",
+      "country": "Pakistan",
+      "notes": "Not ready to commit yet",
+      "status": "On Hold",
+      "created_at": "2024-10-01T15:30:00Z"
+    }
+  },
+  {
+    "model": "app.loginotp",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "channel": "email",
+      "destination": "john@example.com",
+      "code": "123456",
+      "expires_at": "2024-10-16T11:00:00Z",
+      "used_at": "2024-10-16T10:55:00Z",
+      "attempt_count": 1,
+      "created_at": "2024-10-16T10:50:00Z",
+      "updated_at": "2024-10-16T10:55:00Z"
+    }
+  },
+  {
+    "model": "app.loginotp",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "channel": "phone",
+      "destination": "+923009876543",
+      "code": "789012",
+      "expires_at": "2024-10-16T12:00:00Z",
+      "used_at": null,
+      "attempt_count": 0,
+      "created_at": "2024-10-16T11:50:00Z",
+      "updated_at": "2024-10-16T11:50:00Z"
+    }
+  },
+  {
+    "model": "app.loginotp",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "channel": "email",
+      "destination": "mike@example.com",
+      "code": "345678",
+      "expires_at": "2024-10-16T10:30:00Z",
+      "used_at": "2024-10-16T10:25:00Z",
+      "attempt_count": 2,
+      "created_at": "2024-10-16T10:20:00Z",
+      "updated_at": "2024-10-16T10:25:00Z"
+    }
+  },
+  {
+    "model": "app.loginotp",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "channel": "phone",
+      "destination": "+923007778899",
+      "code": "901234",
+      "expires_at": "2024-10-16T13:00:00Z",
+      "used_at": null,
+      "attempt_count": 0,
+      "created_at": "2024-10-16T12:50:00Z",
+      "updated_at": "2024-10-16T12:50:00Z"
+    }
+  },
+  {
+    "model": "app.loginotp",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "channel": "email",
+      "destination": "admin@example.com",
+      "code": "567890",
+      "expires_at": "2024-10-16T09:00:00Z",
+      "used_at": "2024-10-16T08:58:00Z",
+      "attempt_count": 1,
+      "created_at": "2024-10-16T08:50:00Z",
+      "updated_at": "2024-10-16T08:58:00Z"
+    }
+  },
+  {
+    "model": "app.macroplan",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "source": "auto",
+      "start_date": "2024-10-01",
+      "end_date": null,
+      "bmr": 1750,
+      "tdee": 2450,
+      "calorie_target": 2000,
+      "protein_g": 150,
+      "carbs_g": 200,
+      "fats_g": 67,
+      "active": true,
+      "created_at": "2024-10-01T08:00:00Z",
+      "updated_at": "2024-10-01T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.macroplan",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "source": "manual",
+      "start_date": "2024-09-15",
+      "end_date": null,
+      "bmr": 1450,
+      "tdee": 2150,
+      "calorie_target": 2300,
+      "protein_g": 140,
+      "carbs_g": 250,
+      "fats_g": 70,
+      "active": true,
+      "created_at": "2024-09-15T10:00:00Z",
+      "updated_at": "2024-09-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.macroplan",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "source": "auto",
+      "start_date": "2024-10-05",
+      "end_date": null,
+      "bmr": 1850,
+      "tdee": 2350,
+      "calorie_target": 2350,
+      "protein_g": 160,
+      "carbs_g": 220,
+      "fats_g": 75,
+      "active": true,
+      "created_at": "2024-10-05T09:00:00Z",
+      "updated_at": "2024-10-05T09:00:00Z"
+    }
+  },
+  {
+    "model": "app.macroplan",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "source": "auto",
+      "start_date": "2024-09-20",
+      "end_date": null,
+      "bmr": 1550,
+      "tdee": 2250,
+      "calorie_target": 1800,
+      "protein_g": 130,
+      "carbs_g": 180,
+      "fats_g": 60,
+      "active": true,
+      "created_at": "2024-09-20T11:00:00Z",
+      "updated_at": "2024-09-20T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.macroplan",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "source": "manual",
+      "start_date": "2024-10-10",
+      "end_date": null,
+      "bmr": 1800,
+      "tdee": 2800,
+      "calorie_target": 2600,
+      "protein_g": 180,
+      "carbs_g": 280,
+      "fats_g": 80,
+      "active": true,
+      "created_at": "2024-10-10T07:00:00Z",
+      "updated_at": "2024-10-10T07:00:00Z"
+    }
+  },
+  {
+    "model": "app.dailymacrotarget",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-16",
+      "calorie_target": 2000,
+      "protein_g": 150,
+      "carbs_g": 200,
+      "fats_g": 67,
+      "rollover_from_yesterday": 0
+    }
+  },
+  {
+    "model": "app.dailymacrotarget",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "date": "2024-10-16",
+      "calorie_target": 2350,
+      "protein_g": 140,
+      "carbs_g": 250,
+      "fats_g": 70,
+      "rollover_from_yesterday": 50
+    }
+  },
+  {
+    "model": "app.dailymacrotarget",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "date": "2024-10-16",
+      "calorie_target": 2350,
+      "protein_g": 160,
+      "carbs_g": 220,
+      "fats_g": 75,
+      "rollover_from_yesterday": -100
+    }
+  },
+  {
+    "model": "app.dailymacrotarget",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "date": "2024-10-16",
+      "calorie_target": 1800,
+      "protein_g": 130,
+      "carbs_g": 180,
+      "fats_g": 60,
+      "rollover_from_yesterday": 0
+    }
+  },
+  {
+    "model": "app.dailymacrotarget",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "date": "2024-10-16",
+      "calorie_target": 2600,
+      "protein_g": 180,
+      "carbs_g": 280,
+      "fats_g": 80,
+      "rollover_from_yesterday": 150
+    }
+  },
+  {
+    "model": "app.waterlog",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-16",
+      "amount_ml": 500,
+      "created_at": "2024-10-16T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.waterlog",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-16",
+      "amount_ml": 750,
+      "created_at": "2024-10-16T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.waterlog",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "date": "2024-10-16",
+      "amount_ml": 600,
+      "created_at": "2024-10-16T09:30:00Z"
+    }
+  },
+  {
+    "model": "app.waterlog",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "date": "2024-10-16",
+      "amount_ml": 400,
+      "created_at": "2024-10-16T10:15:00Z"
+    }
+  },
+  {
+    "model": "app.waterlog",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "date": "2024-10-16",
+      "amount_ml": 800,
+      "created_at": "2024-10-16T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.dailyactivitysummary",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-15",
+      "steps": 12500,
+      "calories_burned": 450,
+      "distance_m": 9500
+    }
+  },
+  {
+    "model": "app.dailyactivitysummary",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "date": "2024-10-15",
+      "steps": 15200,
+      "calories_burned": 520,
+      "distance_m": 11800
+    }
+  },
+  {
+    "model": "app.dailyactivitysummary",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "date": "2024-10-15",
+      "steps": 8700,
+      "calories_burned": 320,
+      "distance_m": 6500
+    }
+  },
+  {
+    "model": "app.dailyactivitysummary",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "date": "2024-10-15",
+      "steps": 10800,
+      "calories_burned": 400,
+      "distance_m": 8200
+    }
+  },
+  {
+    "model": "app.dailyactivitysummary",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "date": "2024-10-15",
+      "steps": 18000,
+      "calories_burned": 650,
+      "distance_m": 14000
+    }
+  },
+  {
+    "model": "app.heartratesample",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "ts": "2024-10-16T08:30:00Z",
+      "bpm": 72
+    }
+  },
+  {
+    "model": "app.heartratesample",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "ts": "2024-10-16T18:15:00Z",
+      "bpm": 145
+    }
+  },
+  {
+    "model": "app.heartratesample",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "ts": "2024-10-16T09:00:00Z",
+      "bpm": 68
+    }
+  },
+  {
+    "model": "app.heartratesample",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "ts": "2024-10-16T20:30:00Z",
+      "bpm": 138
+    }
+  },
+  {
+    "model": "app.heartratesample",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "ts": "2024-10-16T15:45:00Z",
+      "bpm": 75
+    }
+  },
+  {
+    "model": "app.checkinform",
+    "pk": 1,
+    "fields": {
+      "name": "Weekly Check-in",
+      "active": true
+    }
+  },
+  {
+    "model": "app.checkinform",
+    "pk": 2,
+    "fields": {
+      "name": "Monthly Assessment",
+      "active": true
+    }
+  },
+  {
+    "model": "app.checkinform",
+    "pk": 3,
+    "fields": {
+      "name": "Progress Review",
+      "active": true
+    }
+  },
+  {
+    "model": "app.checkinform",
+    "pk": 4,
+    "fields": {
+      "name": "Quick Check",
+      "active": true
+    }
+  },
+  {
+    "model": "app.checkinform",
+    "pk": 5,
+    "fields": {
+      "name": "Detailed Assessment",
+      "active": false
+    }
+  },
+  {
+    "model": "app.checkinquestion",
+    "pk": 1,
+    "fields": {
+      "form": 1,
+      "order": 1,
+      "text": "How would you rate your energy level this week?",
+      "type": "rating",
+      "choices": null
+    }
+  },
+  {
+    "model": "app.checkinquestion",
+    "pk": 2,
+    "fields": {
+      "form": 1,
+      "order": 2,
+      "text": "How many hours did you sleep on average?",
+      "type": "number",
+      "choices": null
+    }
+  },
+  {
+    "model": "app.checkinquestion",
+    "pk": 3,
+    "fields": {
+      "form": 1,
+      "order": 3,
+      "text": "Any challenges or concerns?",
+      "type": "text",
+      "choices": null
+    }
+  },
+  {
+    "model": "app.checkinquestion",
+    "pk": 4,
+    "fields": {
+      "form": 2,
+      "order": 1,
+      "text": "Overall satisfaction with your progress?",
+      "type": "rating",
+      "choices": null
+    }
+  },
+  {
+    "model": "app.checkinquestion",
+    "pk": 5,
+    "fields": {
+      "form": 1,
+      "order": 4,
+      "text": "What was your biggest win this week?",
+      "type": "text",
+      "choices": null
+    }
+  },
+  {
+    "model": "app.checkin",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-10-14",
+      "form": 1,
+      "notes": "Great week overall",
+      "sleep_hours": "7.5",
+      "energy_rating": 4,
+      "meal_plan_use": 5,
+      "workout_plan_use": 4,
+      "created_at": "2024-10-14T20:00:00Z",
+      "updated_at": "2024-10-14T20:00:00Z"
+    }
+  },
+  {
+    "model": "app.checkin",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "date": "2024-10-15",
+      "form": 1,
+      "notes": "Feeling strong",
+      "sleep_hours": "8.0",
+      "energy_rating": 5,
+      "meal_plan_use": 4,
+      "workout_plan_use": 5,
+      "created_at": "2024-10-15T19:30:00Z",
+      "updated_at": "2024-10-15T19:30:00Z"
+    }
+  },
+  {
+    "model": "app.checkin",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "date": "2024-10-13",
+      "form": 1,
+      "notes": "Need more sleep",
+      "sleep_hours": "6.5",
+      "energy_rating": 3,
+      "meal_plan_use": 4,
+      "workout_plan_use": 3,
+      "created_at": "2024-10-13T21:00:00Z",
+      "updated_at": "2024-10-13T21:00:00Z"
+    }
+  },
+  {
+    "model": "app.checkin",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "date": "2024-10-16",
+      "form": 1,
+      "notes": "On track with goals",
+      "sleep_hours": "7.8",
+      "energy_rating": 4,
+      "meal_plan_use": 5,
+      "workout_plan_use": 4,
+      "created_at": "2024-10-16T18:00:00Z",
+      "updated_at": "2024-10-16T18:00:00Z"
+    }
+  },
+  {
+    "model": "app.checkin",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "date": "2024-10-12",
+      "form": 2,
+      "notes": "Monthly check - all good",
+      "sleep_hours": "7.2",
+      "energy_rating": 5,
+      "meal_plan_use": 5,
+      "workout_plan_use": 5,
+      "created_at": "2024-10-12T17:00:00Z",
+      "updated_at": "2024-10-12T17:00:00Z"
+    }
+  },
+  {
+    "model": "app.checkinanswer",
+    "pk": 1,
+    "fields": {
+      "checkin": 1,
+      "question": 1,
+      "value": "4"
+    }
+  },
+  {
+    "model": "app.checkinanswer",
+    "pk": 2,
+    "fields": {
+      "checkin": 1,
+      "question": 2,
+      "value": "7.5"
+    }
+  },
+  {
+    "model": "app.checkinanswer",
+    "pk": 3,
+    "fields": {
+      "checkin": 2,
+      "question": 1,
+      "value": "5"
+    }
+  },
+  {
+    "model": "app.checkinanswer",
+    "pk": 4,
+    "fields": {
+      "checkin": 3,
+      "question": 1,
+      "value": "3"
+    }
+  },
+  {
+    "model": "app.checkinanswer",
+    "pk": 5,
+    "fields": {
+      "checkin": 4,
+      "question": 1,
+      "value": "4"
+    }
+  },
+  {
+    "model": "app.foodbrand",
+    "pk": 1,
+    "fields": {
+      "name": "Nestle"
+    }
+  },
+  {
+    "model": "app.foodbrand",
+    "pk": 2,
+    "fields": {
+      "name": "Olpers"
+    }
+  },
+  {
+    "model": "app.foodbrand",
+    "pk": 3,
+    "fields": {
+      "name": "National Foods"
+    }
+  },
+  {
+    "model": "app.foodbrand",
+    "pk": 4,
+    "fields": {
+      "name": "Shan"
+    }
+  },
+  {
+    "model": "app.foodbrand",
+    "pk": 5,
+    "fields": {
+      "name": "Kolson"
+    }
+  },
+  {
+    "model": "app.food",
+    "pk": 1,
+    "fields": {
+      "name": "Whole Wheat Bread",
+      "brand": 1,
+      "is_custom": false,
+      "created_by": null,
+      "calories": 247.0,
+      "protein": 13.0,
+      "carbs": 41.0,
+      "fat": 3.4,
+      "fiber": 7.0,
+      "allergens": "gluten"
+    }
+  },
+  {
+    "model": "app.food",
+    "pk": 2,
+    "fields": {
+      "name": "Full Cream Milk",
+      "brand": 2,
+      "is_custom": false,
+      "created_by": null,
+      "calories": 61.0,
+      "protein": 3.2,
+      "carbs": 4.8,
+      "fat": 3.3,
+      "fiber": 0.0,
+      "allergens": "dairy"
+    }
+  },
+  {
+    "model": "app.food",
+    "pk": 3,
+    "fields": {
+      "name": "Basmati Rice",
+      "brand": 3,
+      "is_custom": false,
+      "created_by": null,
+      "calories": 365.0,
+      "protein": 7.0,
+      "carbs": 80.0,
+      "fat": 0.6,
+      "fiber": 1.5,
+      "allergens": ""
+    }
+  },
+  {
+    "model": "app.food",
+    "pk": 4,
+    "fields": {
+      "name": "Mixed Vegetables",
+      "brand": null,
+      "is_custom": true,
+      "created_by": 1,
+      "calories": 65.0,
+      "protein": 2.6,
+      "carbs": 13.0,
+      "fat": 0.4,
+      "fiber": 3.5,
+      "allergens": ""
+    }
+  },
+  {
+    "model": "app.food",
+    "pk": 5,
+    "fields": {
+      "name": "Egg White",
+      "brand": null,
+      "is_custom": false,
+      "created_by": null,
+      "calories": 52.0,
+      "protein": 11.0,
+      "carbs": 0.7,
+      "fat": 0.2,
+      "fiber": 0.0,
+      "allergens": "eggs"
+    }
+  },
+  {
+    "model": "app.foodbarcode",
+    "pk": 1,
+    "fields": {
+      "food": 1,
+      "code": "8901234567890"
+    }
+  },
+  {
+    "model": "app.foodbarcode",
+    "pk": 2,
+    "fields": {
+      "food": 2,
+      "code": "8901234567891"
+    }
+  },
+  {
+    "model": "app.foodbarcode",
+    "pk": 3,
+    "fields": {
+      "food": 3,
+      "code": "8901234567892"
+    }
+  },
+  {
+    "model": "app.foodbarcode",
+    "pk": 4,
+    "fields": {
+      "food": 1,
+      "code": "8901234567893"
+    }
+  },
+  {
+    "model": "app.foodbarcode",
+    "pk": 5,
+    "fields": {
+      "food": 5,
+      "code": "8901234567894"
+    }
+  },
+  {
+    "model": "app.foodportion",
+    "pk": 1,
+    "fields": {
+      "food": 1,
+      "name": "1 slice",
+      "unit": "piece",
+      "quantity": 1.0,
+      "grams": 30.0
+    }
+  },
+  {
+    "model": "app.foodportion",
+    "pk": 2,
+    "fields": {
+      "food": 2,
+      "name": "1 cup",
+      "unit": "cup",
+      "quantity": 1.0,
+      "grams": 244.0
+    }
+  },
+  {
+    "model": "app.foodportion",
+    "pk": 3,
+    "fields": {
+      "food": 3,
+      "name": "1 cup cooked",
+      "unit": "cup",
+      "quantity": 1.0,
+      "grams": 195.0
+    }
+  },
+  {
+    "model": "app.foodportion",
+    "pk": 4,
+    "fields": {
+      "food": 4,
+      "name": "1 cup",
+      "unit": "cup",
+      "quantity": 1.0,
+      "grams": 150.0
+    }
+  },
+  {
+    "model": "app.foodportion",
+    "pk": 5,
+    "fields": {
+      "food": 5,
+      "name": "1 large egg white",
+      "unit": "piece",
+      "quantity": 1.0,
+      "grams": 33.0
+    }
+  },
+  {
+    "model": "app.recipe",
+    "pk": 1,
+    "fields": {
+      "name": "Chicken Rice Bowl",
+      "created_by": 1,
+      "is_public": true
+    }
+  },
+  {
+    "model": "app.recipe",
+    "pk": 2,
+    "fields": {
+      "name": "Veggie Omelette",
+      "created_by": 2,
+      "is_public": true
+    }
+  },
+  {
+    "model": "app.recipe",
+    "pk": 3,
+    "fields": {
+      "name": "Protein Breakfast Bowl",
+      "created_by": 3,
+      "is_public": false
+    }
+  },
+  {
+    "model": "app.recipe",
+    "pk": 4,
+    "fields": {
+      "name": "Rice and Vegetables",
+      "created_by": 1,
+      "is_public": true
+    }
+  },
+  {
+    "model": "app.recipe",
+    "pk": 5,
+    "fields": {
+      "name": "Egg White Scramble",
+      "created_by": 4,
+      
+      "is_public": true 
+     }
+  },
+  {
+    "model": "app.wishlistitem",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "name": "Resistance Bands Set",
+      "description": "5-piece resistance band set with handles",
+      "category": "fitness",
+      "priority": 2,
+      "estimated_price": "3500.00",
+      "url": "https://amazon.com/resistance-bands",
+      "added_on": "2024-09-25T14:30:00Z",
+      "is_purchased": true,
+      "purchased_on": "2024-10-05"
+    }
+  },
+  {
+    "model": "app.wishlistitem",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "name": "Gym Duffle Bag",
+      "description": "Large capacity sports bag with shoe compartment",
+      "category": "bags",
+      "priority": 1,
+      "estimated_price": "4500.00",
+      "url": "https://adidas.com/duffle-bag",
+      "added_on": "2024-10-10T09:00:00Z",
+      "is_purchased": false,
+      "purchased_on": null
+    }
+  }]

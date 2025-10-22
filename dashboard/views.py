@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from app.models import *
 import json
+from django.db.models import Avg
 
 def _daterange_for(kind: str):
     today = timezone.localdate()
@@ -902,50 +903,102 @@ def progress_list(request):
 # -------------------------
 # Meals
 # -------------------------
- 
-
 def meals(request):
     meals = Meal.objects.all()
     stats = {
         "total_meals": meals.count(),
-        "avg_calories": round(meals.aggregate(models.Avg('calories'))['calories__avg'] or 0),
+        "avg_calories": round(meals.aggregate(Avg('calories'))['calories__avg'] or 0),
         "vegan_count": meals.filter(is_vegan=True).count(),
         "vegetarian_count": meals.filter(is_vegetarian=True).count(),
     }
-    return render(request, "meals.html", {"meals": meals, "stats": stats})
 
+    # Orders
+    orders = Order.objects.select_related('meal').all()
+    order_stats = {
+        "total": orders.count(),
+        "pending": orders.filter(status="pending").count(),
+        "in_progress": orders.filter(status="in_progress").count(),
+        "delivered": orders.filter(status="delivered").count(),
+    }
+
+    # Clients
+    clients = User.objects.all()
+
+    # Inventory
+    inventory = Inventory.objects.all()
+
+    # Delivery
+    deliveries = Delivery.objects.select_related('subscription').all()
+    delivery_stats = {
+        "total": deliveries.count(),
+        "pending": deliveries.filter(status="pending").count(),
+        "out_for_delivery": deliveries.filter(status="out_for_delivery").count(),
+        "delivered": deliveries.filter(status="delivered").count(),
+        "failed": deliveries.filter(status="failed").count(),
+    }
+
+    # Payments
+    payments = Payment.objects.select_related('client').all()
+    payment_stats = {
+        "total": payments.count(),
+        "paid": payments.filter(status="paid").count(),
+        "pending": payments.filter(status="pending").count(),
+        "failed": payments.filter(status="failed").count(),
+        "revenue": payments.filter(status="paid").aggregate(Sum('amount'))['amount__sum'] or 0,
+    }
+
+    context = {
+        "meals": meals,
+        "stats": stats,
+        "orders": orders,
+        "order_stats": order_stats,
+        "clients": clients,
+        "inventory": inventory,
+        "deliveries": deliveries,
+        "delivery_stats": delivery_stats,
+        "payments": payments,
+        "payment_stats": payment_stats,
+    }
+
+    return render(request, "meals.html", context)
 # -------------------------
 # Wishlist
 # -------------------------
 def wishlist_list(request):
     wishlist = WishlistItem.objects.all().order_by("-priority")
     return render(request, "wishlist.html", {"wishlist": wishlist})
+ 
 
 
-# -------------------------
-# Content (static for now)
+# ---------- FILE CRUD ----------
+
+ 
 def content(request):
     files = File.objects.all().order_by('-created_at')
     lessons = Lesson.objects.all().order_by('-created_at')
 
-    file_form = FileForm()
-    lesson_form = LessonForm()
-
-    return render(request, 'content.html', {
+    context = {
         'files': files,
         'lessons': lessons,
-        'file_form': file_form,
-        'lesson_form': lesson_form,
-    })
+        'file_form': FileForm(),
+        'lesson_form': LessonForm(),
+    }
+    return render(request, 'content.html', context)
 
 
-# ---------- FILE CRUD ----------
 def add_file(request):
     if request.method == 'POST':
-        form = FileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-    return redirect('content')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        file = request.FILES.get('file')  # ✅ must be from request.FILES
+
+        if file:
+            File.objects.create(title=title, description=description, file=file)
+        else:
+            print("⚠️ No file uploaded")
+
+        return redirect('content')
+    return render(request, 'content.html')
 
 
 def edit_file(request, pk):
@@ -954,71 +1007,81 @@ def edit_file(request, pk):
         form = FileForm(request.POST, request.FILES, instance=file)
         if form.is_valid():
             form.save()
-            return redirect('content')
+            messages.success(request, "File updated successfully.")
+        else:
+            messages.error(request, "Error updating file.")
     return redirect('content')
 
 
 def delete_file(request, pk):
     file = get_object_or_404(File, pk=pk)
     file.delete()
+    messages.success(request, "File deleted successfully.")
     return redirect('content')
+from django.http import HttpResponse
 
-# content/views.py
-from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from .forms import LessonForm
-
-def lesson_list(request):
-    lessons = Lesson.objects.order_by("-created_at")
-    return render(request, "lessons/list.html", {"lessons": lessons})
+# ---------- LESSON CRUD ----------
 
 def add_lesson(request):
     if request.method == "POST":
-        form = LessonForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Save lesson first (without M2M), then handle attachments, then save M2M
-            lesson = form.save(commit=False)
-            lesson.save()
+        print("🟡 [DEBUG] POST data received:")
+        for key, value in request.POST.items():
+            print(f"➡️ {key}: {value}")
+        print("🟡 [DEBUG] FILES:", request.FILES)
 
-            # Save selected existing files for M2M
-            form.save_m2m()
+        try:
+            title = request.POST.get('title')
+            subtitle = request.POST.get('subtitle', '')
+            message = request.POST.get('message')
+            
+            if not title or not message:
+                print("🔴 Missing required fields")
+                return JsonResponse({'error': 'Missing fields'}, status=400)
 
-            # Handle new uploaded attachments (not part of model fields)
-            for f in request.FILES.getlist("attachments"):
-                fobj = File.objects.create(file=f, name=f.name)
-                lesson.files.add(fobj)
+            Lesson.objects.create(
+                title=title,
+                subtitle=subtitle,
+                message=message
+            )
+            print("✅ Lesson created successfully!")
+            return JsonResponse({'success': True})
 
-            messages.success(request, "Lesson created.")
-            return redirect("lesson_list")  # or 'content' if that’s your dashboard
-        messages.error(request, "Please correct the errors below.")
-    else:
-        form = LessonForm()
-    return render(request, "lessons/form.html", {"form": form, "mode": "create"})
+        except Exception as e:
+            print("❌ [ERROR] Lesson creation failed:", e)
+            return JsonResponse({'error': str(e)}, status=500)
 
+    return JsonResponse({'error': 'Invalid method'}, status=405)
 def edit_lesson(request, pk):
     lesson = get_object_or_404(Lesson, pk=pk)
     if request.method == "POST":
         form = LessonForm(request.POST, request.FILES, instance=lesson)
         if form.is_valid():
-            lesson = form.save()  # ok to save M2M together for existing files
-            # New attachments (if any)
-            for f in request.FILES.getlist("attachments"):
-                fobj = File.objects.create(file=f, name=f.name)
-                lesson.files.add(fobj)
-            messages.success(request, "Lesson updated.")
-            return redirect("lesson_list")
-        messages.error(request, "Please correct the errors below.")
-    else:
-        form = LessonForm(instance=lesson)
-    return render(request, "lessons/form.html", {"form": form, "lesson": lesson, "mode": "edit"})
+            lesson = form.save()
+            
+            # Handle new attachments (if any)
+            if request.FILES.getlist("attachments"):
+                for f in request.FILES.getlist("attachments"):
+                    fobj = File.objects.create(file=f, title=f.name, description="Uploaded with lesson")
+                    lesson.files.add(fobj)
+            
+            messages.success(request, "Lesson updated successfully.")
+            return redirect("content")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    return redirect("content")
+
 
 def delete_lesson(request, pk):
     lesson = get_object_or_404(Lesson, pk=pk)
-    if request.method == "POST":
-        lesson.delete()
-        messages.success(request, "Lesson deleted.")
-        return redirect("lesson_list")
-    return render(request, "lessons/confirm_delete.html", {"lesson": lesson})
+    lesson.delete()
+    messages.success(request, "Lesson deleted successfully.")
+    return redirect("content")
+
+#------------------------------
+#content end
+#------------------------------
+
+
 def meals_dashboard(request):
     # range selector
     range_kind = request.GET.get("range", "monthly")

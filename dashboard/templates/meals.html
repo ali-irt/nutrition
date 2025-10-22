@@ -5,118 +5,477 @@
   <!-- Alpine.js for tab switching -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <style>
-.bg{
-  margin-top: 30px;
-
-}
-.tab{
-  
-  display: block;
-}
+    .bg {
+      margin-top: 30px;
+    }
+    .tab {
+      display: block;
+    }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-900" x-data="{ tab: 'overview' }">
+<body class="text-white min-h-screen" x-data="{ tab: 'overview', deliveryFilter: 'all', paymentFilter: 'all', showMenu: null }">
 
-  <!-- Navbar -->
-  <header class="bg-black text-white py-4 px-6 flex justify-between items-center">
-    <h1 class="text-2xl bg font-semibold">Meals Dashboard</h1>
+  <!-- Page Title & Tabs -->
+  <div class="bg-black px-6 pt-12 pb-6">
+    <h1 class="text-4xl font-bold mb-6">Meals</h1>
+    <div class="flex gap-6 text-sm border-b border-gray-800">
+      <button @click="tab = 'overview'" :class="tab === 'overview' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Overview</button>
+      <button @click="tab = 'orders'" :class="tab === 'orders' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Orders</button>
+      <button @click="tab = 'clients'" :class="tab === 'clients' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Clients</button>
+      <button @click="tab = 'inventory'" :class="tab === 'inventory' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Inventory</button>
+      <button @click="tab = 'delivery'" :class="tab === 'delivery' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Delivery</button>
+      <button @click="tab = 'payments'" :class="tab === 'payments' ? 'text-white pb-3 border-b-2 border-white font-semibold' : 'text-gray-400 pb-3 hover:text-white'">Payments</button>
+    </div>
+  </div>
 
-    <!-- Tabs -->
-    <nav class="space-x-4">
-      <button @click="tab = 'overview'" :class="tab === 'overview' ? 'text-blue-400' : 'hover:text-gray-300'">Overview</button>
-      <button @click="tab = 'orders'" :class="tab === 'orders' ? 'text-blue-400' : 'hover:text-gray-300'">Orders</button>
-      <button @click="tab = 'clients'" :class="tab === 'clients' ? 'text-blue-400' : 'hover:text-gray-300'">Clients</button>
-      <button @click="tab = 'inventory'" :class="tab === 'inventory' ? 'text-blue-400' : 'hover:text-gray-300'">Inventory</button>
-    </nav>
-  </header>
-
-  <main class="p-6">
+  <main class="px-6 pb-8">
 
     <!-- 🔹 Overview Tab -->
     <section x-show="tab === 'overview'" x-transition>
-      <h2 class="text-xl font-bold mb-6">Overview</h2>
-
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <p class="text-gray-500">Total Meals</p>
-          <h3 class="text-3xl font-bold">{{ stats.total_meals }}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8" style="margin-top: 20px;">
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-center">
+          <p class="text-gray-400 text-sm mb-2">Total Meals</p>
+          <h3 class="text-4xl font-bold">{{ stats.total_meals }}</h3>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <p class="text-gray-500">Avg Calories</p>
-          <h3 class="text-3xl font-bold">{{ stats.avg_calories }}</h3>
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-center">
+          <p class="text-gray-400 text-sm mb-2">Avg Calories</p>
+          <h3 class="text-4xl font-bold">{{ stats.avg_calories }}</h3>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <p class="text-gray-500">Vegan Meals</p>
-          <h3 class="text-3xl font-bold text-green-500">{{ stats.vegan_count }}</h3>
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-center">
+          <p class="text-gray-400 text-sm mb-2">Vegan Meals</p>
+          <h3 class="text-4xl font-bold text-green-400">{{ stats.vegan_count }}</h3>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <p class="text-gray-500">Vegetarian Meals</p>
-          <h3 class="text-3xl font-bold text-amber-500">{{ stats.vegetarian_count }}</h3>
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-center">
+          <p class="text-gray-400 text-sm mb-2">Vegetarian Meals</p>
+          <h3 class="text-4xl font-bold text-amber-400">{{ stats.vegetarian_count }}</h3>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow overflow-hidden">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-50 border-b">
-            <tr class="text-left text-gray-600 uppercase">
-              <th class="p-3">Image</th>
-              <th class="p-3">Name</th>
-              <th class="p-3">Type</th>
-              <th class="p-3">Calories</th>
-              <th class="p-3">Difficulty</th>
-              <th class="p-3">Prep Time</th>
+      <div class="bg-white text-black rounded-2xl shadow-lg overflow-hidden">
+        <div class="p-6">
+          <h2 class="text-xl font-bold mb-4">All Meals</h2>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-100 text-left">
+                <th class="px-4 py-3 rounded-l-lg font-semibold">Image</th>
+                <th class="px-4 py-3 font-semibold">Name</th>
+                <th class="px-4 py-3 font-semibold">Type</th>
+                <th class="px-4 py-3 font-semibold">Calories</th>
+                <th class="px-4 py-3 font-semibold">Difficulty</th>
+                <th class="px-4 py-3 rounded-r-lg font-semibold">Prep Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for meal in meals %}
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="px-4 py-4">
+                  {% if meal.image %}
+                  <img src="{{ meal.image.url }}" class="w-12 h-12 rounded-lg object-cover">
+                  {% else %}
+                  <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-xs">N/A</div>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-4 font-semibold">{{ meal.name }}</td>
+                <td class="px-4 py-4 capitalize">{{ meal.get_meal_type_display }}</td>
+                <td class="px-4 py-4">{{ meal.calories }} kcal</td>
+                <td class="px-4 py-4">{{ meal.get_difficulty_display }}</td>
+                <td class="px-4 py-4">{{ meal.preparation_time }} min</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No meals found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🔹 Orders Tab -->
+    <section x-show="tab === 'orders'" x-transition>
+      <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 mb-8">
+        <div class="flex items-center justify-around">
+          <div class="text-center">
+            <div class="text-4xl font-bold">{{ order_stats.total }}</div>
+            <div class="text-sm text-gray-400 mt-2">Total Orders</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-yellow-400">{{ order_stats.pending }}</div>
+            <div class="text-sm text-gray-400 mt-2">Pending</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-blue-400">{{ order_stats.in_progress }}</div>
+            <div class="text-sm text-gray-400 mt-2">In Progress</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-green-400">{{ order_stats.delivered }}</div>
+            <div class="text-sm text-gray-400 mt-2">Delivered</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white text-black rounded-2xl shadow-lg p-6">
+        <h2 class="text-xl font-bold mb-4">Orders List</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="px-4 py-3 rounded-l-lg font-semibold">Order ID</th>
+              <th class="px-4 py-3 font-semibold">Meal</th>
+              <th class="px-4 py-3 font-semibold">Client</th>
+              <th class="px-4 py-3 font-semibold">Quantity</th>
+              <th class="px-4 py-3 font-semibold">Status</th>
+              <th class="px-4 py-3 rounded-r-lg font-semibold">Date</th>
             </tr>
           </thead>
           <tbody>
-            {% for meal in meals %}
-            <tr class="border-b hover:bg-gray-50">
-              <td class="p-3">
-                {% if meal.image %}
-                <img src="{{ meal.image.url }}" class="w-12 h-12 rounded-lg object-cover">
-                {% else %}
-                <span class="text-gray-400">N/A</span>
-                {% endif %}
+            {% for order in orders %}
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="px-4 py-4 font-medium">#{{ order.id }}</td>
+              <td class="px-4 py-4">{{ order.meal.name }}</td>
+              <td class="px-4 py-4">{{ order.client.username }}</td>
+              <td class="px-4 py-4">{{ order.quantity }}</td>
+              <td class="px-4 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                  {% if order.status == 'delivered' %}bg-green-100 text-green-700
+                  {% elif order.status == 'in_progress' %}bg-blue-100 text-blue-700
+                  {% elif order.status == 'pending' %}bg-yellow-100 text-yellow-700
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ order.get_status_display }}
+                </span>
               </td>
-              <td class="p-3 font-semibold">{{ meal.name }}</td>
-              <td class="p-3 capitalize">{{ meal.get_meal_type_display }}</td>
-              <td class="p-3">{{ meal.calories }} kcal</td>
-              <td class="p-3">{{ meal.get_difficulty_display }}</td>
-              <td class="p-3">{{ meal.preparation_time }} min</td>
+              <td class="px-4 py-4">{{ order.created_at|date:"M d, Y" }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="6" class="p-4 text-center text-gray-400">No meals found.</td></tr>
+            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No orders found.</td></tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- 🔹 Orders Tab -->
-    <section x-show="tab === 'orders'" x-transition>
-      <h2 class="text-xl font-bold mb-6">Orders Summary</h2>
-      <div class="bg-white rounded-xl shadow p-6">
-        <p class="text-gray-600 mb-2">This section can display all orders linked to meals (future feature).</p>
-        <div class="text-gray-400 italic">Coming soon...</div>
-      </div>
-    </section>
-
     <!-- 🔹 Clients Tab -->
     <section x-show="tab === 'clients'" x-transition>
-      <h2 class="text-xl font-bold mb-6">Clients</h2>
-      <div class="bg-white rounded-xl shadow p-6">
-        <p class="text-gray-600 mb-2">Client management and subscription tracking will go here.</p>
-        <div class="text-gray-400 italic">Coming soon...</div>
+      <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 mb-8">
+        <div class="text-center">
+          <h2 class="text-4xl font-bold mb-2">{{ clients.count }}</h2>
+          <p class="text-gray-400">Total Clients</p>
+        </div>
+      </div>
+      <div class="bg-white text-black rounded-2xl shadow-lg p-6">
+        <h2 class="text-xl font-bold mb-4">Client List</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="px-4 py-3 rounded-l-lg font-semibold">Name</th>
+              <th class="px-4 py-3 font-semibold">Email</th>
+              <th class="px-4 py-3 font-semibold">Joined</th>
+              <th class="px-4 py-3 rounded-r-lg font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for client in clients %}
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="px-4 py-4 font-semibold">{{ client.username }}</td>
+              <td class="px-4 py-4">{{ client.email }}</td>
+              <td class="px-4 py-4">{{ client.date_joined|date:"M d, Y" }}</td>
+              <td class="px-4 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {% if client.is_active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {% if client.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No clients found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </section>
 
     <!-- 🔹 Inventory Tab -->
     <section x-show="tab === 'inventory'" x-transition>
-      <h2 class="text-xl font-bold mb-6">Inventory & Ingredients</h2>
-      <div class="bg-white rounded-xl shadow p-6">
-        <p class="text-gray-600 mb-2">Track low-stock ingredients and reorder alerts.</p>
-        <div class="text-gray-400 italic">Coming soon...</div>
+      <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 mb-8">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold mb-2">Inventory & Ingredients</h2>
+          <p class="text-gray-400">Track stock levels and manage ingredients</p>
+        </div>
+      </div>
+      <div class="bg-white text-black rounded-2xl shadow-lg p-6">
+        <h2 class="text-xl font-bold mb-4">Inventory Items</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="px-4 py-3 rounded-l-lg font-semibold">Item</th>
+              <th class="px-4 py-3 font-semibold">Quantity</th>
+              <th class="px-4 py-3 font-semibold">Unit</th>
+              <th class="px-4 py-3 rounded-r-lg font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in inventory %}
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="px-4 py-4 font-semibold">{{ item.name }}</td>
+              <td class="px-4 py-4">{{ item.quantity }}</td>
+              <td class="px-4 py-4">{{ item.unit }}</td>
+              <td class="px-4 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                  {% if item.quantity > 50 %}bg-green-100 text-green-700
+                  {% elif item.quantity > 20 %}bg-yellow-100 text-yellow-700
+                  {% else %}bg-red-100 text-red-700{% endif %}">
+                  {% if item.quantity > 50 %}In Stock
+                  {% elif item.quantity > 20 %}Low Stock
+                  {% else %}Critical{% endif %}
+                </span>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No inventory items found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 🔹 Delivery Tab -->
+    <section x-show="tab === 'delivery'" x-transition>
+      <!-- Stats Cards -->
+      <div class="mb-8" style="margin-top: 20px;">
+        <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8">
+          <div class="flex items-center justify-around">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ delivery_stats.total }}</div>
+                <div class="text-sm text-gray-400">Total Deliveries</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ delivery_stats.pending }}</div>
+                <div class="text-sm text-gray-400">Pending</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ delivery_stats.out_for_delivery }}</div>
+                <div class="text-sm text-gray-400">Out for Delivery</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ delivery_stats.delivered }}</div>
+                <div class="text-sm text-gray-400">Delivered</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ delivery_stats.failed }}</div>
+                <div class="text-sm text-gray-400">Failed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery List -->
+      <div class="bg-white text-black rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="text-sm text-gray-600">Showing {{ deliveries.count }} result{{ deliveries.count|pluralize }}</div>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Delivery List</h2>
+        </div>
+
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="px-4 py-3 rounded-l-lg text-sm font-semibold">Id#</th>
+              <th class="px-4 py-3 text-sm font-semibold">Date & Time</th>
+              <th class="px-4 py-3 text-sm font-semibold">Rider</th>
+              <th class="px-4 py-3 text-sm font-semibold">Address</th>
+              <th class="px-4 py-3 text-sm font-semibold">Status</th>
+              <th class="px-4 py-3 rounded-r-lg text-sm font-semibold">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for delivery in deliveries %}
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="px-4 py-4 text-sm font-medium">#D{{ delivery.id }}</td>
+              <td class="px-4 py-4 text-sm">{{ delivery.delivery_time|date:"M d, g:iA" }}</td>
+              <td class="px-4 py-4 text-sm">{{ delivery.rider_name|default:"Not Assigned" }}</td>
+              <td class="px-4 py-4 text-sm">{{ delivery.address }}</td>
+              <td class="px-4 py-4 text-sm">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                  {% if delivery.status == 'delivered' %}bg-green-100 text-green-700
+                  {% elif delivery.status == 'out_for_delivery' %}bg-blue-100 text-blue-700
+                  {% elif delivery.status == 'pending' %}bg-yellow-100 text-yellow-700
+                  {% elif delivery.status == 'failed' %}bg-red-100 text-red-700
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ delivery.get_status_display }}
+                </span>
+              </td>
+              <td class="px-4 py-4 text-sm">
+                <div class="relative" x-data="{ open: false }">
+                  <button @click="open = !open" class="p-1 hover:bg-gray-200 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                    </svg>
+                  </button>
+                  <div x-show="open" @click.away="open = false" class="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 w-24">
+                    <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">View</button>
+                    <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">Edit</button>
+                    <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 text-red-600">Cancel</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No deliveries found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 🔹 Payments Tab -->
+    <section x-show="tab === 'payments'" x-transition>
+      <!-- Stats Cards -->
+      <div class="mb-8" style="margin-top: 20px;">
+        <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8">
+          <div class="flex items-center justify-around">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ payment_stats.total }}</div>
+                <div class="text-sm text-gray-400">Total Payments</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ payment_stats.paid }}</div>
+                <div class="text-sm text-gray-400">Paid</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">PKR {{ payment_stats.revenue|floatformat:0 }}</div>
+                <div class="text-sm text-gray-400">Total Revenue</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-3xl font-bold">{{ payment_stats.pending }}</div>
+                <div class="text-sm text-gray-400">Pending Payments</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments List -->
+      <div class="bg-white text-black rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="text-sm text-gray-600">Showing {{ payments.count }} result{{ payments.count|pluralize }}</div>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Payments</h2>
+        </div>
+
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="px-4 py-3 rounded-l-lg text-sm font-semibold">Id#</th>
+              <th class="px-4 py-3 text-sm font-semibold">Client</th>
+              <th class="px-4 py-3 text-sm font-semibold">Plan Type</th>
+              <th class="px-4 py-3 text-sm font-semibold">Amount</th>
+              <th class="px-4 py-3 text-sm font-semibold">Payment Method</th>
+              <th class="px-4 py-3 rounded-r-lg text-sm font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for payment in payments %}
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="px-4 py-4 text-sm font-medium">{{ payment.id|stringformat:"03d" }}</td>
+              <td class="px-4 py-4 text-sm">{{ payment.client.username }}</td>
+              <td class="px-4 py-4 text-sm">{{ payment.plan_type|default:"Basic Plan" }}</td>
+              <td class="px-4 py-4 text-sm">{{ payment.amount|floatformat:0 }} PKR</td>
+              <td class="px-4 py-4 text-sm">{{ payment.payment_method|default:"Credit Card" }}</td>
+              <td class="px-4 py-4 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold
+                    {% if payment.status == 'paid' %}bg-green-100 text-green-700
+                    {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-700
+                    {% elif payment.status == 'failed' %}bg-red-100 text-red-700
+                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                    {{ payment.get_status_display }}
+                  </span>
+                  <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="p-1 hover:bg-gray-200 rounded">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                      </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 w-32">
+                      <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">Download</button>
+                      <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">Refund History</button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No payments found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </section>
 
   </main>
+
+</body>
 {% endblock %}

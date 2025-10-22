@@ -1,382 +1,1231 @@
-{
-  "users": [
-    {
-      "username": "john_doe",
-      "email": "john@example.com",
-      "password": "password123",
-      "first_name": "John",
-      "last_name": "Doe"
-    },
-    {
-      "username": "jane_smith",
-      "email": "jane@example.com",
-      "password": "password123",
-      "first_name": "Jane",
-      "last_name": "Smith"
-    },
-    {
-      "username": "mike_wilson",
-      "email": "mike@example.com",
-      "password": "password123",
-      "first_name": "Mike",
-      "last_name": "Wilson"
-    },
-    {
-      "username": "sarah_jones",
-      "email": "sarah@example.com",
-      "password": "password123",
-      "first_name": "Sarah",
-      "last_name": "Jones"
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "client1",
+      "email": "client1@example.com",
+      "first_name": "Ahmed",
+      "last_name": "Khan",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-01-15T10:00:00Z"
     }
-  ],
-  "workouts": [
-    {
-      "user": "john_doe",
-      "name": "Morning Run",
-      "description": "5k morning run in the park",
-      "duration": "00:45:00",
-      "level": "intermediate",
-      "calories_burned": 350,
-      "date": "2024-01-15",
-      "completed": true
-    },
-    {
-      "user": "john_doe",
-      "name": "Weight Training",
-      "description": "Upper body workout",
-      "duration": "01:00:00",
-      "level": "intermediate",
-      "calories_burned": 400,
-      "date": "2024-01-16",
-      "completed": true
-    },
-    {
-      "user": "jane_smith",
-      "name": "Yoga Session",
-      "description": "Vinyasa flow yoga",
-      "duration": "01:00:00",
-      "level": "beginner",
-      "calories_burned": 200,
-      "date": "2024-01-15",
-      "completed": true
-    },
-    {
-      "user": "mike_wilson",
-      "name": "HIIT Workout",
-      "description": "High intensity interval training",
-      "duration": "00:30:00",
-      "level": "advanced",
-      "calories_burned": 450,
-      "date": "2024-01-16",
-      "completed": true
-    },
-    {
-      "user": "sarah_jones",
-      "name": "Swimming",
-      "description": "Lap swimming at local pool",
-      "duration": "01:15:00",
-      "level": "intermediate",
-      "calories_burned": 500,
-      "date": "2024-01-14",
-      "completed": true
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "client2",
+      "email": "client2@example.com",
+      "first_name": "Fatima",
+      "last_name": "Ali",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-02-01T10:00:00Z"
     }
-  ],
-  "user_profiles": [
-    {
-      "user": "john_doe",
-      "date_of_birth": "1990-05-15",
-      "gender": "male",
-      "height": 180.0,
-      "weight": 75.0,
-      "unit_system": "metric",
-      "goal": "Lose weight and build muscle",
-      "target_weight": 72.0,
-      "dietary_preferences": "meat_veg",
-      "activity_level": "active",
-      "phone": "+1234567890",
-      "source": "google"
-    },
-    {
-      "user": "jane_smith",
-      "date_of_birth": "1988-08-22",
-      "gender": "female",
-      "height": 165.0,
-      "weight": 60.0,
-      "unit_system": "metric",
-      "goal": "Maintain weight and tone",
-      "target_weight": 60.0,
-      "dietary_preferences": "veg",
-      "activity_level": "moderate",
-      "phone": "+1234567891",
-      "source": "friend"
-    },
-    {
-      "user": "mike_wilson",
-      "date_of_birth": "1985-12-10",
-      "gender": "male",
-      "height": 175.0,
-      "weight": 80.0,
-      "unit_system": "metric",
-      "goal": "Gain muscle mass",
-      "target_weight": 85.0,
-      "dietary_preferences": "meat",
-      "activity_level": "active",
-      "phone": "+1234567892",
-      "source": "ads"
-    },
-    {
-      "user": "sarah_jones",
-      "date_of_birth": "1992-03-30",
-      "gender": "female",
-      "height": 170.0,
-      "weight": 65.0,
-      "unit_system": "metric",
-      "goal": "Lose weight",
-      "target_weight": 58.0,
-      "dietary_preferences": "vegan",
-      "activity_level": "moderate",
-      "phone": "+1234567893",
-      "source": "social"
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "client3",
+      "email": "client3@example.com",
+      "first_name": "Hassan",
+      "last_name": "Malik",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-02-15T10:00:00Z"
     }
-  ],
-  "meals": [
-    {
-      "name": "Oatmeal with Berries",
-      "description": "Healthy oatmeal topped with fresh berries and nuts",
-      "meal_type": "breakfast",
-      "calories": 350,
-      "protein": 12.0,
-      "carbs": 55.0,
-      "fats": 8.0,
-      "fiber": 7.0,
-      "is_vegan": true,
-      "is_vegetarian": true,
-      "is_gluten_free": true,
-      "is_dairy_free": true,
-      "preparation_time": 10,
-      "difficulty": "easy"
-    },
-    {
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "client4",
+      "email": "client4@example.com",
+      "first_name": "Aisha",
+      "last_name": "Siddiqui",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-03-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "username": "client5",
+      "email": "client5@example.com",
+      "first_name": "Omar",
+      "last_name": "Raza",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-03-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "username": "client6",
+      "email": "client6@example.com",
+      "first_name": "Zainab",
+      "last_name": "Ahmed",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-04-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "username": "client7",
+      "email": "client7@example.com",
+      "first_name": "Ali",
+      "last_name": "Hassan",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-04-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "username": "client8",
+      "email": "client8@example.com",
+      "first_name": "Maria",
+      "last_name": "Sheikh",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-05-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "username": "client9",
+      "email": "client9@example.com",
+      "first_name": "Bilal",
+      "last_name": "Tariq",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-05-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 10,
+    "fields": {
+      "username": "client10",
+      "email": "client10@example.com",
+      "first_name": "Sara",
+      "last_name": "Iqbal",
+      "password": "pbkdf2_sha256$600000$xyz$abc123",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-06-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 1,
+    "fields": {
       "name": "Grilled Chicken Salad",
-      "description": "Mixed greens with grilled chicken, vegetables, and light dressing",
+      "description": "Fresh mixed greens with grilled chicken breast",
       "meal_type": "lunch",
       "calories": 450,
-      "protein": 35.0,
-      "carbs": 20.0,
-      "fats": 15.0,
-      "fiber": 6.0,
-      "is_vegan": false,
-      "is_vegetarian": false,
-      "is_gluten_free": true,
-      "is_dairy_free": true,
-      "preparation_time": 20,
-      "difficulty": "easy"
-    },
-    {
-      "name": "Salmon with Quinoa",
-      "description": "Baked salmon served with quinoa and steamed vegetables",
-      "meal_type": "dinner",
-      "calories": 550,
-      "protein": 40.0,
-      "carbs": 45.0,
-      "fats": 20.0,
+      "protein": 35.5,
+      "carbs": 25.0,
+      "fats": 18.5,
       "fiber": 8.0,
       "is_vegan": false,
       "is_vegetarian": false,
       "is_gluten_free": true,
-      "is_dairy_free": true,
-      "preparation_time": 30,
-      "difficulty": "medium"
-    },
-    {
-      "name": "Protein Shake",
-      "description": "Whey protein shake with almond milk and banana",
-      "meal_type": "snack",
-      "calories": 250,
-      "protein": 25.0,
-      "carbs": 20.0,
-      "fats": 5.0,
-      "fiber": 3.0,
-      "is_vegan": false,
-      "is_vegetarian": true,
-      "is_gluten_free": true,
       "is_dairy_free": false,
-      "preparation_time": 5,
-      "difficulty": "easy"
-    },
-    {
-      "name": "Greek Yogurt Parfait",
-      "description": "Greek yogurt layered with granola and honey",
+      "preparation_time": 20,
+      "difficulty": "easy",
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 2,
+    "fields": {
+      "name": "Salmon with Roasted Vegetables",
+      "description": "Pan-seared salmon with seasonal vegetables",
+      "meal_type": "dinner",
+      "calories": 520,
+      "protein": 42.0,
+      "carbs": 30.0,
+      "fats": 22.0,
+      "fiber": 10.0,
+      "is_vegan": false,
+      "is_vegetarian": false,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 35,
+      "difficulty": "medium",
+      "created_at": "2024-01-02T10:00:00Z",
+      "updated_at": "2024-01-02T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 3,
+    "fields": {
+      "name": "Veggie Stir Fry",
+      "description": "Colorful vegetable stir fry with tofu",
+      "meal_type": "dinner",
+      "calories": 380,
+      "protein": 18.0,
+      "carbs": 45.0,
+      "fats": 12.0,
+      "fiber": 12.0,
+      "is_vegan": true,
+      "is_vegetarian": true,
+      "is_gluten_free": false,
+      "is_dairy_free": true,
+      "preparation_time": 25,
+      "difficulty": "easy",
+      "created_at": "2024-01-03T10:00:00Z",
+      "updated_at": "2024-01-03T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 4,
+    "fields": {
+      "name": "Protein Smoothie Bowl",
+      "description": "Berry smoothie bowl with granola and nuts",
       "meal_type": "breakfast",
-      "calories": 300,
-      "protein": 20.0,
-      "carbs": 35.0,
-      "fats": 8.0,
-      "fiber": 4.0,
+      "calories": 420,
+      "protein": 25.0,
+      "carbs": 52.0,
+      "fats": 15.0,
+      "fiber": 9.0,
       "is_vegan": false,
       "is_vegetarian": true,
       "is_gluten_free": false,
       "is_dairy_free": false,
-      "preparation_time": 5,
-      "difficulty": "easy"
+      "preparation_time": 10,
+      "difficulty": "easy",
+      "created_at": "2024-01-04T10:00:00Z",
+      "updated_at": "2024-01-04T10:00:00Z"
     }
-  ],
-  "user_workout_logs": [
-    {
-      "user": "john_doe",
-      "workout": "Morning Run",
-      "date": "2024-01-15",
-      "start_time": "07:00:00",
-      "end_time": "07:45:00",
-      "completed": true,
-      "satisfaction": 4,
-      "notes": "Felt great today! Good pace maintained.",
-      "calories_burned": 350
-    },
-    {
-      "user": "jane_smith",
-      "workout": "Yoga Session",
-      "date": "2024-01-15",
-      "start_time": "18:00:00",
-      "end_time": "19:00:00",
-      "completed": true,
-      "satisfaction": 5,
-      "notes": "Very relaxing session, improved flexibility",
-      "calories_burned": 200
-    },
-    {
-      "user": "mike_wilson",
-      "workout": "HIIT Workout",
-      "date": "2024-01-16",
-      "start_time": "17:30:00",
-      "end_time": "18:00:00",
-      "completed": true,
-      "satisfaction": 4,
-      "notes": "Challenging but rewarding",
-      "calories_burned": 450
+  },
+  {
+    "model": "app.meal",
+    "pk": 5,
+    "fields": {
+      "name": "Quinoa Buddha Bowl",
+      "description": "Nutritious bowl with quinoa, chickpeas and avocado",
+      "meal_type": "lunch",
+      "calories": 485,
+      "protein": 20.0,
+      "carbs": 58.0,
+      "fats": 18.0,
+      "fiber": 14.0,
+      "is_vegan": true,
+      "is_vegetarian": true,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 30,
+      "difficulty": "medium",
+      "created_at": "2024-01-05T10:00:00Z",
+      "updated_at": "2024-01-05T10:00:00Z"
     }
-  ],
-  "user_meal_logs": [
-    {
-      "user": "john_doe",
-      "meal": "Oatmeal with Berries",
-      "date": "2024-01-15",
-      "consumed_at": "08:00:00",
-      "servings": 1.0,
-      "satisfaction": 4,
-      "notes": "Tasty and filling"
-    },
-    {
-      "user": "john_doe",
-      "meal": "Grilled Chicken Salad",
-      "date": "2024-01-15",
-      "consumed_at": "13:00:00",
-      "servings": 1.0,
-      "satisfaction": 5,
-      "notes": "Perfect lunch, not too heavy"
-    },
-    {
-      "user": "jane_smith",
-      "meal": "Greek Yogurt Parfait",
-      "date": "2024-01-15",
-      "consumed_at": "07:30:00",
-      "servings": 1.0,
-      "satisfaction": 4,
-      "notes": "Quick and delicious breakfast"
-    },
-    {
-      "user": "mike_wilson",
-      "meal": "Protein Shake",
-      "date": "2024-01-16",
-      "consumed_at": "16:00:00",
-      "servings": 1.5,
-      "satisfaction": 3,
-      "notes": "Good post-workout shake"
+  },
+  {
+    "model": "app.meal",
+    "pk": 6,
+    "fields": {
+      "name": "Turkey Wrap",
+      "description": "Whole wheat wrap with turkey and vegetables",
+      "meal_type": "lunch",
+      "calories": 390,
+      "protein": 32.0,
+      "carbs": 42.0,
+      "fats": 10.0,
+      "fiber": 6.0,
+      "is_vegan": false,
+      "is_vegetarian": false,
+      "is_gluten_free": false,
+      "is_dairy_free": false,
+      "preparation_time": 15,
+      "difficulty": "easy",
+      "created_at": "2024-01-06T10:00:00Z",
+      "updated_at": "2024-01-06T10:00:00Z"
     }
-  ],
-  "progress_entries": [
-    {
-      "user": "john_doe",
-      "date": "2024-01-01",
-      "weight": 77.0,
-      "body_fat_percentage": 20.5,
-      "muscle_mass": 60.0,
-      "waist_circumference": 85.0,
-      "hip_circumference": 95.0,
-      "notes": "Starting measurements"
-    },
-    {
-      "user": "john_doe",
-      "date": "2024-01-15",
-      "weight": 75.0,
-      "body_fat_percentage": 19.8,
-      "muscle_mass": 60.5,
-      "waist_circumference": 83.0,
-      "hip_circumference": 94.0,
-      "notes": "Good progress, losing fat"
-    },
-    {
-      "user": "jane_smith",
-      "date": "2024-01-01",
-      "weight": 61.0,
-      "body_fat_percentage": 25.0,
-      "muscle_mass": 45.0,
-      "waist_circumference": 70.0,
-      "hip_circumference": 95.0,
-      "notes": "Baseline measurements"
-    },
-    {
-      "user": "jane_smith",
-      "date": "2024-01-15",
-      "weight": 60.0,
-      "body_fat_percentage": 24.5,
-      "muscle_mass": 45.2,
-      "waist_circumference": 69.0,
-      "hip_circumference": 94.5,
-      "notes": "Slow but steady progress"
+  },
+  {
+    "model": "app.meal",
+    "pk": 7,
+    "fields": {
+      "name": "Greek Yogurt Parfait",
+      "description": "Layered yogurt with berries and honey",
+      "meal_type": "breakfast",
+      "calories": 320,
+      "protein": 22.0,
+      "carbs": 38.0,
+      "fats": 8.0,
+      "fiber": 5.0,
+      "is_vegan": false,
+      "is_vegetarian": true,
+      "is_gluten_free": true,
+      "is_dairy_free": false,
+      "preparation_time": 10,
+      "difficulty": "easy",
+      "created_at": "2024-01-07T10:00:00Z",
+      "updated_at": "2024-01-07T10:00:00Z"
     }
-  ],
-  "wishlist_items": [
-    {
-      "user": "john_doe",
-      "name": "Running Shoes",
-      "description": "Professional running shoes for marathon training",
-      "category": "shoes",
-      "priority": 3,
-      "estimated_price": 120.00,
-      "url": "https://example.com/running-shoes",
-      "is_purchased": false
-    },
-    {
-      "user": "john_doe",
-      "name": "Fitness Tracker",
-      "description": "Smart watch with heart rate monitoring",
-      "category": "electronics",
-      "priority": 2,
-      "estimated_price": 200.00,
-      "url": "https://example.com/fitness-tracker",
-      "is_purchased": false
-    },
-    {
-      "user": "jane_smith",
-      "name": "Yoga Mat",
-      "description": "Premium non-slip yoga mat",
-      "category": "fitness",
-      "priority": 3,
-      "estimated_price": 50.00,
-      "url": "https://example.com/yoga-mat",
-      "is_purchased": true,
-      "purchased_on": "2024-01-10"
-    },
-    {
-      "user": "mike_wilson",
-      "name": "Protein Powder",
-      "description": "Whey protein isolate 5lbs",
-      "category": "supplements",
-      "priority": 2,
-      "estimated_price": 60.00,
-      "url": "https://example.com/protein-powder",
-      "is_purchased": false
+  },
+  {
+    "model": "app.meal",
+    "pk": 8,
+    "fields": {
+      "name": "Egg White Omelette",
+      "description": "Fluffy egg white omelette with vegetables",
+      "meal_type": "breakfast",
+      "calories": 280,
+      "protein": 28.0,
+      "carbs": 15.0,
+      "fats": 10.0,
+      "fiber": 4.0,
+      "is_vegan": false,
+      "is_vegetarian": true,
+      "is_gluten_free": true,
+      "is_dairy_free": false,
+      "preparation_time": 15,
+      "difficulty": "easy",
+      "created_at": "2024-01-08T10:00:00Z",
+      "updated_at": "2024-01-08T10:00:00Z"
     }
-  ]
-}
+  },
+  {
+    "model": "app.meal",
+    "pk": 9,
+    "fields": {
+      "name": "Chickpea Curry",
+      "description": "Spiced chickpea curry with basmati rice",
+      "meal_type": "dinner",
+      "calories": 465,
+      "protein": 16.0,
+      "carbs": 68.0,
+      "fats": 14.0,
+      "fiber": 11.0,
+      "is_vegan": true,
+      "is_vegetarian": true,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 40,
+      "difficulty": "medium",
+      "created_at": "2024-01-09T10:00:00Z",
+      "updated_at": "2024-01-09T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.meal",
+    "pk": 10,
+    "fields": {
+      "name": "Tuna Poke Bowl",
+      "description": "Fresh tuna poke with rice and edamame",
+      "meal_type": "lunch",
+      "calories": 510,
+      "protein": 38.0,
+      "carbs": 55.0,
+      "fats": 16.0,
+      "fiber": 7.0,
+      "is_vegan": false,
+      "is_vegetarian": false,
+      "is_gluten_free": true,
+      "is_dairy_free": true,
+      "preparation_time": 25,
+      "difficulty": "medium",
+      "created_at": "2024-01-10T10:00:00Z",
+      "updated_at": "2024-01-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 1,
+    "fields": {
+      "meal": 1,
+      "customer_name": "Ahmed Khan",
+      "address": "123 Main Street, Model Town, Lahore",
+      "status": "delivered",
+      "created_at": "2024-10-15T09:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 2,
+    "fields": {
+      "meal": 2,
+      "customer_name": "Fatima Ali",
+      "address": "456 Park Avenue, Gulberg, Lahore",
+      "status": "in_progress",
+      "created_at": "2024-10-16T10:30:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 3,
+    "fields": {
+      "meal": 3,
+      "customer_name": "Hassan Malik",
+      "address": "789 Garden Road, DHA, Lahore",
+      "status": "pending",
+      "created_at": "2024-10-17T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 4,
+    "fields": {
+      "meal": 4,
+      "customer_name": "Aisha Siddiqui",
+      "address": "321 Lake View, Johar Town, Lahore",
+      "status": "delivered",
+      "created_at": "2024-10-18T08:30:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 5,
+    "fields": {
+      "meal": 5,
+      "customer_name": "Omar Raza",
+      "address": "654 Canal Road, Faisal Town, Lahore",
+      "status": "in_progress",
+      "created_at": "2024-10-19T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 6,
+    "fields": {
+      "meal": 6,
+      "customer_name": "Zainab Ahmed",
+      "address": "987 University Road, Township, Lahore",
+      "status": "pending",
+      "created_at": "2024-10-20T09:30:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 7,
+    "fields": {
+      "meal": 7,
+      "customer_name": "Ali Hassan",
+      "address": "147 Mall Road, Anarkali, Lahore",
+      "status": "delivered",
+      "created_at": "2024-10-21T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 8,
+    "fields": {
+      "meal": 8,
+      "customer_name": "Maria Sheikh",
+      "address": "258 Jail Road, Cantt, Lahore",
+      "status": "in_progress",
+      "created_at": "2024-10-22T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 9,
+    "fields": {
+      "meal": 9,
+      "customer_name": "Bilal Tariq",
+      "address": "369 Ferozpur Road, Iqbal Town, Lahore",
+      "status": "pending",
+      "created_at": "2024-10-22T11:30:00Z"
+    }
+  },
+  {
+    "model": "app.order",
+    "pk": 10,
+    "fields": {
+      "meal": 10,
+      "customer_name": "Sara Iqbal",
+      "address": "741 Walton Road, Shadman, Lahore",
+      "status": "delivered",
+      "created_at": "2024-10-22T13:00:00Z"
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 1,
+    "fields": {
+      "ingredient_name": "Chicken Breast",
+      "quantity": 85,
+      "unit": "kg",
+      "low_stock_alert": 15
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 2,
+    "fields": {
+      "ingredient_name": "Salmon Fillet",
+      "quantity": 42,
+      "unit": "kg",
+      "low_stock_alert": 10
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 3,
+    "fields": {
+      "ingredient_name": "Brown Rice",
+      "quantity": 120,
+      "unit": "kg",
+      "low_stock_alert": 20
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 4,
+    "fields": {
+      "ingredient_name": "Quinoa",
+      "quantity": 35,
+      "unit": "kg",
+      "low_stock_alert": 10
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 5,
+    "fields": {
+      "ingredient_name": "Broccoli",
+      "quantity": 28,
+      "unit": "kg",
+      "low_stock_alert": 8
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 6,
+    "fields": {
+      "ingredient_name": "Spinach",
+      "quantity": 15,
+      "unit": "kg",
+      "low_stock_alert": 5
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 7,
+    "fields": {
+      "ingredient_name": "Olive Oil",
+      "quantity": 25,
+      "unit": "liters",
+      "low_stock_alert": 5
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 8,
+    "fields": {
+      "ingredient_name": "Greek Yogurt",
+      "quantity": 40,
+      "unit": "liters",
+      "low_stock_alert": 10
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 9,
+    "fields": {
+      "ingredient_name": "Eggs",
+      "quantity": 65,
+      "unit": "dozen",
+      "low_stock_alert": 15
+    }
+  },
+  {
+    "model": "app.inventory",
+    "pk": 10,
+    "fields": {
+      "ingredient_name": "Almonds",
+      "quantity": 22,
+      "unit": "kg",
+      "low_stock_alert": 8
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "full_name": "Ahmed Khan",
+      "phone": "+923001234567",
+      "line1": "House 123, Street 5",
+      "line2": "Model Town",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54000",
+      "is_default": true,
+      "created_at": "2024-01-15T10:00:00Z",
+      "updated_at": "2024-01-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "full_name": "Fatima Ali",
+      "phone": "+923002345678",
+      "line1": "Apartment 45, Block C",
+      "line2": "Gulberg III",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54660",
+      "is_default": true,
+      "created_at": "2024-02-01T10:00:00Z",
+      "updated_at": "2024-02-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "full_name": "Hassan Malik",
+      "phone": "+923003456789",
+      "line1": "Villa 78, Phase 5",
+      "line2": "DHA",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54792",
+      "is_default": true,
+      "created_at": "2024-02-15T10:00:00Z",
+      "updated_at": "2024-02-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "full_name": "Aisha Siddiqui",
+      "phone": "+923004567890",
+      "line1": "House 32, Block E",
+      "line2": "Johar Town",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54782",
+      "is_default": true,
+      "created_at": "2024-03-01T10:00:00Z",
+      "updated_at": "2024-03-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "full_name": "Omar Raza",
+      "phone": "+923005678901",
+      "line1": "Flat 12, Floor 3",
+      "line2": "Faisal Town",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54770",
+      "is_default": true,
+      "created_at": "2024-03-15T10:00:00Z",
+      "updated_at": "2024-03-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 6,
+    "fields": {
+      "user": 6,
+      "full_name": "Zainab Ahmed",
+      "phone": "+923006789012",
+      "line1": "House 56, Street 10",
+      "line2": "Township",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54800",
+      "is_default": true,
+      "created_at": "2024-04-01T10:00:00Z",
+      "updated_at": "2024-04-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 7,
+    "fields": {
+      "user": 7,
+      "full_name": "Ali Hassan",
+      "phone": "+923007890123",
+      "line1": "Shop 21, Mall Road",
+      "line2": "Anarkali",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54000",
+      "is_default": true,
+      "created_at": "2024-04-15T10:00:00Z",
+      "updated_at": "2024-04-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 8,
+    "fields": {
+      "user": 8,
+      "full_name": "Maria Sheikh",
+      "phone": "+923008901234",
+      "line1": "House 89, Sector A",
+      "line2": "Cantt",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54810",
+      "is_default": true,
+      "created_at": "2024-05-01T10:00:00Z",
+      "updated_at": "2024-05-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 9,
+    "fields": {
+      "user": 9,
+      "full_name": "Bilal Tariq",
+      "phone": "+923009012345",
+      "line1": "Apartment 15, Block D",
+      "line2": "Iqbal Town",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54700",
+      "is_default": true,
+      "created_at": "2024-05-15T10:00:00Z",
+      "updated_at": "2024-05-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.address",
+    "pk": 10,
+    "fields": {
+      "user": 10,
+      "full_name": "Sara Iqbal",
+      "phone": "+923000123456",
+      "line1": "House 67, Street 8",
+      "line2": "Shadman",
+      "city": "Lahore",
+      "province": "Punjab",
+      "postal_code": "54000",
+      "is_default": true,
+      "created_at": "2024-06-01T10:00:00Z",
+      "updated_at": "2024-06-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.product",
+    "pk": 1,
+    "fields": {
+      "slug": "meal-subscription",
+      "name": "Meal Subscription",
+      "description": "Healthy meal delivery service with customizable plans",
+      "active": true
+    }
+  },
+  {
+    "model": "app.plan",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "name": "Basic Plan",
+      "interval": "monthly",
+      "price_amount": "8000.00",
+      "currency": "PKR",
+      "is_default": true,
+      "sort_order": 1
+    }
+  },
+  {
+    "model": "app.plan",
+    "pk": 2,
+    "fields": {
+      "product": 1,
+      "name": "Premium Plan",
+      "interval": "monthly",
+      "price_amount": "12000.00",
+      "currency": "PKR",
+      "is_default": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "app.plan",
+    "pk": 3,
+    "fields": {
+      "product": 1,
+      "name": "Weekly Plan",
+      "interval": "one_time",
+      "price_amount": "2500.00",
+      "currency": "PKR",
+      "is_default": false,
+      "sort_order": 3
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "address": 1,
+      "plan": 1,
+      "meals_per_week": 10,
+      "portion": "standard",
+      "protein_preference": "meat_vegan",
+      "delivery_window": "08:00-09:00",
+      "start_date": "2024-10-01",
+      "status": "active",
+      "created_at": "2024-09-25T10:00:00Z",
+      "updated_at": "2024-09-25T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "address": 2,
+      "plan": 2,
+      "meals_per_week": 12,
+      "portion": "high_protein",
+      "protein_preference": "meat_only",
+      "delivery_window": "10:00-11:00",
+      "start_date": "2024-10-05",
+      "status": "active",
+      "created_at": "2024-09-30T10:00:00Z",
+      "updated_at": "2024-09-30T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "address": 3,
+      "plan": 1,
+      "meals_per_week": 8,
+      "portion": "low_cal",
+      "protein_preference": "vegan_only",
+      "delivery_window": "14:00-15:00",
+      "start_date": "2024-10-10",
+      "status": "paused",
+      "created_at": "2024-10-05T10:00:00Z",
+      "updated_at": "2024-10-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "address": 4,
+      "plan": 2,
+      "meals_per_week": 15,
+      "portion": "standard",
+      "protein_preference": "meat_vegan",
+      "delivery_window": "08:00-09:00",
+      "start_date": "2024-09-28",
+      "status": "active",
+      "created_at": "2024-09-20T10:00:00Z",
+      "updated_at": "2024-09-20T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "address": 5,
+      "plan": 3,
+      "meals_per_week": 6,
+      "portion": "high_protein",
+      "protein_preference": "meat_only",
+      "delivery_window": "10:00-11:00",
+      "start_date": "2024-10-15",
+      "status": "active",
+      "created_at": "2024-10-10T10:00:00Z",
+      "updated_at": "2024-10-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 6,
+    "fields": {
+      "user": 6,
+      "address": 6,
+      "plan": 1,
+      "meals_per_week": 10,
+      "portion": "standard",
+      "protein_preference": "meat_vegan",
+      "delivery_window": "08:00-09:00",
+      "start_date": "2024-10-08",
+      "status": "active",
+      "created_at": "2024-10-01T10:00:00Z",
+      "updated_at": "2024-10-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 7,
+    "fields": {
+      "user": 7,
+      "address": 7,
+      "plan": 2,
+      "meals_per_week": 12,
+      "portion": "low_cal",
+      "protein_preference": "vegan_only",
+      "delivery_window": "14:00-15:00",
+      "start_date": "2024-10-12",
+      "status": "canceled",
+      "created_at": "2024-10-05T10:00:00Z",
+      "updated_at": "2024-10-18T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 8,
+    "fields": {
+      "user": 8,
+      "address": 8,
+      "plan": 1,
+      "meals_per_week": 10,
+      "portion": "standard",
+      "protein_preference": "meat_vegan",
+      "delivery_window": "10:00-11:00",
+      "start_date": "2024-10-20",
+      "status": "active",
+      "created_at": "2024-10-15T10:00:00Z",
+      "updated_at": "2024-10-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 9,
+    "fields": {
+      "user": 9,
+      "address": 9,
+      "plan": 3,
+      "meals_per_week": 6,
+      "portion": "high_protein",
+      "protein_preference": "meat_only",
+      "delivery_window": "08:00-09:00",
+      "start_date": "2024-10-22",
+      "status": "active",
+      "created_at": "2024-10-18T10:00:00Z",
+      "updated_at": "2024-10-18T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.mealsubscription",
+    "pk": 10,
+    "fields": {
+      "user": 10,
+      "address": 10,
+      "plan": 2,
+      "meals_per_week": 12,
+      "portion": "standard",
+      "protein_preference": "meat_vegan",
+      "delivery_window": "14:00-15:00",
+      "start_date": "2024-10-18",
+      "status": "active",
+      "created_at": "2024-10-12T10:00:00Z",
+      "updated_at": "2024-10-12T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 1,
+    "fields": {
+      "subscription": 1,
+      "scheduled_date": "2024-10-23",
+      "delivered_at": null,
+      "status": "out_for_delivery",
+      "notes": "Morning delivery requested",
+      "created_at": "2024-10-22T08:00:00Z",
+      "updated_at": "2024-10-23T08:30:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 2,
+    "fields": {
+      "subscription": 2,
+      "scheduled_date": "2024-10-22",
+      "delivered_at": "2024-10-22T10:45:00Z",
+      "status": "delivered",
+      "notes": "Left at gate",
+      "created_at": "2024-10-21T10:00:00Z",
+      "updated_at": "2024-10-22T10:45:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 3,
+    "fields": {
+      "subscription": 4,
+      "scheduled_date": "2024-10-24",
+      "delivered_at": null,
+      "status": "scheduled",
+      "notes": "Call before delivery",
+      "created_at": "2024-10-22T12:00:00Z",
+      "updated_at": "2024-10-22T12:00:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 4,
+    "fields": {
+      "subscription": 5,
+      "scheduled_date": "2024-10-23",
+      "delivered_at": "2024-10-23T09:20:00Z",
+      "status": "delivered",
+      "notes": "Handed to security",
+      "created_at": "2024-10-22T08:00:00Z",
+      "updated_at": "2024-10-23T09:20:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 5,
+    "fields": {
+      "subscription": 6,
+      "scheduled_date": "2024-10-25",
+      "delivered_at": null,
+      "status": "scheduled",
+      "notes": "Weekend delivery",
+      "created_at": "2024-10-23T10:00:00Z",
+      "updated_at": "2024-10-23T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 6,
+    "fields": {
+      "subscription": 8,
+      "scheduled_date": "2024-10-23",
+      "delivered_at": null,
+      "status": "out_for_delivery",
+      "notes": "Address verified",
+      "created_at": "2024-10-22T14:00:00Z",
+      "updated_at": "2024-10-23T10:15:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 7,
+    "fields": {
+      "subscription": 9,
+      "scheduled_date": "2024-10-24",
+      "delivered_at": null,
+      "status": "scheduled",
+      "notes": "First delivery for new customer",
+      "created_at": "2024-10-23T08:00:00Z",
+      "updated_at": "2024-10-23T08:00:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 8,
+    "fields": {
+      "subscription": 10,
+      "scheduled_date": "2024-10-22",
+      "delivered_at": "2024-10-22T15:30:00Z",
+      "status": "delivered",
+      "notes": "Delivered to reception",
+      "created_at": "2024-10-21T12:00:00Z",
+      "updated_at": "2024-10-22T15:30:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 9,
+    "fields": {
+      "subscription": 1,
+      "scheduled_date": "2024-10-21",
+      "delivered_at": "2024-10-21T08:45:00Z",
+      "status": "delivered",
+      "notes": "Regular customer",
+      "created_at": "2024-10-20T10:00:00Z",
+      "updated_at": "2024-10-21T08:45:00Z"
+    }
+  },
+  {
+    "model": "app.delivery",
+    "pk": 10,
+    "fields": {
+      "subscription": 2,
+      "scheduled_date": "2024-10-20",
+      "delivered_at": null,
+      "status": "missed",
+      "notes": "Customer not available, rescheduled",
+      "created_at": "2024-10-19T10:00:00Z",
+      "updated_at": "2024-10-20T11:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 1,
+    "fields": {
+      "client": 1,
+      "plan_type": "Basic Plan",
+      "duration": "1 Month",
+      "amount": "8000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-09-25T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 2,
+    "fields": {
+      "client": 2,
+      "plan_type": "Premium Plan",
+      "duration": "1 Month",
+      "amount": "12000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-09-30T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 3,
+    "fields": {
+      "client": 3,
+      "plan_type": "Basic Plan",
+      "duration": "1 Month",
+      "amount": "8000.00",
+      "payment_method": "bank_transfer",
+      "status": "pending",
+      "created_at": "2024-10-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 4,
+    "fields": {
+      "client": 4,
+      "plan_type": "Premium Plan",
+      "duration": "1 Month",
+      "amount": "12000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-09-20T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 5,
+    "fields": {
+      "client": 5,
+      "plan_type": "Weekly Plan",
+      "duration": "1 Week",
+      "amount": "2500.00",
+      "payment_method": "cash",
+      "status": "paid",
+      "created_at": "2024-10-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 6,
+    "fields": {
+      "client": 6,
+      "plan_type": "Basic Plan",
+      "duration": "1 Month",
+      "amount": "8000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-10-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 7,
+    "fields": {
+      "client": 7,
+      "plan_type": "Premium Plan",
+      "duration": "1 Month",
+      "amount": "12000.00",
+      "payment_method": "bank_transfer",
+      "status": "failed",
+      "created_at": "2024-10-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 8,
+    "fields": {
+      "client": 8,
+      "plan_type": "Basic Plan",
+      "duration": "1 Month",
+      "amount": "8000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-10-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 9,
+    "fields": {
+      "client": 9,
+      "plan_type": "Weekly Plan",
+      "duration": "1 Week",
+      "amount": "2500.00",
+      "payment_method": "cash",
+      "status": "pending",
+      "created_at": "2024-10-18T10:00:00Z"
+    }
+  },
+  {
+    "model": "app.payment",
+    "pk": 10,
+    "fields": {
+      "client": 10,
+      "plan_type": "Premium Plan",
+      "duration": "1 Month",
+      "amount": "12000.00",
+      "payment_method": "credit_card",
+      "status": "paid",
+      "created_at": "2024-10-12T10:00:00Z"
+    }
+  }
+]

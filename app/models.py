@@ -930,19 +930,27 @@ class Invoice(TimeStampedModel):
         return f"Invoice {self.id} - {self.user.username} - {self.amount} {self.currency}"
 
 
-class Payment(TimeStampedModel):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
-    method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ('credit_card', 'Credit Card'),
+        ('cash', 'Cash'),
+        ('bank_transfer', 'Bank Transfer'),
+    ]
+    STATUS_CHOICES = [
+        ('paid', 'Paid'),
+        ('pending', 'Pending'),
+        ('failed', 'Failed'),
+    ]
+    client = models.ForeignKey(User, on_delete=models.CASCADE)
+    plan_type = models.CharField(max_length=100)
+    duration = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default="PKR")
-    provider_id = models.CharField(max_length=255, blank=True)
-    succeeded = models.BooleanField(default=False)
-    error_message = models.TextField(blank=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Payment {self.id} for Invoice {self.invoice_id}"
-
-
+        return f"Payment #{self.id} - {self.client.name}"
 class MealPortionChoice(models.TextChoices):
     STANDARD = "standard", "Standard"
     LOW_CAL = "low_cal", "Low Calorie"
@@ -1050,10 +1058,31 @@ class UserFile(TimeStampedModel):
     def __str__(self):
         return f"{self.user.username} - {self.name}"
 
-#content models
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    ]
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    customer_name = models.CharField(max_length=100)
+    address = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
 from django.db import models
+class Inventory(models.Model):
+    ingredient_name = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
+    unit = models.CharField(max_length=20)
+    low_stock_alert = models.PositiveIntegerField(default=10)
 
+    def is_low_stock(self):
+        return self.quantity <= self.low_stock_alert
+
+    def __str__(self):
+        return self.ingredient_name
 class File(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)

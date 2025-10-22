@@ -175,16 +175,21 @@
         bottom: -10px;
       }
     }
+      .error {
+      color: #d9534f;
+      background-color: #f8d7da;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 
 <body>
   <!-- Main background is set on body -->
-  
-  <!-- Extended background layer -->
-  <div class="extended-bg"></div>
-  
-  <!-- Login container -->
+   <div class="extended-bg"></div>
+
   <div class="login-container">
     <div class="logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
@@ -194,28 +199,28 @@
     </div>
 
     <h1>WELCOME BACK</h1>
-    <p class="subtitle">Welcome back! Please enter your details.</p>
+    <p class="subtitle">Please enter your details to continue</p>
 
-    <form id="loginForm">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="error">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="">
+      {% csrf_token %}
       <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Enter your email" required>
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="Enter your username" required>
       </div>
 
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="••••••••" required>
+        <input type="password" name="password" id="password" placeholder="••••••••" required>
       </div>
 
       <button type="submit" class="login-btn">Login</button>
     </form>
   </div>
-
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      alert('Login functionality would be implemented here!');
-    });
-  </script>
 </body>
 </html>

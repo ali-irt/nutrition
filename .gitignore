@@ -1,0 +1,11 @@
+*.pyc
+__pycache__/
+db.sqlite3
+*.log
+/media/
+/.venv/
+/.env/
+settings.py
+.env
+uploads/
+wsgi.py

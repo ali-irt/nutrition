@@ -124,7 +124,7 @@ class UserProfile(models.Model):
         related_name='profile',
         primary_key=True
     )
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True, blank=True)
     age = models.PositiveIntegerField(editable=False)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     height = models.DecimalField(max_digits=5, decimal_places=2, help_text="Height in cm or inches")
@@ -313,6 +313,7 @@ class Nutrition(models.Model):
     instructions = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
 
 class NutritionTemplate(models.Model):
     name = models.CharField(max_length=255)
@@ -452,7 +453,7 @@ class Lead(models.Model):
 # NEW: Auth/OTP verification
 # ---------------------------
 
-class LoginOTP(TimeStampedModel):
+class OTP(TimeStampedModel):
     class Channel(models.TextChoices):
         EMAIL = "email", "Email"
         PHONE = "phone", "Phone"
@@ -1151,5 +1152,3 @@ class MealOrderItem(models.Model):
 
     def __str__(self):
         return f"{self.name} x{self.quantity}"
-    
-    

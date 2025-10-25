@@ -1,214 +1,302 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.contrib.auth.models import User
-
-
-from rest_framework import serializers
-from .models import UserProfile
-import re
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from datetime import date
 from .models import *
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
+from datetime import date, datetime
 
-        # Add custom fields to the response
-        data['user_id'] = self.user.id
-        data['username'] = self.user.username
-        data['email'] = self.user.email
 
-        return data
+# ---------------------------
+# User & Auth Serializers
+# ---------------------------
 
-class WorkoutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Workout
-        fields = [
-            'id', 'user', 'name', 'description', 'duration', 
-            'level', 'calories_burned', 'date', 'completed',
-            'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
-
-    def validate(self, data):
-        # Validate that workout date isn't in the future
-        if 'date' in data and data['date'] > date.today():
-            raise serializers.ValidationError("Workout date cannot be in the future")
-        return data
-# ✅ Basic user info for nesting
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        read_only_fields = ['id']
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'password_confirm', 'first_name', 'last_name']
+    
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError("Passwords don't match")
+        return data
+    
+    def create(self, validated_data):
+        validated_data.pop('password_confirm')
+        user = User.objects.create_user(**validated_data)
+        return user
+
+
+class OTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OTP
+        fields = ['channel', 'destination', 'code', 'expires_at']
+        read_only_fields = ['code', 'expires_at']
+
+
+class OTPVerifySerializer(serializers.Serializer):
+    channel = serializers.ChoiceField(choices=OTP.Channel.choices)
+    destination = serializers.CharField()
+    code = serializers.CharField(max_length=8)
+
+
+# ---------------------------
+# Profile Serializers
+# ---------------------------
 class UserProfileSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(source='user.id', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
+    bmi = serializers.ReadOnlyField()
+    age = serializers.ReadOnlyField()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = UserProfile
         fields = [
-            'user_id', 'username', 'email', 'date_of_birth', 'age', 'gender',
-            'height', 'weight', 'unit_system', 'goal', 'target_weight',
-            'dietary_preferences', 'activity_level', 'phone', 'source',
-            'workouts', 'created_at', 'last_updated', 'bmi'
+            'user', 'date_of_birth', 'age', 'gender', 'height', 'weight',
+            'unit_system', 'goal', 'target_weight', 'dietary_preferences',
+            'activity_level', 'phone', 'source', 'bmi', 'status',
+            'checkin_status', 'last_communication', 'program_start_date',
+            'workouts_per_week', 'goal_rate_lbs_per_week',
+            'calorie_rollover_enabled', 'daily_step_goal',
+            'daily_water_goal_ml', 'sleep_goal_hours', 'timezone',
+            'onboarding_completed', 'phone_verified', 'email_verified',
+            'created_at', 'last_updated'
         ]
-        read_only_fields = ['user_id', 'username', 'email', 'age', 'created_at', 'last_updated', 'bmi']
-class MealSerializer(serializers.ModelSerializer):
+        read_only_fields = [
+            'created_at', 'last_updated', 'age', 'bmi', 'user'
+        ]
+
+    def create(self, validated_data):
+        """
+        Automatically link the logged-in user to the new profile.
+        """
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)
+
+
+
+
+class OnboardingSerializer(serializers.Serializer):
+    date_of_birth = serializers.DateField()
+    gender = serializers.ChoiceField(choices=UserProfile.GENDER_CHOICES)
+    height = serializers.DecimalField(max_digits=5, decimal_places=2)
+    weight = serializers.DecimalField(max_digits=5, decimal_places=2)
+    unit_system = serializers.ChoiceField(choices=UnitSystem.choices)
+    goal = serializers.CharField(max_length=100)
+    target_weight = serializers.DecimalField(max_digits=5, decimal_places=2, required=False)
+    dietary_preferences = serializers.ChoiceField(choices=UserProfile.DIET_CHOICES, required=False)
+    activity_level = serializers.ChoiceField(choices=UserProfile.ACTIVITY_LEVEL_CHOICES)
+    workouts_per_week = serializers.IntegerField(min_value=0, max_value=14)
+    daily_step_goal = serializers.IntegerField(default=10000)
+    daily_water_goal_ml = serializers.IntegerField(default=2000)
+    phone = serializers.CharField(required=False)
+    source = serializers.ChoiceField(choices=UserProfile.SOURCE_CHOICES, required=False)
+
+
+# ---------------------------
+# Workout Serializers
+# ---------------------------
+
+class ExerciseSerializer(serializers.ModelSerializer):
+    primary_muscle_name = serializers.CharField(source='primary_muscle.name', read_only=True)
+    secondary_muscle_names = serializers.SerializerMethodField()
+    
     class Meta:
-        model = Meal
+        model = Exercise
         fields = [
-            'id',
-            'name',
-            'description',
-            'meal_type',
-            'calories',
-            'protein',
-            'carbs',
-            'fats',
-            'fiber',
-            'is_vegan',
-            'is_vegetarian',
-            'is_gluten_free',
-            'is_dairy_free',
-            'preparation_time',
-            'difficulty',
-            'image'
+            'id', 'name', 'primary_muscle', 'primary_muscle_name',
+            'secondary_muscles', 'secondary_muscle_names', 'equipment',
+            'video_url', 'instructions', 'unilateral', 'created_at'
+        ]
+    
+    def get_secondary_muscle_names(self, obj):
+        return [m.name for m in obj.secondary_muscles.all()]
+
+
+class WorkoutExerciseSerializer(serializers.ModelSerializer):
+    exercise = ExerciseSerializer(read_only=True)
+    exercise_id = serializers.PrimaryKeyRelatedField(
+        queryset=Exercise.objects.all(),
+        source='exercise',
+        write_only=True
+    )
+    
+    class Meta:
+        model = WorkoutExercise
+        fields = [
+            'id', 'exercise', 'exercise_id', 'order', 'sets', 'reps',
+            'reps_min', 'reps_max', 'time_seconds', 'distance_m',
+            'rest_seconds', 'rpe_min', 'rpe_max', 'tempo', 'notes'
         ]
 
 
-# ✅ User Workout Log — auto-link user, duration_actual is read-only
-class UserWorkoutLogSerializer(serializers.ModelSerializer):
-    duration_actual = serializers.DurationField(read_only=True)
+class WorkoutSerializer(serializers.ModelSerializer):
+    items = WorkoutExerciseSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Workout
+        fields = [
+            'id', 'name', 'description', 'duration', 'level',
+            'calories_burned', 'date', 'completed', 'items',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
 
+
+class SetLogSerializer(serializers.ModelSerializer):
+    exercise_name = serializers.CharField(source='exercise.name', read_only=True)
+    
+    class Meta:
+        model = SetLog
+        fields = [
+            'id', 'exercise', 'exercise_name', 'order', 'set_number',
+            'reps', 'weight_kg', 'time_seconds', 'distance_m',
+            'rpe', 'completed', 'notes'
+        ]
+
+
+class UserWorkoutLogSerializer(serializers.ModelSerializer):
+    workout_name = serializers.CharField(source='workout.name', read_only=True)
+    sets = SetLogSerializer(many=True, read_only=True)
+    duration_actual = serializers.ReadOnlyField()
+    
     class Meta:
         model = UserWorkoutLog
         fields = [
-            'id',
-            'workout',
-            'date',
-            'start_time',
-            'end_time',
-            'completed',
-            'satisfaction',
-            'notes',
-            'calories_burned',
-            'duration_actual'
+            'id', 'workout', 'workout_name', 'date', 'start_time',
+            'end_time', 'completed', 'satisfaction', 'notes',
+            'calories_burned', 'duration_actual', 'sets'
         ]
-        read_only_fields = ['id', 'duration_actual']
 
 
-# ✅ User Meal Log
+class CardioSessionSerializer(serializers.ModelSerializer):
+    duration = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = CardioSession
+        fields = [
+            'id', 'activity', 'started_at', 'ended_at', 'distance_m',
+            'calories', 'avg_hr', 'max_hr', 'notes', 'duration',
+            'created_at'
+        ]
+
+
+# ---------------------------
+# Nutrition Serializers
+# ---------------------------
+
+class FoodBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodBrand
+        fields = ['id', 'name']
+
+
+class FoodPortionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodPortion
+        fields = ['id', 'name', 'unit', 'quantity', 'grams']
+
+
+class FoodSerializer(serializers.ModelSerializer):
+    brand_name = serializers.CharField(source='brand.name', read_only=True)
+    portions = FoodPortionSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Food
+        fields = [
+            'id', 'name', 'brand', 'brand_name', 'is_custom',
+            'calories', 'protein', 'carbs', 'fat', 'fiber',
+            'allergens', 'image', 'portions'
+        ]
+
+
+class MealSerializer(serializers.ModelSerializer):
+    macros_ratio = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Meal
+        fields = [
+            'id', 'name', 'description', 'meal_type', 'calories',
+            'protein', 'carbs', 'fats', 'fiber', 'is_vegan',
+            'is_vegetarian', 'is_gluten_free', 'is_dairy_free',
+            'preparation_time', 'difficulty', 'image',
+            'macros_ratio', 'created_at', 'updated_at'
+        ]
+
+
+class RecipeIngredientSerializer(serializers.ModelSerializer):
+    food = FoodSerializer(read_only=True)
+    food_id = serializers.PrimaryKeyRelatedField(
+        queryset=Food.objects.all(),
+        source='food',
+        write_only=True
+    )
+    
+    class Meta:
+        model = RecipeIngredient
+        fields = ['id', 'food', 'food_id', 'grams']
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    ingredients = RecipeIngredientSerializer(many=True, read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+    
+    class Meta:
+        model = Recipe
+        fields = [
+            'id', 'name', 'created_by', 'created_by_username',
+            'is_public', 'image', 'ingredients'
+        ]
+
+
+class FoodDiaryEntrySerializer(serializers.ModelSerializer):
+    food_details = FoodSerializer(source='food', read_only=True)
+    recipe_details = RecipeSerializer(source='recipe', read_only=True)
+    meal_details = MealSerializer(source='meal', read_only=True)
+    portion_details = FoodPortionSerializer(source='portion', read_only=True)
+    
+    class Meta:
+        model = FoodDiaryEntry
+        fields = [
+            'id', 'date', 'time', 'meal_time', 'food', 'food_details',
+            'recipe', 'recipe_details', 'meal', 'meal_details',
+            'portion', 'portion_details', 'servings', 'notes'
+        ]
+
+
 class UserMealLogSerializer(serializers.ModelSerializer):
+    meal_details = MealSerializer(source='meal', read_only=True)
+    total_calories = serializers.ReadOnlyField()
+    total_protein = serializers.ReadOnlyField()
+    
     class Meta:
         model = UserMealLog
         fields = [
-            'id',
-            'meal',
-            'date',
-            'consumed_at',
-            'servings',
-            'satisfaction',
-            'notes'
+            'id', 'meal', 'meal_details', 'date', 'consumed_at',
+            'servings', 'satisfaction', 'notes', 'total_calories',
+            'total_protein'
         ]
-        read_only_fields = ['id']
 
 
-# ✅ Progress Log with front/side/back images & BMI
-class ProgressSerializer(serializers.ModelSerializer):
-    bmi = serializers.FloatField(read_only=True)
+# ---------------------------
+# Macro & Targets Serializers
+# ---------------------------
 
-    class Meta:
-        model = Progress
-        fields = [
-            'id',
-            'date',
-            'weight',
-            'body_fat_percentage',
-            'muscle_mass',
-            'waist_circumference',
-            'hip_circumference',
-            'notes',
-            'front_image',
-            'side_image',
-            'back_image',
-            'bmi'
-        ]
-        read_only_fields = ['id', 'bmi']
-
-
-# ✅ Wishlist Item
-class WishlistItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WishlistItem
-        fields = [
-            'id',
-            'name',
-            'description',
-            'category',
-            'priority',
-            'estimated_price',
-            'url',
-            'added_on',
-            'is_purchased',
-            'purchased_on'
-        ]
-        read_only_fields = ['id', 'added_on']
-
-# Add these serializers to your existing serializers.py file
-
-# =====================================
-# Nutrition
-# =====================================
-class NutritionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Nutrition
-        fields = [
-            'id', 'date', 'calories_consumed', 'protein_consumed',
-            'carbs_consumed', 'fats_consumed', 'fiber_consumed',
-            'water_intake', 'notes'
-        ]
-        read_only_fields = ['id']
-
-
-# =====================================
-# Lead Management
-# =====================================
-class LeadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lead
-        fields = [
-            'id', 'first_name', 'last_name', 'email', 'phone',
-            'country', 'notes', 'status', 'created_at'
-        ]
-        read_only_fields = ['id', 'created_at']
-
-
-# =====================================
-# Auth/OTP
-# =====================================
-class LoginOTPSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LoginOTP
-        fields = [
-            'id', 'channel', 'destination', 'code', 'expires_at',
-            'used_at', 'attempt_count', 'created_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-
-# =====================================
-# Macro Planning
-# =====================================
 class MacroPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MacroPlan
         fields = [
             'id', 'source', 'start_date', 'end_date', 'bmr', 'tdee',
             'calorie_target', 'protein_g', 'carbs_g', 'fats_g',
-            'active', 'created_at', 'updated_at'
+            'active', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class DailyMacroTargetSerializer(serializers.ModelSerializer):
@@ -218,243 +306,92 @@ class DailyMacroTargetSerializer(serializers.ModelSerializer):
             'id', 'date', 'calorie_target', 'protein_g', 'carbs_g',
             'fats_g', 'rollover_from_yesterday'
         ]
-        read_only_fields = ['id']
 
 
-# =====================================
-# Activity Tracking
-# =====================================
+# ---------------------------
+# Progress & Tracking Serializers
+# ---------------------------
+
+class ProgressSerializer(serializers.ModelSerializer):
+    bmi = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Progress
+        fields = [
+            'id', 'date', 'weight', 'body_fat_percentage', 'muscle_mass',
+            'waist_circumference', 'hip_circumference', 'notes', 'bmi',
+            'front_image', 'side_image', 'back_image'
+        ]
+
+
 class WaterLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WaterLog
         fields = ['id', 'date', 'amount_ml', 'created_at']
-        read_only_fields = ['id', 'created_at']
 
 
 class DailyActivitySummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyActivitySummary
         fields = ['id', 'date', 'steps', 'calories_burned', 'distance_m']
-        read_only_fields = ['id']
 
 
 class HeartRateSampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = HeartRateSample
         fields = ['id', 'ts', 'bpm']
-        read_only_fields = ['id']
 
 
-# =====================================
-# Check-ins
-# =====================================
+# ---------------------------
+# Check-in Serializers
+# ---------------------------
+
 class CheckinQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckinQuestion
         fields = ['id', 'order', 'text', 'type', 'choices']
-        read_only_fields = ['id']
 
 
 class CheckinFormSerializer(serializers.ModelSerializer):
     questions = CheckinQuestionSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = CheckinForm
         fields = ['id', 'name', 'active', 'questions']
-        read_only_fields = ['id']
-
-
-class CheckinAnswerSerializer(serializers.ModelSerializer):
-    question_text = serializers.CharField(source='question.text', read_only=True)
-
-    class Meta:
-        model = CheckinAnswer
-        fields = ['id', 'question', 'question_text', 'value']
-        read_only_fields = ['id', 'question_text']
 
 
 class CheckinPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckinPhoto
         fields = ['id', 'kind', 'image']
-        read_only_fields = ['id']
+
+
+class CheckinAnswerSerializer(serializers.ModelSerializer):
+    question_text = serializers.CharField(source='question.text', read_only=True)
+    
+    class Meta:
+        model = CheckinAnswer
+        fields = ['id', 'question', 'question_text', 'value']
 
 
 class CheckinSerializer(serializers.ModelSerializer):
-    answers = CheckinAnswerSerializer(many=True, read_only=True)
     photos = CheckinPhotoSerializer(many=True, read_only=True)
-
+    answers = CheckinAnswerSerializer(many=True, read_only=True)
+    form_name = serializers.CharField(source='form.name', read_only=True)
+    
     class Meta:
         model = Checkin
         fields = [
-            'id', 'date', 'form', 'notes', 'sleep_hours',
+            'id', 'date', 'form', 'form_name', 'notes', 'sleep_hours',
             'energy_rating', 'meal_plan_use', 'workout_plan_use',
-            'answers', 'photos', 'created_at', 'updated_at'
+            'photos', 'answers', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
-# =====================================
-# Food Library
-# =====================================
-class FoodBrandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FoodBrand
-        fields = ['id', 'name']
-        read_only_fields = ['id']
+# ---------------------------
+# Subscription & Payment Serializers
+# ---------------------------
 
-
-class FoodBarcodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FoodBarcode
-        fields = ['id', 'code']
-        read_only_fields = ['id']
-
-
-class FoodPortionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FoodPortion
-        fields = ['id', 'name', 'unit', 'quantity', 'grams']
-        read_only_fields = ['id']
-
-
-class FoodSerializer(serializers.ModelSerializer):
-    brand_name = serializers.CharField(source='brand.name', read_only=True)
-    barcodes = FoodBarcodeSerializer(many=True, read_only=True)
-    portions = FoodPortionSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Food
-        fields = [
-            'id', 'name', 'brand', 'brand_name', 'is_custom',
-            'created_by', 'calories', 'protein', 'carbs', 'fat',
-            'fiber', 'allergens', 'image', 'barcodes', 'portions'
-        ]
-        read_only_fields = ['id', 'brand_name', 'created_by']
-
-
-class RecipeIngredientSerializer(serializers.ModelSerializer):
-    food_name = serializers.CharField(source='food.name', read_only=True)
-
-    class Meta:
-        model = RecipeIngredient
-        fields = ['id', 'food', 'food_name', 'grams']
-        read_only_fields = ['id', 'food_name']
-
-
-class RecipeSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientSerializer(many=True, read_only=True)
-    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
-
-    class Meta:
-        model = Recipe
-        fields = [
-            'id', 'name', 'created_by', 'created_by_username',
-            'is_public', 'image', 'ingredients'
-        ]
-        read_only_fields = ['id', 'created_by', 'created_by_username']
-
-
-class FoodDiaryEntrySerializer(serializers.ModelSerializer):
-    food_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FoodDiaryEntry
-        fields = [
-            'id', 'date', 'time', 'meal_time', 'food', 'recipe',
-            'meal', 'portion', 'servings', 'notes', 'food_name'
-        ]
-        read_only_fields = ['id']
-
-    def get_food_name(self, obj):
-        if obj.food:
-            return obj.food.name
-        elif obj.recipe:
-            return obj.recipe.name
-        elif obj.meal:
-            return obj.meal.name
-        return None
-
-
-# =====================================
-# Exercise Library
-# =====================================
-class MuscleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Muscle
-        fields = ['id', 'name', 'group']
-        read_only_fields = ['id']
-
-
-class ExerciseSerializer(serializers.ModelSerializer):
-    primary_muscle_name = serializers.CharField(source='primary_muscle.name', read_only=True)
-    secondary_muscle_names = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Exercise
-        fields = [
-            'id', 'name', 'primary_muscle', 'primary_muscle_name',
-            'secondary_muscles', 'secondary_muscle_names', 'equipment',
-            'video_url', 'instructions', 'unilateral', 'created_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'primary_muscle_name']
-
-    def get_secondary_muscle_names(self, obj):
-        return [m.name for m in obj.secondary_muscles.all()]
-
-
-class WorkoutExerciseSerializer(serializers.ModelSerializer):
-    exercise_name = serializers.CharField(source='exercise.name', read_only=True)
-
-    class Meta:
-        model = WorkoutExercise
-        fields = [
-            'id', 'exercise', 'exercise_name', 'order', 'sets',
-            'reps', 'reps_min', 'reps_max', 'time_seconds',
-            'distance_m', 'rest_seconds', 'rpe_min', 'rpe_max',
-            'tempo', 'notes'
-        ]
-        read_only_fields = ['id', 'exercise_name']
-
-
-class SetLogSerializer(serializers.ModelSerializer):
-    exercise_name = serializers.CharField(source='exercise.name', read_only=True)
-
-    class Meta:
-        model = SetLog
-        fields = [
-            'id', 'session', 'exercise', 'exercise_name', 'order',
-            'set_number', 'reps', 'weight_kg', 'time_seconds',
-            'distance_m', 'rpe', 'completed', 'notes'
-        ]
-        read_only_fields = ['id', 'exercise_name']
-
-
-# =====================================
-# Cardio
-# =====================================
-class CardioSessionSerializer(serializers.ModelSerializer):
-    duration = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CardioSession
-        fields = [
-            'id', 'activity', 'started_at', 'ended_at', 'distance_m',
-            'calories', 'avg_hr', 'max_hr', 'notes', 'duration',
-            'created_at'
-        ]
-        read_only_fields = ['id', 'duration', 'created_at']
-
-    def get_duration(self, obj):
-        duration = obj.duration
-        if duration:
-            return str(duration)
-        return None
-
-
-# =====================================
-# Subscriptions & Payments
-# =====================================
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
@@ -462,48 +399,43 @@ class AddressSerializer(serializers.ModelSerializer):
             'id', 'full_name', 'phone', 'line1', 'line2', 'city',
             'province', 'postal_code', 'is_default', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'slug', 'name', 'description', 'active']
-        read_only_fields = ['id']
 
 
 class PlanSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
-
+    
     class Meta:
         model = Plan
         fields = [
             'id', 'product', 'product_name', 'name', 'interval',
             'price_amount', 'currency', 'is_default', 'sort_order'
         ]
-        read_only_fields = ['id', 'product_name']
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    plan_name = serializers.CharField(source='plan.name', read_only=True)
-
+    plan_details = PlanSerializer(source='plan', read_only=True)
+    
     class Meta:
         model = Subscription
         fields = [
-            'id', 'plan', 'plan_name', 'status', 'started_at',
+            'id', 'plan', 'plan_details', 'status', 'started_at',
             'current_period_end', 'auto_renew', 'created_at'
         ]
-        read_only_fields = ['id', 'plan_name', 'created_at']
 
 
 class PaymentMethodSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentMethod
         fields = [
-            'id', 'provider', 'brand', 'last4', 'token',
-            'is_default', 'created_at'
+            'id', 'provider', 'brand', 'last4', 'is_default', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['token']
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -513,48 +445,39 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'id', 'subscription', 'amount', 'currency', 'due_date',
             'paid_at', 'status', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
 
 
-class PaymentSerializer(serializers.ModelSerializer):
+# ---------------------------
+# Meal Subscription Serializers
+# ---------------------------
+
+class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Payment
-        fields = [
-            'id', 'invoice', 'method', 'amount', 'currency',
-            'provider_id', 'succeeded', 'error_message', 'created_at'
-        ]
-        read_only_fields = ['id', 'created_at']
+        model = MealPlan
+        fields = ['id', 'name', 'plan_type', 'price', 'calories_per_day']
 
 
-# =====================================
-# Meal Subscriptions
-# =====================================
 class WeeklyMealSelectionSerializer(serializers.ModelSerializer):
-    meal_name = serializers.CharField(source='meal.name', read_only=True)
-
+    meal_details = MealSerializer(source='meal', read_only=True)
+    
     class Meta:
         model = WeeklyMealSelection
-        fields = ['id', 'week_start', 'meal', 'meal_name', 'quantity']
-        read_only_fields = ['id', 'meal_name']
+        fields = ['id', 'week_start', 'meal', 'meal_details', 'quantity']
 
 
 class MealSubscriptionSerializer(serializers.ModelSerializer):
-    address_display = serializers.SerializerMethodField()
-    plan_name = serializers.CharField(source='plan.name', read_only=True)
+    address_details = AddressSerializer(source='address', read_only=True)
+    plan_details = PlanSerializer(source='plan', read_only=True)
     weekly_selections = WeeklyMealSelectionSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = MealSubscription
         fields = [
-            'id', 'address', 'address_display', 'plan', 'plan_name',
+            'id', 'address', 'address_details', 'plan', 'plan_details',
             'meals_per_week', 'portion', 'protein_preference',
             'delivery_window', 'start_date', 'status',
             'weekly_selections', 'created_at'
         ]
-        read_only_fields = ['id', 'address_display', 'plan_name', 'created_at']
-
-    def get_address_display(self, obj):
-        return f"{obj.address.full_name}, {obj.address.city}"
 
 
 class DeliverySerializer(serializers.ModelSerializer):
@@ -564,51 +487,103 @@ class DeliverySerializer(serializers.ModelSerializer):
             'id', 'subscription', 'scheduled_date', 'delivered_at',
             'status', 'notes', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
 
 
-# =====================================
-# Chat & Files
-# =====================================
+class MealOrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MealOrderItem
+        fields = ['id', 'name', 'quantity', 'day']
+
+
+class MealOrderSerializer(serializers.ModelSerializer):
+    items = MealOrderItemSerializer(many=True, read_only=True)
+    plan_name = serializers.CharField(source='plan.name', read_only=True)
+    customer_name = serializers.CharField(source='customer.get_full_name', read_only=True)
+    
+    class Meta:
+        model = MealOrder
+        fields = [
+            'id', 'customer', 'customer_name', 'plan', 'plan_name',
+            'order_no', 'status', 'shipping_name', 'shipping_address',
+            'items_count', 'total_price', 'scheduled_date',
+            'delivered_at', 'created_at', 'items'
+        ]
+
+
+# ---------------------------
+# Chat Serializers
+# ---------------------------
+
 class ChatAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatAttachment
         fields = ['id', 'file']
-        read_only_fields = ['id']
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
-    sender_username = serializers.CharField(source='sender.username', read_only=True)
+    sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
+    receiver_name = serializers.CharField(source='reciever.get_full_name', read_only=True)
     attachments = ChatAttachmentSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = ChatMessage
         fields = [
-            'id', 'thread', 'sender', 'sender_username', 'text',
-            'read_at', 'attachments', 'created_at'
+            'id', 'thread', 'sender', 'sender_name', 'reciever',
+            'receiver_name', 'text', 'read_at', 'attachments',
+            'created_at'
         ]
-        read_only_fields = ['id', 'sender', 'sender_username', 'created_at']
 
 
 class ChatThreadSerializer(serializers.ModelSerializer):
-    messages = ChatMessageSerializer(many=True, read_only=True)
-    participant_usernames = serializers.SerializerMethodField()
-
+    participants_details = UserSerializer(source='participants', many=True, read_only=True)
+    last_message = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = ChatThread
         fields = [
-            'id', 'topic', 'is_support', 'participants',
-            'participant_usernames', 'messages', 'created_at'
+            'id', 'participants', 'participants_details', 'topic',
+            'is_support', 'last_message', 'unread_count', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
+    
+    def get_last_message(self, obj):
+        last = obj.messages.order_by('-created_at').first()
+        return ChatMessageSerializer(last).data if last else None
+    
+    def get_unread_count(self, obj):
+        user = self.context.get('request').user
+        return obj.messages.filter(reciever=user, read_at__isnull=True).count()
 
-    def get_participant_usernames(self, obj):
-        return [u.username for u in obj.participants.all()]
+
+# ---------------------------
+# Dashboard & Summary Serializers
+# ---------------------------
+
+class DashboardSummarySerializer(serializers.Serializer):
+    today = serializers.DateField()
+    calories_consumed = serializers.IntegerField()
+    calories_target = serializers.IntegerField()
+    protein_consumed = serializers.FloatField()
+    protein_target = serializers.IntegerField()
+    carbs_consumed = serializers.FloatField()
+    carbs_target = serializers.IntegerField()
+    fats_consumed = serializers.FloatField()
+    fats_target = serializers.IntegerField()
+    water_consumed_ml = serializers.IntegerField()
+    water_goal_ml = serializers.IntegerField()
+    steps = serializers.IntegerField()
+    steps_goal = serializers.IntegerField()
+    workouts_completed = serializers.IntegerField()
+    workouts_scheduled = serializers.IntegerField()
+    current_weight = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)
+    target_weight = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)
+    weight_change_this_week = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)
 
 
-class UserFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserFile
-        fields = ['id', 'name', 'file', 'tag', 'created_at']
-        read_only_fields = ['id', 'created_at']
-       
+class WeeklySummarySerializer(serializers.Serializer):
+    week_start = serializers.DateField()
+    week_end = serializers.DateField()
+    avg_calories = serializers.FloatField()
+    total_workouts = serializers.IntegerField()
+    avg_steps = serializers.IntegerField()
+    weight_change = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)

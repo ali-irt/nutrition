@@ -2,110 +2,120 @@
 {% block content %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-  body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f8fc;
-      color: #1f2937;
-    }  
-  .header-sec { background:#000; padding:3rem 2rem; color:#fff; margin-left: -28px;margin-right: -20px; }
-  .header-sec h1 { font-weight:600; }
-  .header-sec .tabs a {
-    margin-right:1.5rem; text-decoration:none; color:#aaa;
-  }
-  .header-sec .tabs a.active { color:#fff; border-bottom:2px solid #fff; padding-bottom:.3rem; }
-  .client-table td, .client-table th { vertical-align: middle; }
-  .badge-demo { background:#000; color:#fff; border-radius:.5rem; padding:.3rem .8rem; }
-  .chat-badge {
-    background:#000;
-    color:#fff;
-    border-radius:.5rem;
-    padding:.3rem .8rem;
-    font-size: 0.75rem;
-    display: inline-block;
-  }
+
 </style>
 
-<section class="header-sec">
-  <h1  style="padding-left: 2in;">Clients / {{ status }}</h1>
-  <div  style="padding-left: 2in;" class="tabs mt-4 d-flex flex-wrap">
-    <a href="{% url 'clients_active' %}" class="{% if status == 'Active' %}active{% endif %}">All Active({{ clients|length }})</a>
-    <a href="{% url 'clients_payment_error' %}" class="{% if status == 'Payment Error' %}active{% endif %}">Payment Error({{ clients|length }})</a>
-    <a href="{% url 'clients_started' %}" class="{% if status == 'Just Started' %}active{% endif %}">Just Started({{ clients|length }})</a>
-    <a href="{% url 'clients_new_message' %}" class="{% if status == 'New Message' %}active{% endif %}">New Message({{ clients|length }})</a>
-    <a href="{% url 'clients_new_checkin' %}" class="{% if status == 'New Check-In' %}active{% endif %}">New Check-In({{ clients|length }})</a>
-    <a href="{% url 'clients_missed_checkin' %}" class="{% if status == 'Missed Check-In' %}active{% endif %}">Missed Check-In({{ clients|length }})</a>
-    <a href="{% url 'clients_reminders' %}" class="{% if status == 'Reminders' %}active{% endif %}">Reminders({{ clients|length }})</a>
-    <a href="{% url 'clients_completed' %}" class="{% if status == 'Ending Soon' %}active{% endif %}">Ending Soon({{ clients|length }})</a>
-    <a href="{% url 'clients_no_communication' %}" class="{% if status == 'No Communication' %}active{% endif %}">No Communication({{ clients|length }})</a>
+<section class="bg-black text-white py-5 px-4">
+  <h1 style="padding-left: 2in;">Clients / {{ status }}</h1>
+  <div style="padding-left: 2in;" class="tabs mt-4 d-flex flex-wrap">
+    <a href="{% url 'clients_active' %}"
+      class="text-decoration-none {% if status == 'Active' %}  text-light{% else %}text-secondary{% endif %}">All
+      Active</a>
+    <a href="{% url 'clients_payment_error' %}"
+      class="text-decoration-none {% if status == 'Payment Error' %} text-light{% else %}text-secondary{% endif %}">Payment
+      Error</a>
+    <a href="{% url 'clients_started' %}"
+      class="text-decoration-none {% if status == 'Just Started' %} text-light{% else %}text-secondary{% endif %}">Just
+      Started</a>
+    <a href="{% url 'clients_new_message' %}"
+      class="text-decoration-none {% if status == 'New Message' %} text-light{% else %}text-secondary{% endif %}">New
+      Message</a>
+    <a href="{% url 'clients_new_checkin' %}"
+      class="text-decoration-none {% if status == 'New Check In' %} text-light{% else %}text-secondary{% endif %}">New
+      Check-In</a>
+    <a href="{% url 'clients_missed_checkin' %}"
+      class="text-decoration-none {% if status == 'Missed Check-In' %} text-light{% else %}text-secondary{% endif %}">Missed
+      Check-In</a>
+    <a href="{% url 'clients_reminders' %}"
+      class="text-decoration-none {% if status == 'Reminders' %} text-light{% else %}text-secondary{% endif %}">Reminders</a>
+    <a href="{% url 'clients_completed' %}"
+      class="text-decoration-none {% if status == 'Ending Soon' %} text-light{% else %}text-secondary{% endif %}">Ending
+      Soon</a>
+    <a href="{% url 'clients_no_communication' %}"
+      class="text-decoration-none {% if status == 'No Communication' %} text-light{% else %}text-secondary{% endif %}">No
+      Communication</a>
   </div>
 </section>
 
-<section class="px-4 py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <span class="text-muted">Showing {{ clients|length }} clients</span>
-    <div class="d-flex gap-2">
-      <input type="text" class="form-control" placeholder="Search">
-      <select class="form-select">
-        <option>Tag</option>
-        <option>Active</option>
-        <option>Payment Issue</option>
-        <option>New Message</option>
-      </select>
-      <button class="btn btn-dark">Broadcast message</button>
-      <button class="btn btn-dark">Add Lead</button>
-    </div>
-  </div>
 
+
+
+<section class="controls" aria-label="Controls">
+  <div class="controls-left" aria-live="polite" aria-atomic="true">
+  </div>
+  <div class="controls-right">
+    <div class="search-wrapper">
+      <input type="text" placeholder="Search" aria-label="Search clients" />
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
+    <select aria-label="Filter by tag">
+      <option>Tag</option>
+      <option>Active</option>
+      <option>Payment Issue</option>
+      <option>New Message</option>
+    </select>
+    <button class="btn-black" data-bs-toggle="modal" data-bs-target="#addClientModal" type="button">Add Lead</button>
+    <!-- Add Client Button -->
+
+  </div>
+</section>
+
+<section class="table-section" aria-label="Clients table">
   <div class="table-responsive">
     <table class="table bg-white client-table shadow-sm">
       <thead class="table-light">
         <tr>
           <th>Name</th>
-          <th>Chat</th>
-          <th>Week</th>
-          <th>Check-in</th>
-          <th>Plans</th>
-          <th>Reminders</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Created at</th>
+          <th>Update Status</th>
+          <th></th>
         </tr>
       </thead>
+
       <tbody>
         {% for client in clients %}
         <tr>
           <td>
             <div class="d-flex align-items-center">
               <div class="rounded-circle d-flex justify-content-center align-items-center me-2"
-                   style="width:35px;height:35px;background:#fef9c3;color:#a16207;font-weight:bold;">
+                style="width:35px;height:35px;background:#fef9c3;color:#a16207;font-weight:bold;">
                 {{ client.initials }}
               </div>
-              <div>
-                <strong>{{ client.name }}</strong>
-                <br>              </div>
+           <div>
+  <a href="{% url 'client_profile' client.profile.user.id %}">
+    <strong>{{ client.name }}</strong>
+  </a>
+  <br>
+</div>
+
             </div>
           </td>
           <td>
-            <span class="chat-badge">{{ client.chat }}</span><br>
-            <small class="text-muted">{{ client.days }} days ago</small>
+            <span class="chat-badge">{{ client.phone }}</span>
           </td>
-          <td>{{ client.week }}</td>
           <td>
             {% if client.checkin == "New" %}
-              <span class="badge bg-success">{{ client.checkin }}</span>
+            <span class="badge bg-success">{{ client.checkin }}</span>
             {% elif client.checkin == "Overdue" or client.checkin == "Missed" %}
-              <span class="badge bg-danger">{{ client.checkin }}</span>
+            <span class="badge bg-danger">{{ client.checkin }}</span>
             {% elif client.checkin == "Pending" %}
-              <span class="badge bg-warning text-dark">{{ client.checkin }}</span>
+            <span class="badge bg-warning text-dark">{{ client.checkin }}</span>
             {% else %}
-              <span class="badge bg-dark">{{ client.checkin }}</span>
+            <span class="badge bg-dark">{{ client.checkin }}</span>
             {% endif %}
           </td>
           <td>{{ client.plans }}</td>
           <td>
             {% if client.reminders != "-" %}
-              <span class="badge bg-info">{{ client.reminders }}</span>
+            <span class="badge bg-info">{{ client.reminders }}</span>
             {% else %}
-              {{ client.reminders }}
+            {{ client.reminders }}
             {% endif %}
           </td>
         </tr>
@@ -119,5 +129,36 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Add Client Modal -->
+  <!-- SIMPLE PREMIUM ADD CLIENT MODAL -->
+  <div class="modal fade premium-modal" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header premium-modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-person-plus-fill"></i>
+            Add New Client
+          </h5>
+          <button type="button" class="btn-close premium-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="post" action="{% url 'add_client1' %}">
+          {% csrf_token %}
+          <div class="modal-body premium-modal-body">
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+          </div>
+          <div class="modal-footer premium-modal-footer">
+            <button type="button" class="premium-btn premium-btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="premium-btn premium-btn-dark">
+              <i class="bi bi-check-circle me-2"></i>Save Client
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </section>
 {% endblock %}

@@ -6,22 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}The Nutri Co.{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
-    
     {% block extra_css %}{% endblock %}
 </head>
-<style>
-    /* Parent dropdown item */
-.nav-menu .dropdown {
-    position: relative;
-}
 
-/* Dropdown list hidden by default */
+<style>
+/* Dropdown styling (same as before) */
+.nav-menu .dropdown { position: relative; }
 .nav-menu .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;  /* below the parent link */
+    top: 100%;
     left: 0;
-    background: #1a1a1a; /* navbar background */
+    background: #1a1a1a;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -29,27 +25,17 @@
     border-radius: 4px;
     z-index: 1000;
 }
-
-/* Show on hover */
-.nav-menu .dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-/* Dropdown links */
+.nav-menu .dropdown:hover .dropdown-menu { display: block; }
 .nav-menu .dropdown-menu li a {
     display: block;
     padding: 10px 15px;
     color: #fff;
     text-decoration: none;
 }
-
 .nav-menu .dropdown-menu li a:hover,
-.nav-menu .dropdown-menu li a.active {
-    background: #333;
-}
-
-
+.nav-menu .dropdown-menu li a.active { background: #333; }
 </style>
+
 <body>
     <!-- Top Navigation -->
     <nav class="top-nav">
@@ -59,71 +45,46 @@
                     <span class="logo-icon">⊕</span>
                     <span class="logo-text">The Nutri Co.</span>
                 </div>
-              
             </div>
+
             <div class="nav-center">
                 <ul class="nav-menu">
                     <li><a href="{% url 'dashboard_home' %}">Home</a></li>
                     <li><a href="{% url 'leads_all' %}">Lead</a></li>
-   <li class="dropdown">
-    <a href="#" class="dropdown-toggle {% if current_page in 'client_list started_clients ended_clients' %}active{% endif %}" data-toggle="dropdown">
-        Clients 
-    </a>
-    <ul class="dropdown-menu">
-        <li>
-            <a href="{% url 'clients_active' %}" class="{% if current_page == 'client_list' %}active{% endif %}">All Clients</a>
-        </li>
-        <li>
-            <a href="{% url 'clients_started' %}" class="{% if current_page == 'started_clients' %}active{% endif %}">Starting Client</a>
-        </li>
-        <li>
-            <a href="{% url 'clients_completed' %}" class="{% if current_page == 'ended_clients' %}active{% endif %}">Ended Reports</a>
-        </li>
-    </ul>
-</li>
-
-
-
-
-                 <li class="dropdown">
-    <a href="#" class="dropdown-toggle {% if current_page in 'client_list started_clients ended_clients' %}active{% endif %}" data-toggle="dropdown">
-        Nutrition 
-    </a>
-    <ul class="dropdown-menu">
-        <li>
-            <a href="{% url 'nutrition_recipes' %}" class="{% if current_page == 'nutrition_recipes' %}active{% endif %}">Recipes</a>
-        </li>
-        <li>
-            <a href="{% url 'nutrition' %}" class="{% if current_page == 'nutrition' %}active{% endif %}">Ingredients</a>
-        </li>
-        <li>
-            <a href="{% url 'nutrition_templates' %}" class="{% if current_page == 'nutrition_templates' %}active{% endif %}">Templates</a>
-        </li>
-    </ul>
-</li>
-                    <li>
-                        <a href="{% url 'workouts' %}" class="{% if current_page == 'workouts' %}active{% endif %}">Workouts </a>
+                    <li class="dropdown">
+                        <a href="#">Clients</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'clients_active' %}">All Clients</a></li>
+                            <li><a href="{% url 'clients_started' %}">Starting Client</a></li>
+                            <li><a href="{% url 'clients_completed' %}">Ended Reports</a></li>
+                        </ul>
                     </li>
-                    <li>
-                        <a href="{% url 'content' %}" class="{% if current_page == 'content' %}active{% endif %}">Content </a>
+                    <li class="dropdown">
+                        <a href="#">Nutrition</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'nutrition_recipes' %}">Recipes</a></li>
+                            <li><a href="{% url 'nutrition' %}">Ingredients</a></li>
+                            <li><a href="{% url 'nutrition_templates' %}">Templates</a></li>
+                        </ul>
                     </li>
-                    <li>
-                        <a href="{% url 'meals' %}" class="{% if current_page == 'meals' %}active{% endif %}">Meals </a>
-                    </li>
+                    <li><a href="{% url 'workouts' %}">Workouts</a></li>
+                    <li><a href="{% url 'content' %}">Content</a></li>
+                    <li><a href="{% url 'meals' %}">Meals</a></li>
                 </ul>
             </div>
-            
+
             <div class="nav-right">
                 <div class="nav-icons">
                     <span class="nav-icon">Roadmap</span>
                     <span class="nav-icon">📍</span>
                     <span class="nav-icon">💬</span>
-                    <span class="nav-icon">Hey {{request.user.first_name}}</span>
+                    <span class="nav-icon">Hey {{ request.user.first_name }}</span>
                     <div class="user-avatar">U</div>
                 </div>
             </div>
         </div>
     </nav>
+
 
     <!-- Main Content -->
     <main class="main-content">
@@ -135,4 +96,3 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
-

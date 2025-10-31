@@ -32,11 +32,13 @@ router.register(r'daily-targets', views.DailyMacroTargetViewSet, basename='daily
 router.register(r'payment-methods', views.PaymentMethodViewSet, basename='payment-method')
 router.register(r'invoices', views.InvoiceViewSet, basename='invoice')
 router.register(r'subscriptions', views.SubscriptionViewSet, basename='subscription')
-#router.register(r'lessons', views.LessonViewSet, basename='lesson')
+router.register(r'lessons', views.LessonViewSet, basename='lesson')
 router.register(r'chat-threads', views.ChatThreadViewSet, basename='chat-thread')
+router.register(r'messages', views.ChatMessageViewSet, basename='chatmessage')
+
 router.register(r'chat-messages', views.ChatMessageViewSet, basename='chat-message')
-#router.register(r'wishlist', views.WishlistViewSet, basename='wishlist')
-#router.register(r'files', views.UserFileViewSet, basename='file')
+router.register(r'wishlist', views.WishlistViewSet, basename='wishlist')
+router.register(r'files', views.UserFileViewSet, basename='file')
 
 urlpatterns = [
     # Auth endpoints
@@ -60,7 +62,7 @@ urlpatterns = [
    path('coach/clients/', views.list_clients, name='list-clients'),
    path('coach/clients/<int:client_id>/', views.client_detail, name='client-detail'),
    path('coach/clients/<int:client_id>/assign-workout/', views.assign_workout_to_client, name='assign-workout'),
-    
+
     # Include router URLs
     path('', include(router.urls)),
 ]

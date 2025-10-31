@@ -83,3 +83,82 @@ class NutritionTemplateForm(forms.ModelForm):
     class Meta:
         model = NutritionTemplate
         fields = ["name", "language", "meals_per_day", "target_calories"]
+
+class InventoryForm(forms.ModelForm):
+    class Meta:
+        model = Inventory
+        fields = [
+            'ingredient_name',
+            'quantity',
+            'unit',
+            'low_stock_alert',
+            'reorder_level',
+            'supplier',
+            'price',
+        ]
+        widgets = {
+            'ingredient_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingredient name'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'unit': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. kg, L'}),
+            'low_stock_alert': forms.NumberInput(attrs={'class': 'form-control'}),
+            'reorder_level': forms.NumberInput(attrs={'class': 'form-control'}),
+            'supplier': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
+   
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name']
+        widgets = {
+             'username': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'Username'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'First Name'
+            }),
+           
+        }
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'goal',
+            'plan',
+            'start_date',
+            'end_date',
+            'status',
+            'dietition_assigned',
+            'progress',
+        ]
+        widgets = {
+            'goal': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'Goal e.g., Muscle Build'
+            }),
+            'plan': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'Plan Type'
+            }),
+            'start_date': forms.DateInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'type': 'date'
+            }),
+            'end_date': forms.DateInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'type': 'date'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-select rounded-pill mb-2'
+            }),
+            'dietition_assigned': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'Assigned Dietitian'
+            }),
+            'progress': forms.NumberInput(attrs={
+                'class': 'form-control rounded-pill mb-2',
+                'placeholder': 'Progress %'
+            }),
+        }

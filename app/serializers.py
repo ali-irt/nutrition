@@ -554,7 +554,7 @@ class ChatThreadSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         return obj.messages.filter(reciever=user, read_at__isnull=True).count()
 
-
+    
 # ---------------------------
 # Dashboard & Summary Serializers
 # ---------------------------
@@ -587,3 +587,29 @@ class WeeklySummarySerializer(serializers.Serializer):
     total_workouts = serializers.IntegerField()
     avg_steps = serializers.IntegerField()
     weight_change = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)
+
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title', 'description', 'video_url', 'created_at', 'updated_at']
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    lesson = LessonSerializer(read_only=True)
+    lesson_id = serializers.PrimaryKeyRelatedField(
+        queryset=Lesson.objects.all(),
+        source='lesson',
+        write_only=True
+    )
+
+    class Meta:
+        model = WishlistItem
+        fields = ['id', 'user', 'lesson', 'lesson_id', 'added_at']
+        read_only_fields = ['user', 'added_at']
+
+
+class UserFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFile
+        fields = ['id', 'user', 'file', 'description', 'uploaded_at']
+        read_only_fields = ['user', 'uploaded_at']

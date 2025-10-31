@@ -347,34 +347,52 @@ def dashboard_today(request):
         }
     })
 
+from datetime import date, datetime, timedelta
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def weekly_progress(request):
-    """Get weekly progress summary"""
+    """Get weekly progress summary (optionally by ?week_start=YYYY-MM-DD)"""
     user = request.user
-    today = date.today()
-    week_start = today - timedelta(days=today.weekday())
+
+    # Optional query param: week_start
+    week_start_str = request.query_params.get('week_start')
+    if week_start_str:
+        try:
+            week_start = datetime.strptime(week_start_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=400)
+    else:
+        today = date.today()
+        week_start = today - timedelta(days=today.weekday())
+
     week_end = week_start + timedelta(days=6)
-    
+
     daily_data = []
     for i in range(7):
         day = week_start + timedelta(days=i)
-        
+
+        # Food entries
         food_entries = FoodDiaryEntry.objects.filter(user=user, date=day)
         calories = sum([
             (entry.food.calories if entry.food else entry.meal.calories) * entry.servings
             for entry in food_entries
         ])
-        
+
+        # Steps
         activity = DailyActivitySummary.objects.filter(user=user, date=day).first()
         steps = activity.steps if activity else 0
-        
+
+        # Weight
         progress = Progress.objects.filter(user=user, date=day).first()
         weight = float(progress.weight) if progress else None
-        
+
+        # Workouts
         workout_completed = UserWorkoutLog.objects.filter(user=user, date=day, completed=True).exists()
-        
+
         daily_data.append({
             'date': day,
             'weight': weight,
@@ -382,22 +400,22 @@ def weekly_progress(request):
             'steps': steps,
             'workout_completed': workout_completed
         })
-    
+
     total_calories = sum([d['calories'] for d in daily_data])
     total_steps = sum([d['steps'] for d in daily_data])
     workouts_completed = sum([1 for d in daily_data if d['workout_completed']])
-    
+
     weights = [d['weight'] for d in daily_data if d['weight']]
     weight_change = weights[-1] - weights[0] if len(weights) >= 2 else 0
-    
+
     return Response({
         'week_start': week_start,
         'week_end': week_end,
         'weight_change': round(weight_change, 1),
         'workouts_completed': workouts_completed,
         'workouts_target': user.profile.workouts_per_week,
-        'avg_calories': round(total_calories / 7),
-        'avg_steps': round(total_steps / 7),
+        'avg_calories': round(total_calories / 7) if total_calories else 0,
+        'avg_steps': round(total_steps / 7) if total_steps else 0,
         'daily_data': daily_data
     })
 
@@ -1323,6 +1341,56 @@ class ChatMessageViewSet(viewsets.ModelViewSet):
             message.save()
         
         return Response({'read': True})
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils import timezone
+from rest_framework.exceptions import ValidationError
+
+class ChatMessageViewSet(viewsets.ModelViewSet):
+    serializer_class = ChatMessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        thread_id = self.request.query_params.get('thread_id')
+        if not thread_id:
+            return ChatMessage.objects.none()
+        return ChatMessage.objects.filter(thread_id=thread_id).order_by('created_at')
+
+    @action(detail=False, methods=['post'])
+    def new(self, request):
+        """
+        Create (send) a new chat message
+        """
+        thread_id = request.data.get('thread_id')
+        text = request.data.get('text', '')
+
+        if not thread_id:
+            raise ValidationError("thread_id is required.")
+
+        try:
+            thread = ChatThread.objects.get(id=thread_id)
+        except ChatThread.DoesNotExist:
+            raise ValidationError("Thread not found.")
+
+        receiver = thread.participants.exclude(id=request.user.id).first()
+        if not receiver:
+            raise ValidationError("No valid receiver found in thread.")
+
+        # Create message
+        message = ChatMessage.objects.create(
+            thread=thread,
+            sender=request.user,
+            reciever=receiver,
+            text=text,
+        )
+
+        # Handle attachments (single or multiple)
+        for f in request.FILES.getlist('attachments'):
+            ChatAttachment.objects.create(message=message, file=f)
+
+        serializer = ChatMessageSerializer(message, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # ============================================
@@ -2095,3 +2163,34 @@ def copy_recipe(request, recipe_id):
             {'error': 'Recipe not found or not public'},
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+class LessonViewSet(viewsets.ModelViewSet):
+    """CRUD for lessons."""
+    queryset = Lesson.objects.all().order_by('-created_at')
+    serializer_class = LessonSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class WishlistViewSet(viewsets.ModelViewSet):
+    """User's wishlist — linked to lessons."""
+    serializer_class = WishlistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return WishlistItem.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class UserFileViewSet(viewsets.ModelViewSet):
+    """Handle user file uploads."""
+    serializer_class = UserFileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserFile.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

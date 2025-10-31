@@ -125,10 +125,10 @@ class UserProfile(models.Model):
         primary_key=True
     )
     date_of_birth = models.DateField(null=True, blank=True)
-    age = models.PositiveIntegerField(editable=False)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
-    height = models.DecimalField(max_digits=5, decimal_places=2, help_text="Height in cm or inches")
-    weight = models.DecimalField(max_digits=5, decimal_places=2, help_text="Weight in kg or lbs")
+    age = models.PositiveIntegerField(editable=False, null=True, blank=True)
+    gender = models.CharField(max_length=20,null=True, choices=GENDER_CHOICES)
+    height = models.DecimalField(max_digits=5, decimal_places=2, help_text="Height in cm or inches", null=True)
+    weight = models.DecimalField(max_digits=5, decimal_places=2,null=True, help_text="Weight in kg or lbs")
     unit_system = models.CharField(
         max_length=10,
         choices=UnitSystem.choices,
@@ -137,11 +137,14 @@ class UserProfile(models.Model):
     goal = models.CharField(max_length=100, help_text="e.g., Lose weight, Gain muscle")
     target_weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     dietary_preferences = models.CharField(max_length=20, choices=DIET_CHOICES, blank=True)
-    activity_level = models.CharField(max_length=20, choices=ACTIVITY_LEVEL_CHOICES, default='moderate')
+    activity_level = models.CharField(max_length=20, choices=ACTIVITY_LEVEL_CHOICES, default='moderate' )
     phone = models.CharField(max_length=20, blank=True)
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True)
-
-    # Deprecated but kept for compatibility (consider replacing with assignments)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    plan = models.CharField(max_length=100, blank=True)
+    dietition_assigned = models.CharField(max_length=100, blank=True)
+    progress = models.IntegerField(blank=True, null=True, help_text="Progress percentage towards goal")
     workouts = models.ManyToManyField(Workout, blank=True, related_name='users')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -175,13 +178,7 @@ class UserProfile(models.Model):
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        today = date.today()
-        self.age = today.year - self.date_of_birth.year - (
-            (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
-        )
-        super().save(*args, **kwargs)
-
+    
     @property
     def bmi(self):
         if self.unit_system == UnitSystem.IMPERIAL:
@@ -1072,12 +1069,14 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
-from django.db import models
 class Inventory(models.Model):
     ingredient_name = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
     unit = models.CharField(max_length=20)
     low_stock_alert = models.PositiveIntegerField(default=10)
+    reorder_level = models.FloatField(default=10)
+    supplier = models.CharField(max_length=100, blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def is_low_stock(self):
         return self.quantity <= self.low_stock_alert

@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # Dashboard Home
     path("", views.dashboard_home, name="dashboard_home"),
+path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lead_status"),
 
     path("leads/", views.leads_all, name="leads_all"),
     path("leads/new/", views.leads_new, name="leads_new"),
@@ -19,8 +20,7 @@ urlpatterns = [
     path("clients/active/", views.clients_active, name="clients_active"),
     path("clients/payment-error/", views.clients_payment_error, name="clients_payment_error"),
     path("clients/just-started/", views.clients_started, name="clients_started"),  # Changed from clients_started
-    path("client/<int:client_id>/membership/", views.client_membership, name="client_membership"),
-    path("clients/new-message/", views.clients_new_message, name="clients_new_message"),
+     path("clients/new-message/", views.clients_new_message, name="clients_new_message"),
     path("clients/new-checkin/", views.clients_new_checkin, name="clients_new_checkin"),
     path("clients/missed-checkin/", views.clients_missed_checkin, name="clients_missed_checkin"),
     path("clients/reminders/", views.clients_reminders, name="clients_reminders"),
@@ -28,11 +28,8 @@ urlpatterns = [
     path("clients/no-communication/", views.clients_no_communication, name="clients_no_communication"),
     path("clients/offer-sent/", views.clients_offer_sent, name="clients_offer_sent"),
     path("clients/no-account/", views.clients_no_account, name="clients_no_account"),
-    path("client/<int:client_id>/", views.client_profile, name="client_profile"),
-   path("client/<int:client_id>/workout/", views.client_workout, name="client_workout"),
-   path("client/<int:client_id>/progress/", views.client_progress, name="client_progress"),
-    path("client/<int:client_id>/nutrition/", views.client_nutrition, name="client_nutrition"),
-    path("nutrition/recipes/", views.nutrition_recipes, name="nutrition_recipes"),
+    path("clients/<int:client_id>/", views.client_profile, name="client_profile"),
+     path("nutrition/recipes/", views.nutrition_recipes, name="nutrition_recipes"),
     path("nutrition/templates/", views.nutrition_templates, name="nutrition_templates"),
     path("nutrition/", views.nutrition, name="nutrition"),
     path("nutrition/ingredients/create/", views.ingredient_create, name="ingredient_create"), 
@@ -52,8 +49,15 @@ urlpatterns = [
     # Progress
     path("progress/", views.progress_list, name="progress_list"),
 
+path("add_lead_client/", views.add_lead_client, name="add_client1"),
     # Meals
     path("meals/", views.meals, name="meals"),
+     path('add/', views.add_inventory, name='add_inventory'),
+    path('edit/<int:pk>/', views.edit_inventory, name='edit_inventory'),
+    path('delete/<int:pk>/', views.delete_inventory, name='delete_inventory'),
+    path('download-payments/', views.download_payments_csv, name='download_payments'),
+
+path('add-client/', views.add_client, name='add_client'),
 
     # Wishlist
     path("wishlist/", views.wishlist_list, name="wishlist"),

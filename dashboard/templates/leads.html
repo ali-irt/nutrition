@@ -5,85 +5,6 @@
 
 <style>
   
-  .modal-content {
-    border-radius: 20px;
-    border: none;
-  }
-  
-  .modal-header {
-    padding: 2rem 2rem 1rem 2rem;
-  }
-  
-  .modal-body {
-    padding: 1rem 2rem 2rem 2rem;
-  }
-  
-  .modal-footer {
-    padding: 1rem 2rem 2rem 2rem;
-  }
-  
-  .form-label {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-  
-  .form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-    background-color: #f8f9fa;
-  }
-  
-  .form-control:focus, .form-select:focus {
-    background-color: #fff;
-    border-color: #000;
-    box-shadow: none;
-  }
-  
-  .phone-input-group {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .country-code-select {
-    width: 100px;
-    flex-shrink: 0;
-  }
-  
-  .phone-input {
-    flex: 1;
-  }
-  
-  textarea.form-control {
-    resize: none;
-    min-height: 100px;
-  }
-  
-  .btn-cancel {
-    background-color: #f8f9fa;
-    color: #333;
-    border: none;
-    padding: 0.65rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-  
-  .btn-submit {
-    background-color: #000;
-    color: #fff;
-    border: none;
-    padding: 0.65rem 2rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-  
-  .btn-submit:hover {
-    background-color: #333;
-    color: #fff;
-  }
 </style>
 
 <!-- Page Header -->
@@ -139,6 +60,19 @@
             ">{{ lead.status }}</span>
           </td>
           <td>{{ lead.created_at|timesince }} ago</td>
+          <td>
+  <form method="POST" action="{% url 'update_lead_status' lead.id %}" class="d-flex align-items-center">
+    {% csrf_token %}
+    <select name="status" class="form-select form-select-sm me-2">
+      {% for choice in lead.STATUS_CHOICES %}
+      <option value="{{ choice.0 }}" {% if lead.status == choice.0 %}selected{% endif %}>
+        {{ choice.0 }}
+      </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-sm btn-dark">Update</button>
+  </form>
+</td>
           <td>
             <button class="btn btn-sm btn-outline-secondary me-2 edit-btn"
               data-id="{{ lead.id }}"

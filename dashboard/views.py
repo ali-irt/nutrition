@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum, Q, F, ExpressionWrapper,FloatField
 from django.utils.timezone import localdate
 from .forms import *
 from django.http import JsonResponse
@@ -15,7 +15,7 @@ from django.db.models.functions import TruncDay
 from django.shortcuts import render
 from django.utils import timezone
 from app.models import *
-import json
+import json, csv
 from django.db.models import Avg
 
 def _daterange_for(kind: str):
@@ -35,6 +35,7 @@ def _daterange_for(kind: str):
 # -------------------------
 # Dashboard Home
 # -------------------------
+@login_required
 def dashboard_home(request):
     # Prefer a 'status' field if your UserProfile has one; else fall back to activity_level heuristic
     if hasattr(UserProfile, 'status'):
@@ -96,6 +97,14 @@ def leads_all(request):
         "form": form,
     })
 
+@require_POST
+def update_lead_status(request, pk):
+    lead = get_object_or_404(Lead, pk=pk)
+    new_status = request.POST.get("status")
+    if new_status:
+        lead.status = new_status
+        lead.save()
+    return redirect("leads_all")
 
 def delete_lead(request, pk):
     lead = get_object_or_404(Lead, pk=pk)
@@ -129,9 +138,11 @@ def leads_lost(request):
 # Clients
 # -------------------------
 
+from django.utils.timezone import now
+from datetime import timedelta
+
 def clients_active(request):
-    """Show active clients - you'll need to define what 'active' means"""
-    # Example: clients created in last 90 days and have a phone number
+    """Show active clients"""
     profiles = UserProfile.objects.filter(
         created_at__gte=now()-timedelta(days=90),
         phone__isnull=False
@@ -144,14 +155,15 @@ def clients_active(request):
         initials = (first_initial + last_initial).upper() or "??"
         
         clients.append({
+            "profile": profile,  # pass the whole object
             "name": profile.user.get_full_name() or profile.user.username,
             "initials": initials,
             "chat": "Active",
-            "week": "Week 1",  # You'll need to calculate this based on your logic
-            "checkin": "Pending",  # Add checkin status to your model
-            "plans": "🥗",  # Add plans info to your model
+            "week": "Week 1",
+            "checkin": "Pending",
+            "plans": "🥗",
             "reminders": "-",
-            "days": "0"  # Days since last activity
+            "days": "0"
         })
     
     return render(request, "clients.html", {"status": "Active", "clients": clients})
@@ -422,96 +434,32 @@ def clients_no_communication(request):
 # -------------------------
 # Client Profile (with tabs)
 # -------------------------
-
+@login_required
 def client_profile(request, client_id):
-    user = get_object_or_404(User, id=client_id)
-    profile = get_object_or_404(UserProfile, user=user)
+    # Fetch the client
+    client = get_object_or_404(User, id=client_id)
 
-    workouts = Workout.objects.filter(user=user).order_by("-date")
-    meal_logs = UserMealLog.objects.filter(user=user).order_by("-date")
-    meals = Meal.objects.all().order_by("meal_type")
-    progress_entries = Progress.objects.filter(user=user).order_by("-date")
-    wishlist = WishlistItem.objects.filter(user=user).order_by("-priority")
+    # Determine active tab (default = overview)
+    current_tab = request.GET.get("tab", "overview")
+    library_documents = UserFile.objects.all().order_by('-created_at')
+
+    # Fetch related data
+    meals = UserMealLog.objects.filter(user=client)
+    workouts = Workout.objects.filter(user=client)
+    progress = Progress.objects.filter(user=client).order_by('-date')
+    memberships = MealSubscription.objects.filter(user=client)
 
     context = {
-        "client": profile,
-        "workouts": workouts,
-        "meal_logs": meal_logs,
+        "client": client,
+        "current_tab": current_tab,
         "meals": meals,
-        "progress": progress_entries,
-        "wishlist": wishlist,
-        "current_tab": request.GET.get("tab", "overview"),
-    }
-    print(context)
-    return render(request, "client_profile.html", context)
-
-def client_nutrition(request, client_id):
-    user = get_object_or_404(User, id=client_id)
-    profile = get_object_or_404(UserProfile, user=user)
-
-    meals = Meal.objects.all().order_by("meal_type")
-    meal_logs = UserMealLog.objects.filter(user=user).order_by("-date")
-    nutrition_entries = Nutrition.objects.filter(kind="ingredient").order_by("name")
-    nutrition_templates = NutritionTemplate.objects.all().order_by("name")
-
-    context = {
-        "client": profile,
-        "meals": meals,
-        "meal_logs": meal_logs,
-        "nutrition_entries": nutrition_entries,
-        "nutrition_templates": nutrition_templates,
-        "current_tab": "nutrition",
-    }
-    return render(request, "client_nutrition.html", context)
-
-def client_workout(request, client_id):
-    # Get client and related data
-    user = get_object_or_404(User, id=client_id)
-    profile = get_object_or_404(UserProfile, user=user)
-
-    # Fetch workouts and logs dynamically
-    workouts = Workout.objects.filter(user=user).order_by("-date")
-    workout_logs = UserWorkoutLog.objects.filter(user=user).order_by("-date")
-    exercises = Exercise.objects.all().order_by("name")
-    muscle_groups = Muscle._meta.get_field("group").choices
-
-    context = {
-        "client": profile,
         "workouts": workouts,
-        "workout_logs": workout_logs,
-        "exercises": exercises,
-        "muscle_groups": muscle_groups,
-        "current_tab": "workouts",
-    }
-    return render(request, "client_workout.html", context)
-
-def client_progress(request, client_id):
-    user = get_object_or_404(User, id=client_id)
-    profile = get_object_or_404(UserProfile, user=user)
-
-    progress_entries = Progress.objects.filter(user=user).order_by("-date")
-
-    context = {
-        "client": profile,
-        "progress": progress_entries,
-        "current_tab": "progress",
-    }
-    return render(request, "client_progress.html", context)
-
-def client_membership(request, client_id):
-    user = get_object_or_404(User, id=client_id)
-    profile = get_object_or_404(UserProfile, user=user)
-    # Fetch user's invoices (most recent first)
-    memberships = Invoice.objects.filter(user=user).order_by("-created_at")
-
-    context = {
-        "client": profile,
+        "library_documents": library_documents,
+        "progress": progress,
         "memberships": memberships,
-        "current_tab": "membership",
     }
-    return render(request, "client_membership.html", context)
-# -------------------------
-# Nutrition
+    
+    return render(request, "client_profile.html", context)
 # -------------------------
 
 def _is_ajax(request):
@@ -903,7 +851,10 @@ def progress_list(request):
 # -------------------------
 # Meals
 # -------------------------
+
+
 def meals(request):
+    # Meals
     meals = Meal.objects.all()
     stats = {
         "total_meals": meals.count(),
@@ -922,10 +873,37 @@ def meals(request):
     }
 
     # Clients
-    clients = User.objects.all()
+    clients_all = User.objects.all()
+    clients_active = clients_all.filter(is_active=True).count()
+    clients_paused = clients_all.filter(is_active=False).count()
+
+    client_stats = {
+        "total": clients_all.count(),
+        "active": clients_active,
+        "paused": clients_paused,
+    }
 
     # Inventory
-    inventory = Inventory.objects.all()
+ # Inventory (with reorder calculation)
+    inventory = (
+        Inventory.objects
+        .annotate(
+            to_order=ExpressionWrapper(
+                F('reorder_level') - F('quantity'),
+                output_field=FloatField()
+            )
+        )
+        .order_by('ingredient_name')
+    )    
+    total_ingredients = inventory.count()
+    low_stock_items = inventory.filter(quantity__lte=F('reorder_level')).count()
+    reorder_count = inventory.filter(quantity__lte=F('reorder_level')).count()
+
+    inventory_stats = {
+        "total_ingredients": total_ingredients,
+        "low_stock_items": low_stock_items,
+        "reorder_alerts": reorder_count,
+    }
 
     # Delivery
     deliveries = Delivery.objects.select_related('subscription').all()
@@ -951,9 +929,13 @@ def meals(request):
         "meals": meals,
         "stats": stats,
         "orders": orders,
+         'user_form': UserForm(),
+        'profile_form': UserProfileForm(),
+        "client_stats": client_stats,
         "order_stats": order_stats,
-        "clients": clients,
+        "clients": clients_all,
         "inventory": inventory,
+        "inventory_stats": inventory_stats,
         "deliveries": deliveries,
         "delivery_stats": delivery_stats,
         "payments": payments,
@@ -961,6 +943,126 @@ def meals(request):
     }
 
     return render(request, "meals.html", context)
+from django.utils.text import slugify
+import uuid, random
+from django.contrib import messages
+
+def add_client(request):
+    if request.method == 'POST':
+        user_form = UserForm(request.POST)
+        profile_form = UserProfileForm(request.POST)
+
+        print("POST DATA:", request.POST)  # Debug: see all submitted data
+
+        if user_form.is_valid():
+            print("UserForm is valid")
+        else:
+            print("UserForm errors:", user_form.errors)  # Debug: show validation errors
+
+        if profile_form.is_valid():
+            print("UserProfileForm is valid")
+        else:
+            print("UserProfileForm errors:", profile_form.errors)  # Debug: show validation errors
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+
+            # Debug: show user before username handling
+            print("User instance before username:", user)
+
+            # Auto-generate username if empty
+            if not user.username:
+                user.username = f"{user.first_name.lower()}{user.last_name.lower()}{random.randint(100,999)}"
+            print("Final username to save:", user.username)
+
+            try:
+                user.save()
+                print("User saved successfully:", user)
+            except Exception as e:
+                print("Error saving user:", e)
+                messages.error(request, f"Error saving user: {e}")
+                return render(request, 'meals.html', {'user_form': user_form, 'profile_form': profile_form})
+
+            profile = profile_form.save(commit=False)
+            profile.user = user
+
+            try:
+                profile.save()
+                print("Profile saved successfully:", profile)
+            except Exception as e:
+                print("Error saving profile:", e)
+                messages.error(request, f"Error saving profile: {e}")
+                return render(request, 'meals.html', {'user_form': user_form, 'profile_form': profile_form})
+
+            messages.success(request, 'Client added successfully.')
+            return redirect('meals')  # or current page
+        else:
+            print("Form is not valid, cannot save.")
+
+    else:
+        user_form = UserForm()
+        profile_form = UserProfileForm()
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+    return render(request, 'meals.html', context)
+
+
+def add_lead_client(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('clients')
+    return redirect('clients')
+
+
+
+def add_inventory(request):
+    if request.method == 'POST':
+        form = InventoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('meals')
+    return redirect('meals')
+
+
+def edit_inventory(request, pk):
+    item = get_object_or_404(Inventory, pk=pk)
+    if request.method == 'POST':
+        form = InventoryForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('meals')
+    else:
+        form = InventoryForm(instance=item)
+        return redirect('meals', {'form': form})
+
+
+def delete_inventory(request, pk):
+    item = get_object_or_404(Inventory, pk=pk)
+    item.delete()
+    return redirect('meals')
+
+def download_payments_csv(request):
+    # Fetch only that specific payment belonging to the logged-in user
+    payment = get_object_or_404(Payment,client=request.user)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="payment.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['User', 'Amount', 'Date', 'Status'])
+    writer.writerow([
+        payment.client.first_name,
+        payment.amount,
+        payment.created_at.strftime("%Y-%m-%d %H:%M"),
+        payment.status
+    ])
+
+    return response
 # -------------------------
 # Wishlist
 # -------------------------

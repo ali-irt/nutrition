@@ -53,6 +53,137 @@
     font-size: 20px;
   }
 </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Overview - The Nutri Co.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-black">
+
+  <!-- Header -->
+  <header class="bg-black text-white px-8 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+      <img src="https://via.placeholder.com/30" class="rounded-full" alt="Logo">
+      <span class="font-semibold text-lg">The Nutri Co.</span>
+    </div>
+    <nav class="hidden md:flex gap-6 text-sm">
+      <a href="#" class="hover:underline">Home</a>
+      <a href="#" class="hover:underline">Lead</a>
+      <a href="#" class="hover:underline">Clients</a>
+      <a href="#" class="hover:underline">Nutrition</a>
+      <a href="#" class="hover:underline">Workouts</a>
+      <a href="#" class="hover:underline">Content</a>
+      <a href="#" class="hover:underline">Meals</a>
+    </nav>
+    <div class="flex items-center gap-4 text-sm">
+      <span>Roadmap</span>
+      <span>|</span>
+      <span>Hey Usamah</span>
+      <div class="bg-white text-black rounded-full px-3 py-1 font-semibold">U</div>
+    </div>
+  </header>
+
+  <!-- Client Info -->
+  <section class="bg-black text-white px-10 py-10 flex items-center gap-8">
+    <div class="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center text-2xl font-semibold">
+      VR
+    </div>
+    <div>
+      <h1 class="text-3xl font-semibold">Vera Rossakoff</h1>
+      <span class="bg-gray-700 text-sm px-3 py-1 rounded-lg mt-2 inline-block">Demo ID</span>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="flex justify-center bg-gray-900 text-white text-sm py-2">
+    <a href="#" class="px-4 py-2 border-b-2 border-white font-semibold">Overview</a>
+    <a href="#" class="px-4 py-2 hover:border-b-2 hover:border-white">Nutrition</a>
+    <a href="#" class="px-4 py-2 hover:border-b-2 hover:border-white">Workouts</a>
+    <a href="#" class="px-4 py-2 hover:border-b-2 hover:border-white">Progress</a>
+    <a href="#" class="px-4 py-2 hover:border-b-2 hover:border-white">Membership</a>
+  </div>
+
+  <!-- Main Section -->
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Left section -->
+      <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow">
+        <h2 class="text-2xl font-bold mb-1">Great! Vera has a new check-in</h2>
+        <p class="text-gray-600 mb-6">Doesn’t enjoy long workouts</p>
+
+        <div class="bg-gray-50 p-4 rounded-xl border">
+          <h3 class="text-lg font-semibold mb-2">Membership Free for 3 months</h3>
+          <p class="text-gray-700">Free with active app</p>
+          <div class="h-2 bg-gray-200 rounded mt-3 mb-1">
+            <div class="h-2 bg-black rounded" style="width:20%;"></div>
+          </div>
+          <p class="text-sm text-gray-500">Week 2 out of 14 weeks</p>
+        </div>
+
+        <div class="flex justify-between mt-6 text-sm text-gray-700">
+          <p>0 unread messages</p>
+          <p>1 task</p>
+        </div>
+      </div>
+
+      <!-- Right section -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-gray-500 text-sm mb-1">Weight</p>
+          <h3 class="text-2xl font-bold">-2.2 <span class="text-gray-500 text-sm">lbs</span></h3>
+          <p class="text-gray-500 text-sm">Lost 2.2 lbs</p>
+          <div class="h-2 bg-black rounded mt-3"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-gray-500 text-sm mb-1">Check-in</p>
+          <h3 class="text-2xl font-bold">None</h3>
+          <p class="text-gray-500 text-sm">No check-in day</p>
+          <div class="h-2 bg-black rounded mt-3"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-gray-500 text-sm mb-1">Nutrition plan</p>
+          <h3 class="text-2xl font-bold">1954</h3>
+          <p class="text-gray-500 text-sm">Calories | 3 meals/day</p>
+          <div class="h-2 bg-black rounded mt-3"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-gray-500 text-sm mb-1">Training</p>
+          <h3 class="text-2xl font-bold">No</h3>
+          <p class="text-gray-500 text-sm">Sessions tracked last week</p>
+          <div class="h-2 bg-black rounded mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Communication Section -->
+    <div class="mt-10 space-y-4">
+      <details class="bg-white p-4 rounded-xl shadow">
+        <summary class="font-semibold cursor-pointer">Documents</summary>
+        <p class="text-gray-600 mt-2">0 Files Uploaded</p>
+      </details>
+
+      <details class="bg-white p-4 rounded-xl shadow">
+        <summary class="font-semibold cursor-pointer">Lessons</summary>
+        <p class="text-gray-600 mt-2">0 Lessons sent, 0 scheduled</p>
+      </details>
+
+      <details class="bg-white p-4 rounded-xl shadow">
+        <summary class="font-semibold cursor-pointer">Email & Publishing History</summary>
+        <p class="text-gray-600 mt-2">No records available</p>
+      </details>
+    </div>
+
+  </main>
+
+</body>
+</html>
 
 <body class="bg-gray-50 text-gray-800">
   <main class="mx-auto px-6 py-8">

@@ -6,7 +6,7 @@ env_variables:
   DJANGO_SETTINGS_MODULE: "nutrition_project.settings"
   SECRET_KEY: "hlkvjdsfgzhksdjhkjsdxhkjxcnvkjshfoishfsjkxnc-this-with-a-secure-secret"
   DEBUG: "False"
-  DB_HOST: "34.172.xx.xx"
+  DB_HOST: "34.70.202.242"
   DB_NAME: "nutritiondb"
   DB_USER: "root"
   DB_PASSWORD: "Nutrition_database.1289"

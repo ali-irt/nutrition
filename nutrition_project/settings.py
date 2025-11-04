@@ -73,18 +73,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'nutrition_project.wsgi.application'
-import os
 
-import os
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': '3306',  # default MySQL port
+        'NAME': 'nutritiondb',
+        'USER': 'django_user',
+        'PASSWORD': 'StrongPassword123!',
+        'HOST': '34.70.202.242',  # Your Cloud SQL public IP
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 

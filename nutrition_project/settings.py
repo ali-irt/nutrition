@@ -75,16 +75,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nutrition_project.wsgi.application'
 import os
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': os.getenv('DB_HOST', 'YOUR_CLOUD_SQL_PUBLIC_IP'),
-        'NAME': os.getenv('DB_NAME', 'nutritiondb'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'yourpassword'),
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': '3306',  # default MySQL port
     }
 }
+
+    
 # settings.py
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

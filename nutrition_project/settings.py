@@ -79,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nutritiondb',
-        'USER': 'django_user',
-        'PASSWORD': 'StrongPassword123!',
+        'USER': 'root',
+        'PASSWORD': 'Nutrition_database.1289!',
         'HOST': '34.70.202.242',  # Your Cloud SQL public IP
         'PORT': '3306',
         'OPTIONS': {

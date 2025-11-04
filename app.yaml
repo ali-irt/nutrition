@@ -13,3 +13,9 @@ handlers:
 
   - url: /.*
     script: auto
+env_variables:
+  DJANGO_SETTINGS_MODULE: "nutrition_project.settings"
+  DB_HOST: "34.172.xx.xx"
+  DB_NAME: "nutritiondb"
+  DB_USER: "root"
+  DB_PASSWORD: "Nutrition_database.1289"

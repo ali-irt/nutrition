@@ -203,33 +203,40 @@ class FoodPortionSerializer(serializers.ModelSerializer):
         model = FoodPortion
         fields = ['id', 'name', 'unit', 'quantity', 'grams']
 
-
 class FoodSerializer(serializers.ModelSerializer):
     brand_name = serializers.CharField(source='brand.name', read_only=True)
     portions = FoodPortionSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = Food
         fields = [
             'id', 'name', 'brand', 'brand_name', 'is_custom',
             'calories', 'protein', 'carbs', 'fat', 'fiber',
-            'allergens', 'image', 'portions'
+            'allergens', 'image', 'portions', 'created_by'
         ]
+        read_only_fields = ['created_by', 'is_custom']
 
-
+ 
 class MealSerializer(serializers.ModelSerializer):
-    macros_ratio = serializers.ReadOnlyField()
-    
     class Meta:
         model = Meal
-        fields = [
-            'id', 'name', 'description', 'meal_type', 'calories',
-            'protein', 'carbs', 'fats', 'fiber', 'is_vegan',
-            'is_vegetarian', 'is_gluten_free', 'is_dairy_free',
-            'preparation_time', 'difficulty', 'image',
-            'macros_ratio', 'created_at', 'updated_at'
-        ]
+        fields = ['id', 'name', 'description', 'calories', 'protein', 'carbs', 'fats', 'image']
 
+
+class MealBoxItemSerializer(serializers.ModelSerializer):
+    meal = MealSerializer()
+
+    class Meta:
+        model = MealBoxItem
+        fields = ['id', 'meal', 'quantity']
+
+
+class MealBoxSerializer(serializers.ModelSerializer):
+    items = MealBoxItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = MealBox
+        fields = ['id', 'name', 'description', 'duration_days', 'price', 'week_start', 'items', 'created_at', 'updated_at']
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     food = FoodSerializer(read_only=True)

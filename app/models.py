@@ -256,7 +256,26 @@ class Meal(models.Model):
             "protein": round((self.protein / total) * 100, 1),
             "carbs": round((self.carbs / total) * 100, 1),
             "fats": round((self.fats / total) * 100, 1),
+
         }
+
+class MealBoxItem(models.Model):
+    meal_box = models.ForeignKey('MealBox', on_delete=models.CASCADE, related_name='items')
+    meal = models.ForeignKey('Meal', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+class MealBox(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_boxes")
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    duration_days = models.IntegerField(default=7)
+    price = models.DecimalField(max_digits=8, null=True, blank=True, decimal_places=2)
+    week_start = models.DateField(default=timezone.now().date())
+    meals = models.ManyToManyField('Meal', through='MealBoxItem')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class UserWorkoutLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workout_logs')

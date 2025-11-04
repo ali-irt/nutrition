@@ -3,7 +3,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -15,6 +15,7 @@ import string, json
 from .models import *
 from .serializers import *
 
+from django.shortcuts import get_object_or_404
 
 # ============================================
 # AUTH VIEWS
@@ -27,36 +28,49 @@ def Register(request):
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
+
+        refresh = RefreshToken.for_user(user)
         return Response({
             'user_id': user.id,
             'email': user.email,
-            'token': token.key,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
             'onboarding_completed': False
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def Login(request):
-    """User login"""
-    email = request.data.get('email')
+    """Login with username, email, or phone"""
+    identifier = request.data.get('identifier')
     password = request.data.get('password')
-    
-    user = authenticate(username=email, password=password)
-    if user:
-        token, _ = Token.objects.get_or_create(user=user)
+
+    if not identifier or not password:
+        return Response(
+            {'error': 'Both identifier and password are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Try to find the user by username, email, or phone number
+    try:
+        user = User.objects.filter(
+            Q(username__iexact=identifier) |
+            Q(email__iexact=identifier)         ).first()
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if user and user.check_password(password):
+        refresh = RefreshToken.for_user(user)
         onboarding_completed = hasattr(user, 'profile') and user.profile.onboarding_completed
         return Response({
             'user_id': user.id,
-            'token': token.key,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
             'onboarding_completed': onboarding_completed
-        })
-    return Response(
-        {'error': 'Invalid credentials'},
-        status=status.HTTP_401_UNAUTHORIZED
-    )
+        }, status=status.HTTP_200_OK)
+
+    return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 @api_view(['DELETE'])
@@ -132,24 +146,34 @@ def verify_otp(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_password(request):
-    """Change user password"""
+    """Change user password (JWT version)"""
     old_password = request.data.get('old_password')
     new_password = request.data.get('new_password')
-    
+
+    # Validate input
+    if not old_password or not new_password:
+        return Response({'error': 'Both old and new passwords are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check old password
     if not request.user.check_password(old_password):
         return Response({'error': 'Old password is incorrect'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    # Validate new password
     if len(new_password) < 8:
-        return Response({'error': 'Password must be at least 8 characters'}, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response({'error': 'Password must be at least 8 characters long'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Save new password
     request.user.set_password(new_password)
     request.user.save()
-    
-    Token.objects.filter(user=request.user).delete()
-    token = Token.objects.create(user=request.user)
-    
-    return Response({'message': 'Password changed successfully', 'token': token.key})
 
+    # Issue new JWT tokens (refresh + access)
+    refresh = RefreshToken.for_user(request.user)
+
+    return Response({
+        'message': 'Password changed successfully',
+        'refresh': str(refresh),
+        'access': str(refresh.access_token)
+    }, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -178,37 +202,51 @@ def forgot_password(request):
         return Response({'message': 'If email exists, reset code has been sent'})
 
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def reset_password(request):
-    """Reset password with OTP"""
+    """Reset password using OTP (JWT version)"""
     email = request.data.get('email')
     code = request.data.get('code')
     new_password = request.data.get('new_password')
-    
+
+    # Validate required fields
+    if not all([email, code, new_password]):
+        return Response({'error': 'Email, code, and new password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
         user = User.objects.get(email=email)
         otp = OTP.objects.get(user=user, channel='email', destination=email, code=code)
-        
+
+        # Check OTP validity
         if not otp.is_valid():
             return Response({'error': 'OTP expired or invalid'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+        # Validate password
+        if len(new_password) < 8:
+            return Response({'error': 'Password must be at least 8 characters long'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update user password
         user.set_password(new_password)
         user.save()
-        
+
+        # Mark OTP as used
         otp.used_at = timezone.now()
         otp.save()
-        
-        Token.objects.filter(user=user).delete()
-        token = Token.objects.create(user=user)
-        
-        return Response({'message': 'Password reset successfully', 'token': token.key})
+
+        # Generate new JWT tokens
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'message': 'Password reset successfully',
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
     except (User.DoesNotExist, OTP.DoesNotExist):
         return Response({'error': 'Invalid email or code'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# ============================================
-# PROFILE VIEWSET
+ # PROFILE VIEWSET
 # ============================================
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -423,7 +461,6 @@ def weekly_progress(request):
 # ============================================
 # FOOD & MEAL VIEWSETS
 # ============================================
-
 class FoodViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FoodSerializer
     permission_classes = [IsAuthenticated]
@@ -433,8 +470,19 @@ class FoodViewSet(viewsets.ReadOnlyModelViewSet):
         search = self.request.query_params.get('q', None)
         if search:
             queryset = queryset.filter(Q(name__icontains=search) | Q(brand__name__icontains=search))
-        return queryset[:20]
-    
+        if self.action == 'list':  # only limit when listing
+            queryset = queryset[:20]
+        return queryset
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def create_custom(self, request):
+        """Create a custom food item"""
+        serializer = FoodSerializer(data=request.data)
+        if serializer.is_valid():
+            food = serializer.save(created_by=request.user, is_custom=True)
+            return Response(FoodSerializer(food).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
     @action(detail=False, methods=['post'])
     def scan_barcode(self, request):
         """Scan barcode and return food"""
@@ -494,22 +542,49 @@ class FoodDiaryViewSet(viewsets.ModelViewSet):
             'meals': meals
         })
 
-
+ 
 class MealViewSet(viewsets.ReadOnlyModelViewSet):
+    """API for listing meals and fetching weekly menus"""
     serializer_class = MealSerializer
     permission_classes = [IsAuthenticated]
     queryset = Meal.objects.all()
-    
+
+    def get_queryset(self):
+        queryset = Meal.objects.all()
+        # optional filters
+        meal_type = self.request.query_params.get('type')
+        vegan = self.request.query_params.get('vegan')
+        search = self.request.query_params.get('q')
+
+        if meal_type:
+            queryset = queryset.filter(meal_type__iexact=meal_type)
+        if vegan == 'true':
+            queryset = queryset.filter(is_vegan=True)
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset
+
     @action(detail=False, methods=['get'])
     def menu(self, request):
-        """Get weekly menu"""
+        """Get the weekly menu based on week_start"""
         week_start = request.query_params.get('week_start')
+
+        if not week_start:
+            week_start = timezone.now().date()
+        else:
+            try:
+                week_start = timezone.datetime.strptime(week_start, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
+
+        week_end = week_start + timedelta(days=6)
         meals = self.get_queryset()
+
         serializer = self.get_serializer(meals, many=True)
-        
         return Response({
-            'week_start': week_start,
-            'available_meals': serializer.data
+            "week_start": week_start,
+            "week_end": week_end,
+            "available_meals": serializer.data
         })
 
 
@@ -581,7 +656,50 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
             'history': [{'date': date_key, 'sets': sets} for date_key, sets in history.items()],
             'personal_records': {'max_weight': float(max_weight) if max_weight else None}
         })
+ 
+class MealBoxViewSet(viewsets.ModelViewSet):
+    serializer_class = MealBoxSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return MealBox.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def active(self, request):
+        """Get current active meal box (this week)"""
+        today = date.today()
+        week_start = today - timedelta(days=today.weekday())
+        box, created = MealBox.objects.get_or_create(user=request.user, week_start=week_start, defaults={'name': 'Weekly Box'})
+        serializer = self.get_serializer(box)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def add(self, request, pk=None):
+        """Add meal to the box"""
+        box = self.get_object()
+        meal_id = request.data.get('meal_id')
+        quantity = int(request.data.get('quantity', 1))
+
+        meal = get_object_or_404(Meal, id=meal_id)
+        item, created = MealBoxItem.objects.get_or_create(meal_box=box, meal=meal)
+        item.quantity = item.quantity + quantity if not created else quantity
+        item.save()
+
+        return Response({'message': 'Meal added successfully', 'item_id': item.id}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def remove(self, request, pk=None):
+        """Remove a meal from the box"""
+        box = self.get_object()
+        meal_id = request.data.get('meal_id')
+
+        meal = get_object_or_404(Meal, id=meal_id)
+        MealBoxItem.objects.filter(meal_box=box, meal=meal).delete()
+
+        return Response({'message': 'Meal removed successfully'}, status=status.HTTP_200_OK)
 
 class UserWorkoutLogViewSet(viewsets.ModelViewSet):
     serializer_class = UserWorkoutLogSerializer

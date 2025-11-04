@@ -35,6 +35,7 @@ router.register(r'subscriptions', views.SubscriptionViewSet, basename='subscript
 router.register(r'lessons', views.LessonViewSet, basename='lesson')
 router.register(r'chat-threads', views.ChatThreadViewSet, basename='chat-thread')
 router.register(r'messages', views.ChatMessageViewSet, basename='chatmessage')
+router.register(r'meal-box', views.MealBoxViewSet, basename='meal-box')
 
 router.register(r'chat-messages', views.ChatMessageViewSet, basename='chat-message')
 router.register(r'wishlist', views.WishlistViewSet, basename='wishlist')

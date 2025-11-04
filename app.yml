@@ -1,0 +1,15 @@
+runtime: python310
+
+entrypoint: gunicorn -b :$PORT nutrition_project.wsgi
+
+env_variables:
+  DJANGO_SETTINGS_MODULE: "nutrition_project.settings"
+  SECRET_KEY: "hlkvjdsfgzhksdjhkjsdxhkjxcnvkjshfoishfsjkxnc-this-with-a-secure-secret"
+  DEBUG: "False"
+
+handlers:
+  - url: /static
+    static_dir: static/
+
+  - url: /.*
+    script: auto

@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nutritiondb',
         'USER': 'django_user',
-        'PASSWORD': 'YourPasswordHere',
+        'PASSWORD': 'StrongPassword123!',
         'HOST': '34.70.202.242',  # public IP
         'PORT': '3306',
     }

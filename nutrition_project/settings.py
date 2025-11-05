@@ -74,14 +74,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nutrition_project.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nutritiondb',
-        'USER': 'django_user',         # your SQL user
-        'PASSWORD': 'StrongPassword123!',  # your password
-        'HOST': '10.128.0.2',          # Private IP
+        'USER': 'django_user',
+        'PASSWORD': 'YourPasswordHere',
+        'HOST': '34.70.202.242',  # public IP
         'PORT': '3306',
     }
 }

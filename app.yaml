@@ -4,7 +4,6 @@ entrypoint: gunicorn -b :$PORT nutrition_project.wsgi
 
 env_variables:
   DJANGO_SETTINGS_MODULE: "nutrition_project.settings"
-  SECRET_KEY: "hlkvjdsfgzhksdjhkjsdxhkjxcnvkjshfoishfsjkxnc-this-with-a-secure-secret"
   DB_HOST: "34.70.202.242"
   DB_NAME: "nutritiondb"
   DB_USER: "django_user"
@@ -12,7 +11,7 @@ env_variables:
 
 handlers:
   - url: /static
-    static_dir: staticfiles/
+    static_dir: staticfiles
 
   - url: /.*
     script: auto

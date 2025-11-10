@@ -5,7 +5,6 @@ db.sqlite3
 /media/
 /.venv/
 /.env/
-settings.py
 .env
 uploads/
 wsgi.py

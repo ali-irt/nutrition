@@ -103,37 +103,33 @@ class OnboardingSerializer(serializers.Serializer):
 # ---------------------------
 # Workout Serializers
 # ---------------------------
+class MuscleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Muscle
+        fields = ['id', 'name', 'group']
+
 
 class ExerciseSerializer(serializers.ModelSerializer):
-    primary_muscle_name = serializers.CharField(source='primary_muscle.name', read_only=True)
-    secondary_muscle_names = serializers.SerializerMethodField()
+    primary_muscle = MuscleSerializer(read_only=True)
+    secondary_muscles = MuscleSerializer(many=True, read_only=True)
     
     class Meta:
         model = Exercise
         fields = [
-            'id', 'name', 'primary_muscle', 'primary_muscle_name',
-            'secondary_muscles', 'secondary_muscle_names', 'equipment',
-            'video_url', 'instructions', 'unilateral', 'created_at'
+            'id', 'name', 'primary_muscle', 'secondary_muscles',
+            'equipment', 'video_url', 'instructions', 'unilateral'
         ]
-    
-    def get_secondary_muscle_names(self, obj):
-        return [m.name for m in obj.secondary_muscles.all()]
 
 
 class WorkoutExerciseSerializer(serializers.ModelSerializer):
     exercise = ExerciseSerializer(read_only=True)
-    exercise_id = serializers.PrimaryKeyRelatedField(
-        queryset=Exercise.objects.all(),
-        source='exercise',
-        write_only=True
-    )
     
     class Meta:
         model = WorkoutExercise
         fields = [
-            'id', 'exercise', 'exercise_id', 'order', 'sets', 'reps',
-            'reps_min', 'reps_max', 'time_seconds', 'distance_m',
-            'rest_seconds', 'rpe_min', 'rpe_max', 'tempo', 'notes'
+            'id', 'exercise', 'order', 'sets', 'reps', 'reps_min', 'reps_max',
+            'time_seconds', 'distance_m', 'rest_seconds', 'rpe_min', 'rpe_max',
+            'tempo', 'notes'
         ]
 
 
@@ -144,36 +140,58 @@ class WorkoutSerializer(serializers.ModelSerializer):
         model = Workout
         fields = [
             'id', 'name', 'description', 'duration', 'level',
-            'calories_burned', 'date', 'completed', 'items',
-            'created_at', 'updated_at'
+            'calories_burned', 'date', 'completed', 'items'
         ]
-        read_only_fields = ['created_at', 'updated_at']
 
 
 class SetLogSerializer(serializers.ModelSerializer):
-    exercise_name = serializers.CharField(source='exercise.name', read_only=True)
+    exercise = ExerciseSerializer(read_only=True)
     
     class Meta:
         model = SetLog
         fields = [
-            'id', 'exercise', 'exercise_name', 'order', 'set_number',
-            'reps', 'weight_kg', 'time_seconds', 'distance_m',
-            'rpe', 'completed', 'notes'
+            'id', 'exercise', 'order', 'set_number', 'reps',
+            'weight_kg', 'time_seconds', 'distance_m', 'rpe',
+            'completed', 'notes'
         ]
 
 
 class UserWorkoutLogSerializer(serializers.ModelSerializer):
-    workout_name = serializers.CharField(source='workout.name', read_only=True)
+    workout = WorkoutSerializer(read_only=True)
     sets = SetLogSerializer(many=True, read_only=True)
-    duration_actual = serializers.ReadOnlyField()
+    duration_actual = serializers.DurationField(read_only=True)
     
     class Meta:
         model = UserWorkoutLog
         fields = [
-            'id', 'workout', 'workout_name', 'date', 'start_time',
-            'end_time', 'completed', 'satisfaction', 'notes',
-            'calories_burned', 'duration_actual', 'sets'
+            'id', 'workout', 'date', 'start_time', 'end_time',
+            'completed', 'satisfaction', 'notes', 'calories_burned',
+            'sets', 'duration_actual'
         ]
+
+class WorkoutLogCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWorkoutLog
+        fields = [
+            'workout', 'date', 'start_time', 'end_time',
+            'completed', 'satisfaction', 'notes', 'calories_burned'
+        ]
+        read_only_fields = []
+
+    def validate(self, attrs):
+        if not attrs.get('workout'):
+            raise serializers.ValidationError({"workout": "Workout ID is required."})
+        return attrs
+
+class SetLogCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SetLog
+        fields = [
+            'session', 'exercise', 'order', 'set_number', 'reps',
+            'weight_kg', 'time_seconds', 'distance_m', 'rpe',
+            'completed', 'notes'
+        ]
+
 
 
 class CardioSessionSerializer(serializers.ModelSerializer):
@@ -393,7 +411,27 @@ class CheckinSerializer(serializers.ModelSerializer):
             'energy_rating', 'meal_plan_use', 'workout_plan_use',
             'photos', 'answers', 'created_at'
         ]
+class SubscriptionInputSerializer(serializers.Serializer):
+    plan_id = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    address_id = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all())
+    meals_per_week = serializers.IntegerField(min_value=1, max_value=20)
+    portion = serializers.ChoiceField(choices=MealPortionChoice.choices)
+    protein_preference = serializers.ChoiceField(choices=ProteinPreference.choices)
+    start_date = serializers.DateField()
 
+# Meal Section 3: Weekly Meal Selection Update
+class WeeklySelectionInputSerializer(serializers.Serializer):
+    subscription_id = serializers.PrimaryKeyRelatedField(queryset=MealSubscription.objects.all())
+    week_start = serializers.DateField()
+    meal_id = serializers.PrimaryKeyRelatedField(queryset=Meal.objects.all())
+    quantity = serializers.IntegerField(min_value=0)
+
+    def validate_week_start(self, value: date):
+        # Basic validation: ensure it's a Monday (or start of the week logic)
+        # In a real app, this would be more robust
+        if value.weekday() != 0: # Monday is 0
+            raise serializers.ValidationError("Week start date must be a Monday.")
+        return value
 
 # ---------------------------
 # Subscription & Payment Serializers
@@ -473,19 +511,14 @@ class WeeklyMealSelectionSerializer(serializers.ModelSerializer):
 
 
 class MealSubscriptionSerializer(serializers.ModelSerializer):
-    address_details = AddressSerializer(source='address', read_only=True)
-    plan_details = PlanSerializer(source='plan', read_only=True)
-    weekly_selections = WeeklyMealSelectionSerializer(many=True, read_only=True)
+    # weekly_selections = WeeklyMealSelectionSerializer(many=True, read_only=True)
     
     class Meta:
         model = MealSubscription
         fields = [
-            'id', 'address', 'address_details', 'plan', 'plan_details',
-            'meals_per_week', 'portion', 'protein_preference',
-            'delivery_window', 'start_date', 'status',
-            'weekly_selections', 'created_at'
+            'id', 'plan', 'meals_per_week', 'portion', 
+            'protein_preference', 'delivery_window', 'start_date', 'status'
         ]
-
 
 class DeliverySerializer(serializers.ModelSerializer):
     class Meta:
@@ -497,26 +530,66 @@ class DeliverySerializer(serializers.ModelSerializer):
 
 
 class MealOrderItemSerializer(serializers.ModelSerializer):
+    meal_name = serializers.CharField(source='meal.name', read_only=True)
+    
     class Meta:
         model = MealOrderItem
-        fields = ['id', 'name', 'quantity', 'day']
-
+        fields = ['meal_name', 'quantity', 'price_per_item', 'total_price']
 
 class MealOrderSerializer(serializers.ModelSerializer):
     items = MealOrderItemSerializer(many=True, read_only=True)
-    plan_name = serializers.CharField(source='plan.name', read_only=True)
-    customer_name = serializers.CharField(source='customer.get_full_name', read_only=True)
     
     class Meta:
-        model = MealOrder
+        model = Order
         fields = [
-            'id', 'customer', 'customer_name', 'plan', 'plan_name',
-            'order_no', 'status', 'shipping_name', 'shipping_address',
-            'items_count', 'total_price', 'scheduled_date',
-            'delivered_at', 'created_at', 'items'
+            'order_number', 'status', 'payment_status', 'total_amount', 
+            'shipping_name', 'shipping_address', 'scheduled_date', 'items'
         ]
 
+# Meal Section 2: Subscription Creation/Update
+class SubscriptionInputSerializer(serializers.Serializer):
+    plan_id = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    address_id = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all())
+    meals_per_week = serializers.IntegerField(min_value=1, max_value=20)
+    portion = serializers.ChoiceField(choices=MealPortionChoice.choices)
+    protein_preference = serializers.ChoiceField(choices=ProteinPreference.choices)
+    start_date = serializers.DateField()
 
+# Meal Section 3: Weekly Meal Selection Update
+class WeeklySelectionInputSerializer(serializers.Serializer):
+    subscription_id = serializers.PrimaryKeyRelatedField(queryset=MealSubscription.objects.all())
+    week_start = serializers.DateField()
+    meal_id = serializers.PrimaryKeyRelatedField(queryset=Meal.objects.all())
+    quantity = serializers.IntegerField(min_value=0)
+
+    def validate_week_start(self, value: date):
+        # Basic validation: ensure it's a Monday (or start of the week logic)
+        # In a real app, this would be more robust
+        if value.weekday() != 0: # Monday is 0
+            raise serializers.ValidationError("Week start date must be a Monday.")
+        return value
+
+# Meal Sections 4-7: Final Checkout
+class ShippingDetailsSerializer(serializers.Serializer):
+    full_name = serializers.CharField(max_length=120)
+    phone = serializers.CharField(max_length=20)
+    street_address = serializers.CharField()
+    city = serializers.CharField(max_length=100)
+    province = serializers.CharField(max_length=100)
+    postal_code = serializers.CharField(max_length=20, required=False)
+
+class PaymentDetailsSerializer(serializers.Serializer):
+    method = serializers.ChoiceField(choices=[
+        ('card', 'Credit/Debit Card'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('google_pay', 'Google Pay'),
+        ('cash_on_delivery', 'Cash on Delivery'),
+    ])
+class CheckoutInputSerializer(serializers.Serializer):
+    subscription_id = serializers.PrimaryKeyRelatedField(queryset=MealSubscription.objects.all())
+    week_start = serializers.DateField()
+    shipping_details = ShippingDetailsSerializer()
+    payment_details = PaymentDetailsSerializer()
 # ---------------------------
 # Chat Serializers
 # ---------------------------
@@ -620,3 +693,73 @@ class UserFileSerializer(serializers.ModelSerializer):
         model = UserFile
         fields = ['id', 'user', 'file', 'description', 'uploaded_at']
         read_only_fields = ['user', 'uploaded_at']
+# ============================================
+# CHECKOUT SERIALIZERS - Add to serializers.py
+# ============================================
+ 
+class CartItemSerializer(serializers.ModelSerializer):
+    meal_name = serializers.CharField(source='meal.name', read_only=True)
+    meal_description = serializers.CharField(source='meal.description', read_only=True)
+    meal_image = serializers.SerializerMethodField()
+    calories = serializers.IntegerField(source='meal.calories', read_only=True)
+    protein = serializers.CharField(source='meal.protein', read_only=True)
+    price_per_item = serializers.DecimalField(source='meal.price', max_digits=10, decimal_places=2, read_only=True)
+    total_price = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CartItem
+        fields = ['id', 'meal', 'meal_name', 'meal_description', 'meal_image', 
+                  'calories', 'protein', 'quantity', 'price_per_item', 'total_price']
+    
+    def get_meal_image(self, obj):
+        request = self.context.get('request')
+        if obj.meal.image and request:
+            return request.build_absolute_uri(obj.meal.image.url)
+        return None
+    
+    def get_total_price(self, obj):
+        return float(obj.total_price)
+
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)
+    total_items = serializers.IntegerField(read_only=True)
+    subtotal = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Cart
+        fields = ['id', 'items', 'total_items', 'subtotal', 'created_at']
+    
+    def get_subtotal(self, obj):
+        return float(obj.subtotal)
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    street_address = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Address
+        fields = ['id', 'full_name', 'phone', 'street_address', 'line1', 'line2',
+                  'city', 'province', 'postal_code', 'is_default']
+        read_only_fields = ['id']
+    
+    def get_street_address(self, obj):
+        return f"{obj.line1} {obj.line2}".strip()
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        
+        # If this is set as default, unset others
+        if validated_data.get('is_default'):
+            Address.objects.filter(user=user, is_default=True).update(is_default=False)
+        
+        address = Address.objects.create(user=user, **validated_data)
+        return address
+
+
+class PaymentMethodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentMethod
+        fields = ['id', 'provider', 'brand', 'last4', 'is_default']
+        read_only_fields = ['id']
+ 

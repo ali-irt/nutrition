@@ -15,7 +15,7 @@ SECRET_KEY = 'django-inssecuritysjfvkjaknbjfn;kjsnrpkJNBecure-q5!1he0pq&!+8)9sdq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -74,17 +74,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nutrition_project.wsgi.application'
 
+# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nutrition_db',
-        'USER': 'django_user',
-        'PASSWORD': 'Abcd@123$%^StrongIron',
-        'HOST': '10.148.0.2',  # public IP
-        'PORT': '3306',
- 
-}}
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
     

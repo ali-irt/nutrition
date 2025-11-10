@@ -4,8 +4,8 @@ from django.utils import timezone
 from datetime import datetime, date
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
-
-# ---------------------------
+from django.db.models import Sum 
+from decimal import Decimal
 # Shared helpers and enums
 # ---------------------------
 
@@ -651,6 +651,7 @@ class FoodBrand(models.Model):
 
 
 class Food(models.Model):
+    food_id = models.CharField(max_length=64, unique=True)
     name = models.CharField(max_length=200)
     brand = models.ForeignKey(FoodBrand, on_delete=models.SET_NULL, null=True, blank=True)
     is_custom = models.BooleanField(default=False)
@@ -1131,42 +1132,108 @@ class Lesson(models.Model):
     def __str__(self):
         return self.title
 class MealOrder(models.Model):
-    STATUS = (
-        ("preparing", "Preparing"),
-        ("on_delivery", "On Delivery"),
-        ("delivered", "Delivered"),
-        ("cancelled", "Cancelled"),
-    )
-
-    # If you have a Client model, change to: client = models.ForeignKey("clients.Client", ...)
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    plan = models.ForeignKey(MealPlan, on_delete=models.PROTECT, related_name="orders")
-
-    order_no = models.CharField(max_length=32, unique=True)
-    status = models.CharField(max_length=20, choices=STATUS, default="preparing")
-
-    # For the table in the mock
-    shipping_name = models.CharField(max_length=120, blank=True)
-    shipping_address = models.TextField(blank=True)
-
-    items_count = models.PositiveIntegerField(default=0)  # sum of item quantities
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    """Complete order with payment tracking"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('preparing', 'Preparing'),
+        ('out_for_delivery', 'Out for Delivery'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    PAYMENT_STATUS = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    order_number = models.CharField(max_length=32, unique=True, editable=False)
+    
+    # Pricing
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Shipping details
+    shipping_name = models.CharField(max_length=120)
+    shipping_phone = models.CharField(max_length=20)
+    shipping_address = models.TextField()
+    shipping_city = models.CharField(max_length=100)
+    shipping_province = models.CharField(max_length=100)
+    shipping_postal_code = models.CharField(max_length=20, blank=True)
+    
+    # Payment details
+    payment_method = models.CharField(max_length=20, choices=[
+        ('card', 'Credit/Debit Card'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('google_pay', 'Google Pay'),
+        ('cash_on_delivery', 'Cash on Delivery'),
+    ])
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    
+    # Delivery
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     scheduled_date = models.DateField(null=True, blank=True)
-    delivered_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
 
-    class Meta:
-        ordering = ("-created_at",)
+    def save(self, *args, **kwargs):
+        if not self.order_number:
+            # Simple mock order number generation
+            self.order_number = f"ORD{timezone.now().strftime('%Y%m%d%H%M%S')}{self.user.id}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"#{self.order_no} {self.plan.name}"
+        return f"Order #{self.order_number} - {self.user.username}"
 
-class MealOrderItem(models.Model):
-    order = models.ForeignKey(MealOrder, on_delete=models.CASCADE, related_name="items")
-    name = models.CharField(max_length=120)  # meal/dish name
+class MealOrderItem(TimeStampedModel):
+    """Items in an order"""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    meal = models.ForeignKey(Meal, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField()
+    price_per_item = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.meal.name} x{self.quantity}"
+
+ 
+
+class Cart(TimeStampedModel):
+    """Shopping cart for users"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    
+    def __str__(self):
+        return f"{self.user.username}'s Cart"
+    
+    @property
+    def total_items(self):
+        return self.items.aggregate(total=Sum('quantity'))['total'] or 0
+    
+    @property
+    def subtotal(self):
+        total = Decimal('0.00')
+        for item in self.items.all():
+            total += item.meal.price * item.quantity
+        return total
+
+
+class CartItem(TimeStampedModel):
+    """Items in shopping cart"""
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    day = models.DateField(null=True, blank=True)  # for kitchen prep scheduling
-
+    
+    class Meta:
+        unique_together = ['cart', 'meal']
+    
     def __str__(self):
-        return f"{self.name} x{self.quantity}"
+        return f"{self.meal.name} x{self.quantity}"
+    
+    @property
+    def total_price(self):
+        return self.meal.price * self.quantity
+

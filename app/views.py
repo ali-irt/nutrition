@@ -11,12 +11,14 @@ from django.db.models import Sum, Q, Count, Max
 from datetime import datetime, date, timedelta
 import random
 import string, json
-
-from .models import *
+import time
 from .serializers import *
-
+from .models import *
 from django.shortcuts import get_object_or_404
-
+from datetime import date, datetime, timedelta
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 # ============================================
 # AUTH VIEWS
 # ============================================
@@ -385,10 +387,7 @@ def dashboard_today(request):
         }
     })
 
-from datetime import date, datetime, timedelta
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -591,72 +590,212 @@ class MealViewSet(viewsets.ReadOnlyModelViewSet):
 # ============================================
 # WORKOUT VIEWSETS
 # ============================================
-
 class WorkoutViewSet(viewsets.ModelViewSet):
+    """
+    Workout templates and plans
+    Corresponds to: Personalized Plan screen showing weekly workout schedule
+    """
     serializer_class = WorkoutSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        queryset = Workout.objects.filter(user=self.request.user)
-        date_param = self.request.query_params.get('date', None)
-        status_param = self.request.query_params.get('status', None)
-        
-        if date_param:
-            queryset = queryset.filter(date=date_param)
-        if status_param == 'scheduled':
-            queryset = queryset.filter(completed=False)
-        elif status_param == 'completed':
-            queryset = queryset.filter(completed=True)
-        
-        return queryset.order_by('-date', 'name')
+        return Workout.objects.filter(user=self.request.user)
     
+    @action(detail=False, methods=['get'])
+    def weekly_plan(self, request):
+        """Get workouts for current week"""
+        today = timezone.now().date()
+        week_start = today - timedelta(days=today.weekday())
+        week_end = week_start + timedelta(days=6)
+        
+        workouts = Workout.objects.filter(
+            user=request.user,
+            date__range=[week_start, week_end]
+        ).order_by('date')
+        
+        serializer = self.get_serializer(workouts, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def by_muscle_group(self, request):
+        """
+        Get workouts filtered by muscle group
+        Corresponds to: Chest screen showing chest-specific exercises
+        """
+        muscle_group = request.query_params.get('group', '')
+        
+        if muscle_group:
+            # Get exercises for this muscle group
+            exercises = Exercise.objects.filter(
+                Q(primary_muscle__group=muscle_group) |
+                Q(secondary_muscles__group=muscle_group)
+            ).distinct()
+            
+            # Get workouts containing these exercises
+            workouts = Workout.objects.filter(
+                user=request.user,
+                items__exercise__in=exercises
+            ).distinct()
+        else:
+            workouts = self.get_queryset()
+        
+        serializer = self.get_serializer(workouts, many=True)
+        return Response(serializer.data)
+    def get_queryset(self):
+        return Workout.objects.filter(user=self.request.user)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-
 class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Exercise library
+    Corresponds to: Activity selection and chest exercise screens
+    """
     serializer_class = ExerciseSerializer
     permission_classes = [IsAuthenticated]
     queryset = Exercise.objects.all()
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        muscle_group = self.request.query_params.get('muscle_group', None)
-        search = self.request.query_params.get('search', None)
+    @action(detail=False, methods=['get'])
+    def by_muscle(self, request):
+        """Filter exercises by muscle group"""
+        muscle_group = request.query_params.get('group')
         
         if muscle_group:
-            queryset = queryset.filter(primary_muscle__group=muscle_group)
-        if search:
-            queryset = queryset.filter(name__icontains=search)
+            exercises = Exercise.objects.filter(
+                Q(primary_muscle__group=muscle_group) |
+                Q(secondary_muscles__group=muscle_group)
+            ).distinct()
+        else:
+            exercises = self.queryset
         
-        return queryset
+        serializer = self.get_serializer(exercises, many=True)
+        return Response(serializer.data)
     
-    @action(detail=True, methods=['get'])
-    def history(self, request, pk=None):
-        """Get exercise history for current user"""
-        exercise = self.get_object()
+    @action(detail=False, methods=['get'])
+    def popular(self, request):
+        """Get most logged exercises"""
+        popular_exercises = Exercise.objects.annotate(
+            log_count=Count('setlog')
+        ).order_by('-log_count')[:20]
         
-        set_logs = SetLog.objects.filter(
-            session__user=request.user,
-            exercise=exercise,
-            completed=True
-        ).order_by('-session__date')[:50]
+        serializer = self.get_serializer(popular_exercises, many=True)
+        return Response(serializer.data)
+
+
+
+class MuscleViewSet(viewsets.ReadOnlyModelViewSet):
+    """Muscle groups and muscles"""
+    serializer_class = MuscleSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Muscle.objects.all()
+    
+    @action(detail=False, methods=['get'])
+    def groups(self, request):
+        """Get all muscle groups"""
+        groups = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in Muscle._meta.get_field('group').choices
+        ]
+        return Response(groups)
+
+
+class UserWorkoutLogViewSet(viewsets.ModelViewSet):
+    """
+    User's workout logs and tracking
+    Corresponds to: Workout tracking with sets, reps, weights
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return WorkoutLogCreateSerializer
+        return UserWorkoutLogSerializer
+    
+    def get_queryset(self):
+        return UserWorkoutLog.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def start(self, request, pk=None):
+        """Start a workout session"""
+        workout_log = self.get_object()
+        workout_log.start_time = timezone.now().time()
+        workout_log.save()
         
-        history = {}
-        for log in set_logs:
-            date_key = str(log.session.date)
-            if date_key not in history:
-                history[date_key] = []
-            history[date_key].append(SetLogSerializer(log).data)
+        serializer = self.get_serializer(workout_log)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def complete(self, request, pk=None):
+        """Complete a workout session"""
+        workout_log = self.get_object()
+        workout_log.end_time = timezone.now().time()
+        workout_log.completed = True
+        workout_log.save()
         
-        max_weight = set_logs.aggregate(Max('weight_kg'))['weight_kg__max']
+        serializer = self.get_serializer(workout_log)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def add_set(self, request, pk=None):
+        """
+        Add a set log to this workout session
+        Body: {exercise_id, order, set_number, reps, weight_kg, rpe, etc.}
+        """
+        workout_log = self.get_object()
         
-        return Response({
-            'exercise': self.get_serializer(exercise).data,
-            'history': [{'date': date_key, 'sets': sets} for date_key, sets in history.items()],
-            'personal_records': {'max_weight': float(max_weight) if max_weight else None}
-        })
- 
+        data = request.data.copy()
+        data['session'] = workout_log.id
+        
+        serializer = SetLogCreateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['get'])
+    def history(self, request):
+        """Get workout history with pagination"""
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+        
+        queryset = self.get_queryset()
+        
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+        
+        queryset = queryset.order_by('-date')
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+
+
+class SetLogViewSet(viewsets.ModelViewSet):
+    """Individual set tracking"""
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return SetLogCreateSerializer
+        return SetLogSerializer
+    
+    def get_queryset(self):
+        return SetLog.objects.filter(session__user=self.request.user)
+
+
+
 class MealBoxViewSet(viewsets.ModelViewSet):
     serializer_class = MealBoxSerializer
     permission_classes = [IsAuthenticated]
@@ -701,47 +840,7 @@ class MealBoxViewSet(viewsets.ModelViewSet):
 
         return Response({'message': 'Meal removed successfully'}, status=status.HTTP_200_OK)
 
-class UserWorkoutLogViewSet(viewsets.ModelViewSet):
-    serializer_class = UserWorkoutLogSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        return UserWorkoutLog.objects.filter(user=self.request.user).order_by('-date')
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-    
-    @action(detail=True, methods=['post'])
-    def log_set(self, request, pk=None):
-        """Log a set for this workout session"""
-        session = self.get_object()
-        serializer = SetLogSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save(session=session)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(detail=True, methods=['patch'])
-    def complete(self, request, pk=None):
-        """Mark workout as completed"""
-        session = self.get_object()
-        session.end_time = request.data.get('end_time')
-        session.completed = True
-        session.satisfaction = request.data.get('satisfaction')
-        session.notes = request.data.get('notes', '')
-        session.calories_burned = request.data.get('calories_burned')
-        session.save()
-        
-        total_sets = session.sets.filter(completed=True).count()
-        
-        return Response({
-            'completed': True,
-            'duration': str(session.duration_actual) if session.duration_actual else None,
-            'total_sets': total_sets
-        })
-
-
+ 
 # ============================================
 # PROGRESS VIEWSET
 # ============================================
@@ -2312,3 +2411,721 @@ class UserFileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_cart(request):
+    """Get user's cart with all items and totals"""
+    try:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        
+        items = []
+        subtotal = Decimal('0.00')
+        
+        for item in cart.items.select_related('meal'):
+            item_total = item.meal.price * item.quantity
+            subtotal += item_total
+            
+            items.append({
+                'id': item.id,
+                'meal_id': item.meal.id,
+                'name': item.meal.name,
+                'description': item.meal.description,
+                'calories': item.meal.calories,
+                'protein': f"{item.meal.protein}g",
+                'quantity': item.quantity,
+                'price_per_item': float(item.meal.price),
+                'total_price': float(item_total),
+                'image': request.build_absolute_uri(item.meal.image.url) if item.meal.image else None
+            })
+        
+        # Calculate discount (10% example)
+        discount_percentage = 10
+        discount = subtotal * Decimal(discount_percentage) / 100
+        delivery_fee = Decimal('0.00')  # Free delivery
+        total = subtotal - discount + delivery_fee
+        
+        return Response({
+            'success': True,
+            'data': {
+                'items': items,
+                'subtotal': float(subtotal),
+                'discount': float(discount),
+                'discount_percentage': discount_percentage,
+                'delivery_fee': float(delivery_fee),
+                'total': float(total),
+                'currency': 'Rs.',
+                'item_count': len(items)
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error fetching cart',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_to_cart(request):
+    """Add meal to cart"""
+    try:
+        meal_id = request.data.get('food_id')
+        quantity = int(request.data.get('quantity', 1))
+        
+        if not meal_id:
+            return Response({
+                'success': False,
+                'message': 'meal_id is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        meal = get_object_or_404(Food, id=meal_id)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            meal=meal,
+            defaults={'quantity': quantity}
+        )
+        
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+        
+        return Response({
+            'success': True,
+            'message': 'Meal added to cart',
+            'data': {
+                'cart_item_id': cart_item.id,
+                'quantity': cart_item.quantity,
+                'total_items': cart.total_items
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error adding to cart',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_cart_item(request, item_id):
+    """Update cart item quantity"""
+    try:
+        quantity = request.data.get('quantity')
+        
+        if quantity is None:
+            return Response({
+                'success': False,
+                'message': 'Quantity is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        quantity = int(quantity)
+        
+        if quantity < 0:
+            return Response({
+                'success': False,
+                'message': 'Quantity cannot be negative'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+        
+        if quantity == 0:
+            cart_item.delete()
+            message = 'Item removed from cart'
+        else:
+            cart_item.quantity = quantity
+            cart_item.save()
+            message = 'Quantity updated successfully'
+        
+        # Recalculate total
+        cart = Cart.objects.get(user=request.user)
+        updated_total = cart.subtotal
+        
+        return Response({
+            'success': True,
+            'message': message,
+            'data': {
+                'item_id': item_id,
+                'quantity': quantity if quantity > 0 else 0,
+                'updated_total': float(updated_total)
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error updating cart item',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_cart_item(request, item_id):
+    """Remove item from cart"""
+    try:
+        cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+        cart_item.delete()
+        
+        cart = Cart.objects.get(user=request.user)
+        updated_total = cart.subtotal
+        
+        return Response({
+            'success': True,
+            'message': 'Item removed from cart successfully',
+            'data': {
+                'item_id': item_id,
+                'updated_total': float(updated_total)
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error removing cart item',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def clear_cart(request):
+    """Clear all items from cart"""
+    try:
+        cart = Cart.objects.get(user=request.user)
+        cart.items.all().delete()
+        
+        return Response({
+            'success': True,
+            'message': 'Cart cleared successfully'
+        }, status=status.HTTP_200_OK)
+        
+    except Cart.DoesNotExist:
+        return Response({
+            'success': True,
+            'message': 'Cart is already empty'
+        }, status=status.HTTP_200_OK)
+
+
+# ============================================
+# 2. ADDRESS MANAGEMENT (Already exists but add these helpers)
+# ============================================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_addresses(request):
+    """Get user's saved addresses"""
+    try:
+        addresses = Address.objects.filter(user=request.user).order_by('-is_default', '-created_at')
+        
+        address_list = [{
+            'id': addr.id,
+            'full_name': addr.full_name,
+            'phone': addr.phone,
+            'street_address': f"{addr.line1} {addr.line2}".strip(),
+            'city': addr.city,
+            'province': addr.province,
+            'postal_code': addr.postal_code,
+            'is_default': addr.is_default
+        } for addr in addresses]
+        
+        return Response({
+            'success': True,
+            'data': {
+                'addresses': address_list
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error fetching addresses',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def validate_shipping(request):
+    """Validate shipping details"""
+    try:
+        full_name = request.data.get('full_name', '').strip()
+        phone_number = request.data.get('phone_number', '').strip()
+        street_address = request.data.get('street_address', '').strip()
+        city = request.data.get('city', '').strip()
+        province = request.data.get('province', '').strip()
+        
+        errors = []
+        
+        if not full_name or len(full_name) < 2:
+            errors.append('Full name is required')
+        
+        if not phone_number or len(phone_number) < 10:
+            errors.append('Valid phone number is required')
+        
+        if not street_address or len(street_address) < 5:
+            errors.append('Street address is required')
+        
+        if not city:
+            errors.append('City is required')
+        
+        if not province:
+            errors.append('Province is required')
+        
+        if errors:
+            return Response({
+                'success': False,
+                'message': 'Validation failed',
+                'errors': errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'success': True,
+            'message': 'Shipping details validated successfully',
+            'data': {
+                'is_valid': True,
+                'estimated_delivery': '8:00 AM - 9:00 AM'
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error validating shipping details',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============================================
+# 3. PAYMENT METHODS
+# ============================================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_payment_methods(request):
+    """Get available payment methods"""
+    try:
+        saved_cards = PaymentMethod.objects.filter(
+            user=request.user,
+            provider='card'
+        ).order_by('-is_default', '-created_at')
+        
+        cards_data = [{
+            'id': card.id,
+            'last4': card.last4,
+            'brand': card.brand,
+            'is_default': card.is_default
+        } for card in saved_cards]
+        
+        payment_methods = [
+            {
+                'id': 'pm_card',
+                'type': 'card',
+                'name': 'Credit/Debit Card',
+                'icon': 'credit_card',
+                'enabled': True,
+                'saved_cards': cards_data
+            },
+            {
+                'id': 'pm_bank',
+                'type': 'bank_transfer',
+                'name': 'Bank Transfer',
+                'icon': 'bank',
+                'enabled': True
+            },
+            {
+                'id': 'pm_google',
+                'type': 'google_pay',
+                'name': 'Google Pay',
+                'icon': 'google_pay',
+                'enabled': True
+            }
+        ]
+        
+        return Response({
+            'success': True,
+            'data': {
+                'payment_methods': payment_methods
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error fetching payment methods',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def process_payment(request):
+    """Process payment"""
+    try:
+        payment_method_id = request.data.get('payment_method_id')
+        card_number = request.data.get('card_number', '').replace(' ', '')
+        card_holder_name = request.data.get('card_holder_name', '').strip()
+        expiry_date = request.data.get('expiry_date', '').strip()
+        cvv = request.data.get('cvv', '').strip()
+        save_card = request.data.get('save_card', False)
+        
+        # Validate based on payment method
+        if payment_method_id == 'pm_card':
+            if not all([card_number, card_holder_name, expiry_date, cvv]):
+                return Response({
+                    'success': False,
+                    'message': 'All card details are required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Basic validation
+            if not card_number.isdigit() or len(card_number) != 16:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid card number'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            if not cvv.isdigit() or len(cvv) not in [3, 4]:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid CVV'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Save card if requested
+            if save_card:
+                PaymentMethod.objects.create(
+                    user=request.user,
+                    provider='card',
+                    brand='Visa',  # Detect from card number
+                    last4=card_number[-4:],
+                    is_default=not PaymentMethod.objects.filter(user=request.user, provider='card').exists()
+                )
+        
+        # Generate payment IDs (in production, integrate with payment gateway)
+        payment_id = f"pay_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+        transaction_id = f"txn_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+        
+        return Response({
+            'success': True,
+            'message': 'Payment processed successfully',
+            'data': {
+                'payment_id': payment_id,
+                'status': 'completed',
+                'transaction_id': transaction_id
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Payment processing failed',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+ 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orders(request):
+    """Get user's orders"""
+    try:
+        status_filter = request.query_params.get('status')
+        
+        orders = Order.objects.filter(user=request.user)
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+        
+        orders = orders.order_by('-created_at')
+        
+        orders_data = []
+        for order in orders:
+            orders_data.append({
+                'id': order.id,
+                'order_number': order.order_number,
+                'status': order.status,
+                'payment_status': order.payment_status,
+                'total_amount': float(order.total_amount),
+                'items_count': order.items_count,
+                'scheduled_date': str(order.scheduled_date) if order.scheduled_date else None,
+                'created_at': order.created_at.isoformat(),
+                'estimated_delivery': f"{order.estimated_delivery_start} - {order.estimated_delivery_end}" if order.estimated_delivery_start else None
+            })
+        
+        return Response({
+            'success': True,
+            'data': {
+                'orders': orders_data
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error fetching orders',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_order_detail(request, order_id):
+    """Get order details"""
+    try:
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        
+        items = []
+        for item in order.items.select_related('meal'):
+            items.append({
+                'meal_id': item.meal.id,
+                'name': item.meal.name,
+                'quantity': item.quantity,
+                'price_per_item': float(item.price_per_item),
+                'total_price': float(item.total_price),
+                'image': request.build_absolute_uri(item.meal.image.url) if item.meal.image else None
+            })
+        
+        order_data = {
+            'id': order.id,
+            'order_number': order.order_number,
+            'status': order.status,
+            'payment_status': order.payment_status,
+            'payment_method': order.payment_method,
+            'subtotal': float(order.subtotal),
+            'discount': float(order.discount),
+            'delivery_fee': float(order.delivery_fee),
+            'total_amount': float(order.total_amount),
+            'shipping_name': order.shipping_name,
+            'shipping_phone': order.shipping_phone,
+            'shipping_address': order.shipping_address,
+            'shipping_city': order.shipping_city,
+            'shipping_province': order.shipping_province,
+            'scheduled_date': str(order.scheduled_date) if order.scheduled_date else None,
+            'estimated_delivery': f"{order.estimated_delivery_start} - {order.estimated_delivery_end}" if order.estimated_delivery_start else None,
+            'created_at': order.created_at.isoformat(),
+            'items': items,
+            'items_count': len(items)
+        }
+        
+        return Response({
+            'success': True,
+            'data': order_data
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Error fetching order details',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def create_or_update_meal_subscription(user, validated_data):
+    """
+    Handles the logic for Meal Section 2: Configuration and Preference Selection.
+    """
+    plan = validated_data['plan_id']
+    address = validated_data['address_id']
+    
+    # Find an existing active subscription or create a new one
+    subscription, created = MealSubscription.objects.get_or_create(
+        user=user,
+        status='active',
+        defaults={
+            'plan': plan,
+            'address': address,
+            'start_date': validated_data['start_date'],
+            'meals_per_week': validated_data['meals_per_week'],
+            'portion': validated_data['portion'],
+            'protein_preference': validated_data['protein_preference'],
+        }
+    )
+
+    if not created:
+        # Update existing subscription with new preferences
+        subscription.plan = plan
+        subscription.address = address
+        subscription.meals_per_week = validated_data['meals_per_week']
+        subscription.portion = validated_data['portion']
+        subscription.protein_preference = validated_data['protein_preference']
+        subscription.start_date = validated_data['start_date']
+        subscription.save()
+
+    return subscription
+
+def update_weekly_meal_selection(user, validated_data):
+    """
+    Handles the logic for Meal Section 3: Weekly Meal Selection.
+    """
+    subscription = validated_data['subscription_id']
+    week_start = validated_data['week_start']
+    meal = validated_data['meal_id']
+    new_quantity = validated_data['quantity']
+
+    if subscription.user != user:
+        raise PermissionError("Subscription does not belong to the current user.")
+
+    # 1. Get the current total meals selected for the week (excluding the meal being updated)
+    current_total = WeeklyMealSelection.objects.filter(
+        subscription=subscription,
+        week_start=week_start
+    ).exclude(meal=meal).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    # 2. Calculate the new total
+    new_total = current_total + new_quantity
+    
+    # 3. Check against the subscription limit
+    if new_total > subscription.meals_per_week:
+        raise ValueError(f"Total meals for the week ({new_total}) exceeds the subscription limit of {subscription.meals_per_week}.")
+
+    if new_quantity == 0:
+        # Remove the selection if quantity is 0
+        WeeklyMealSelection.objects.filter(
+            subscription=subscription,
+            week_start=week_start,
+            meal=meal
+        ).delete()
+        return None
+
+    # 4. Create or update the selection
+    selection, created = WeeklyMealSelection.objects.update_or_create(
+        subscription=subscription,
+        week_start=week_start,
+        meal=meal,
+        defaults={'quantity': new_quantity}
+    )
+    
+    return selection
+ 
+# --- API Views ---
+from rest_framework.views import APIView
+from django.db import transaction
+
+class MealWorkflowView(APIView):
+    """
+    Handles the three main steps of the meal subscription and ordering workflow.
+    """
+    # NOTE: In a real Django app, you would add authentication/permission classes here
+
+    def post(self, request, step):
+        user = request.user # Assuming user is authenticated
+
+        if step == 'configure':
+            # Meal Section 2: Subscription Configuration
+            serializer = SubscriptionInputSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                try:
+                    subscription = create_or_update_meal_subscription(user, serializer.validated_data)
+                    return Response(MealSubscriptionSerializer(subscription).data, status=status.HTTP_200_OK)
+                except (ValueError, PermissionError) as e:
+                    return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        elif step == 'select_meals':
+            # Meal Section 3: Weekly Meal Selection
+            serializer = WeeklySelectionInputSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                try:
+                    update_weekly_meal_selection(user, serializer.validated_data)
+                    return Response({'detail': 'Meal selection updated successfully.'}, status=status.HTTP_200_OK)
+                except (ValueError, PermissionError) as e:
+                    return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        elif step == 'checkout':
+            # Meal Sections 4-7: Final Checkout
+            serializer = CheckoutInputSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                try:
+                    order = create_final_order(user, serializer.validated_data)
+                    return Response(MealOrderSerializer(order).data, status=status.HTTP_201_CREATED)
+                except (ValueError, PermissionError, Exception) as e:
+                    # Catch the generic Exception for payment failure
+                    return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': 'Invalid workflow step.'}, status=status.HTTP_400_BAD_REQUEST)
+def create_final_order(user, validated_data):
+    """
+    Handles the logic for Meal Sections 4, 5, 6, and 7: Checkout and Order Creation.
+    """
+    subscription = validated_data['subscription_id']
+    week_start = validated_data['week_start']
+    shipping_details = validated_data['shipping_details']
+    payment_details = validated_data['payment_details']
+
+    if subscription.user != user:
+        raise PermissionError("Subscription does not belong to the current user.")
+
+    # 1. Get the weekly meal selections
+    selections = WeeklyMealSelection.objects.filter(
+        subscription=subscription,
+        week_start=week_start
+    )
+    if not selections.exists():
+        raise ValueError("No meals selected for the specified week.")
+
+    # 2. Calculate pricing and create OrderItems data
+    subtotal = Decimal('0.00')
+    order_items_data = []
+    for selection in selections:
+        price_per_item = selection.meal.price
+        total_price = price_per_item * selection.quantity
+        subtotal += total_price
+        order_items_data.append({
+            'meal': selection.meal,
+            'quantity': selection.quantity,
+            'price_per_item': price_per_item,
+            'total_price': total_price
+        })
+
+    # 3. Apply mock discount and delivery fee
+    DISCOUNT_RATE = Decimal('0.10')
+    discount = subtotal * DISCOUNT_RATE
+    delivery_fee = Decimal('0.00')
+    total_amount = subtotal - discount + delivery_fee
+
+    # 4. Mock Payment Processing
+    # In a real app, this would be a call to a payment gateway
+    payment_successful = True
+    if not payment_successful:
+        # Rollback the transaction if payment fails
+        raise Exception("Payment failed. Please try again.")
+
+    # 5. Create the Order object within a transaction
+    with transaction.atomic():
+        order = Order.objects.create(
+            user=user,
+            subtotal=subtotal,
+            discount=discount,
+            delivery_fee=delivery_fee,
+            total_amount=total_amount,
+            
+            # Shipping Details
+            shipping_name=shipping_details['full_name'],
+            shipping_phone=shipping_details['phone'],
+            shipping_address=shipping_details['street_address'],
+            shipping_city=shipping_details['city'],
+            shipping_province=shipping_details['province'],
+            shipping_postal_code=shipping_details.get('postal_code', ''),
+            
+            # Payment Details
+            payment_method=payment_details['method'],
+            payment_status=Order.PAYMENT_STATUS[2][0], # 'completed'
+            
+            # Delivery
+            status=Order.STATUS_CHOICES[1][0], # 'confirmed'
+            scheduled_date=week_start
+        )
+
+        # 6. Create OrderItem objects
+        order_items = [MealOrderItem(order=order, **data) for data in order_items_data]
+        MealOrderItem.objects.bulk_create(order_items)
+
+        # 7. Clean up selections (optional: remove selections after order is placed)
+        # selections.delete()
+
+    return order

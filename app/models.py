@@ -1083,7 +1083,7 @@ class Order(models.Model):
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     ]
-    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name='orders')
     customer_name = models.CharField(max_length=100)
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1168,6 +1168,8 @@ class MealOrder(models.Model):
     shipping_postal_code = models.CharField(max_length=20, blank=True)
     
     # Payment details
+
+
     payment_method = models.CharField(max_length=20, choices=[
         ('card', 'Credit/Debit Card'),
         ('bank_transfer', 'Bank Transfer'),

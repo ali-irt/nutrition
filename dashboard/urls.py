@@ -5,7 +5,7 @@ urlpatterns = [
     # Dashboard Home
     path("", views.dashboard_home, name="dashboard_home"),
 path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lead_status"),
-
+    path('logout/', views.logout_view, name='logout'),
     path("leads/", views.leads_all, name="leads_all"),
     path("leads/new/", views.leads_new, name="leads_new"),
     path("leads/contacted/", views.leads_contacted, name="leads_contacted"),

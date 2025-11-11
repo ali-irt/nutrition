@@ -1278,3 +1278,8 @@ def admin_login(request):
             messages.error(request, "Invalid username or password.")
 
       return render(request, 'login.html')
+
+from django.contrib.auth import logout
+def logout_view(request):
+    logout(request)  # Clears the session and logs out user
+    return redirect('admin_login')  # Redirect to login page

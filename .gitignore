@@ -8,3 +8,18 @@ db.sqlite3
 .env
 uploads/
 wsgi.py
+
+
+
+
+''
+
+
+ },
+    },
+]
+
+WSGI_APPLICATION = 'nutrition_project.wsgi.application'
+
+
+''

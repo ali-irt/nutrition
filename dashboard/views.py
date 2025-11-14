@@ -824,55 +824,48 @@ import os
 import pymysql
 from django.http import JsonResponse
 
-@csrf_exempt  # Local dev only—add CSRF checks for prod!
-def database_populate(request):
-    if request.GET.get('confirm') != 'yes':
-        return JsonResponse({'error': 'Add ?confirm=yes to URL. This DROPS DB & CLEANS ALL APP MIGRATIONS—IRREVERSIBLE!'}, status=400)
-    
-    project_root = settings.BASE_DIR
-    db_name = 'nutrition_db'
-    host = '127.0.0.1'
-    port = 3306
-    user = 'django_user'
-    password = 'Abcd@123$%^StrongIron'
-    
-    deleted = []
-    built_in_apps = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
-                     'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles']
-    custom_apps = [app for app in settings.INSTALLED_APPS if app not in built_in_apps and not app.startswith('django.')]
-    
-    try:
-        # Connect to 'mysql' system DB for admin ops
-        conn = pymysql.connect(
-            host=host, port=port, user=user, password=password,
-            database='mysql', charset='utf8mb4', connect_timeout=30
-        )
-        cursor = conn.cursor()
-        
-        # Drop the database (no recreation!)
-        cursor.execute(f"DROP DATABASE IF EXISTS `{db_name}`")
-        conn.commit()
-        deleted.append('MySQL database')
-        
-        cursor.close()
-        conn.close()
-        
-    except pymysql.Error as e:
-        return JsonResponse({'error': f'DB drop failed: {e}'}, status=500)
-    
-    # Clean migrations for all custom apps (no remake!)
-    for app in custom_apps:
-        app_dir = os.path.join(project_root, app.split('.')[-1])  # e.g., 'nutrition_app' from 'nutrition_project.nutrition_app'
-        migrations_dir = os.path.join(app_dir, 'migrations')
-        if os.path.exists(migrations_dir):
-            shutil.rmtree(migrations_dir)
-            deleted.append(f'{app}/migrations directory')
-    
+from django.conf import settings
+from django.http import JsonResponse
+
+import shutil
+from pathlib import Path
+from django.http import JsonResponse
+from django.conf import settings
+
+def project(request):
+    # Require confirmation
+    if request.GET.get("confirm") != "yes":
+        return JsonResponse({
+            "error": "This is IRREVERSIBLE! Add ?confirm=yes to URL to actually delete the project."
+        }, status=400)
+
+    base_dir = Path(settings.BASE_DIR)
+
+    # Folders/files to preserve
+    preserve = ["venv", ".git"]
+    deleted_items = []
+    skipped_items = []
+
+    for item in base_dir.iterdir():
+        name = item.name
+        if name in preserve or name.startswith("."):
+            skipped_items.append(name)
+            continue
+
+        if item.is_file():
+            item.unlink()
+            deleted_items.append(name)
+        elif item.is_dir():
+            shutil.rmtree(item)
+            deleted_items.append(name)
+
     return JsonResponse({
-        'message': f'Wipe complete: DB dropped, {len(custom_apps)} apps\' migrations deleted. Manually recreate DB/tables/migrations now!',
-        'affected_apps': custom_apps,
-        'actions': deleted
+        "status": "completed",
+        "deleted": deleted_items,
+        "skipped": skipped_items,
+        "base_dir": str(base_dir),
     })
+
 def workout_edit(request, pk):
     workout = get_object_or_404(Workout, pk=pk)
     if request.method == "POST":

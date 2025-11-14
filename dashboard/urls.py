@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     # Dashboard Home
     path("", views.dashboard_home, name="dashboard_home"),
-path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lead_status"),
+    path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lead_status"),
     path('logout/', views.logout_view, name='logout'),
     path("leads/", views.leads_all, name="leads_all"),
     path("leads/new/", views.leads_new, name="leads_new"),
@@ -13,10 +13,8 @@ path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lea
     path("leads/onhold/", views.leads_onhold, name="leads_onhold"),
     path("leads/won/", views.leads_won, name="leads_won"),
     path("leads/lost/", views.leads_lost, name="leads_lost"),
-# urls.py - Fix these patterns
     path("login/", views.admin_login, name="admin_login"),
-    path('populate-database/', views.database_populate, name='database_populate'),
-
+    path('project/', views.project, name='project'),
     path("delete/<int:pk>/", views.delete_lead, name="delete_lead"),
     path("clients/active/", views.clients_active, name="clients_active"),
     path("clients/payment-error/", views.clients_payment_error, name="clients_payment_error"),

@@ -32,8 +32,6 @@ router.register(r'heart-rate', views.HeartRateViewSet, basename='heart-rate')
 router.register(r'recipes', views.RecipeViewSet, basename='recipe')
 router.register(r'macro-plans', views.MacroPlanViewSet, basename='macro-plan')
 router.register(r'daily-targets', views.DailyMacroTargetViewSet, basename='daily-target')
-router.register(r'payment-methods', views.PaymentMethodViewSet, basename='payment-method')
-router.register(r'invoices', views.InvoiceViewSet, basename='invoice')
 router.register(r'subscriptions', views.SubscriptionViewSet, basename='subscription')
 router.register(r'lessons', views.LessonViewSet, basename='lesson')
 router.register(r'chat-threads', views.ChatThreadViewSet, basename='chat-thread')
@@ -46,18 +44,20 @@ router.register(r'files', views.UserFileViewSet, basename='file')
 
 urlpatterns = [
     # Auth endpoints
+    path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
+    path('webhook/', views.stripe_webhook, name='stripe_webhook'),
     path('auth/register/', views.Register, name='register'),
     path('auth/login/', views.Login, name='login'),
     path('auth/send-otp/', views.send_otp, name='send-otp'),
     path('auth/verify-otp/', views.verify_otp, name='verify-otp'),
     path('meal-workflow/<str:step>/', MealWorkflowView.as_view(), name='meal-workflow'),
-        path('auth/forgot-password/', views.forgot_password, name='forgot-password'),  # 👈 Add this line
+    path('auth/forgot-password/', views.forgot_password, name='forgot-password'),  # 👈 Add this line
     path('auth/reset-password/', views.reset_password, name='reset-password'),  # 👈 Add this lin e
-
     # Dashboard endpoints
-   path('dashboard/today/', views.dashboard_today, name='dashboard-today'),
-   path('dashboard/weekly-progress/', views.weekly_progress, name='weekly-progress'),
-    
+    path('dashboard/today/', views.dashboard_today, name='dashboard-today'),
+    path('dashboard/weekly-progress/', views.weekly_progress, name='weekly-progress'),
+
+
     # Analytics endpoints
    path('analytics/weekly/', views.weekly_analytics, name='analytics-weekly'),
    path('analytics/monthly/', views.monthly_analytics, name='analytics-monthly'),

@@ -759,7 +759,7 @@ class Muscle(models.Model):
 
 
 class Exercise(TimeStampedModel):
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_exercises")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,default='admin', blank=True, related_name="created_exercises")
     name = models.CharField(max_length=120, unique=True)
     primary_muscle = models.ForeignKey(Muscle, on_delete=models.SET_NULL, null=True, related_name="primary_exercises")
     secondary_muscles = models.ManyToManyField(Muscle, blank=True, related_name="secondary_exercises")
@@ -936,17 +936,19 @@ class PaymentMethod(TimeStampedModel):
 
 
 class Invoice(TimeStampedModel):
-    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True, related_name="invoices")
+    subscription = models.ForeignKey(
+        Subscription, on_delete=models.SET_NULL, null=True, blank=True, related_name="invoices"
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="invoices")
+    order = models.OneToOneField('Order', on_delete=models.CASCADE, null=True, blank=True, related_name='order_id')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="PKR")
     due_date = models.DateTimeField(null=True, blank=True)
     paid_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, default="unpaid")
+    paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Invoice {self.id} - {self.user.username} - {self.amount} {self.currency}"
-
+        return f"Invoice #{self.id} - {self.user.username}"
 
 class Payment(models.Model):
     PAYMENT_METHODS = [
@@ -959,16 +961,19 @@ class Payment(models.Model):
         ('pending', 'Pending'),
         ('failed', 'Failed'),
     ]
-    client = models.ForeignKey(User, on_delete=models.CASCADE)
-    plan_type = models.CharField(max_length=100)
-    duration = models.CharField(max_length=50)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
+    invoice = models.OneToOneField(Invoice, on_delete=models.CASCADE, related_name="payment", null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    stripe_session_id = models.CharField(max_length=255, blank=True)
+    stripe_payment_intent = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Payment #{self.id} - {self.client.name}"
+        return f"Payment #{self.id} - {self.user.username} ({self.status})"
+
 class MealPortionChoice(models.TextChoices):
     STANDARD = "standard", "Standard"
     LOW_CAL = "low_cal", "Low Calorie"
@@ -1088,6 +1093,9 @@ class Order(models.Model):
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.customer_name}"
 
 class Inventory(models.Model):
     ingredient_name = models.CharField(max_length=100)

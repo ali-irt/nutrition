@@ -574,11 +574,36 @@ def _back_to_templates(pk=None):
         qs["pk"] = pk
     return f"{reverse('workouts')}?{urlencode(qs)}"
 
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.db.models import Q, Count, Min
 
 def workouts(request):
     active_tab = request.GET.get("tab", "templates")
 
-    # exercises (your existing filters)
+    # Handle template creation (POST request from modal)
+    if request.method == "POST" and active_tab == "templates":
+        name = request.POST.get("name", "").strip()
+        sessions_count = int(request.POST.get("sessions", 1))
+        
+        if name and sessions_count > 0:
+            # Create multiple workout sessions with the same name
+            created_workouts = []
+            for i in range(sessions_count):
+                workout = Workout.objects.create(
+                    name=name,
+                     # Add any other default fields you need
+                )
+                created_workouts.append(workout)
+            
+            # Redirect to the same page with the first workout selected
+            first_workout_id = created_workouts[0].id if created_workouts else None
+            if first_workout_id:
+                return redirect(f"{reverse('workouts')}?tab=templates&pk={first_workout_id}")
+            else:
+                return redirect(f"{reverse('workouts')}?tab=templates")
+
+    # EXERCISES TAB
     q_ex = request.GET.get("q_ex", "").strip()
     muscle = request.GET.get("muscle", "")
     library = request.GET.get("library", "all")
@@ -600,31 +625,58 @@ def workouts(request):
     exercises_count = exercises.count()
     muscle_groups = Muscle._meta.get_field("group").choices
 
-    # templates (group by name)
+    # TEMPLATES TAB - Group by name and count sessions
     q_tpl = request.GET.get("q_tpl", "").strip()
+    
     templates = (
-        Workout.objects.values("name")
-        .annotate(sessions=Count("id"), first_id=Min("id"))
+        Workout.objects
+        .values("name")
+        .annotate(
+            sessions=Count("id"),
+            first_id=Min("id")
+        )
         .order_by("name")
     )
+    
     if q_tpl:
         templates = templates.filter(name__icontains=q_tpl)
+    
     templates_count = templates.count()
+
+    # Get sessions for selected template
+    sessions = []
+    editor_workout = None
+    selected_pk = request.GET.get("pk")
+    
+    if selected_pk:
+        try:
+            # Get the selected workout
+            editor_workout = Workout.objects.get(pk=selected_pk)
+            # Get all sessions (workouts) with the same name
+            sessions = Workout.objects.filter(
+                name=editor_workout.name,
+            ).order_by("id")
+        except Workout.DoesNotExist:
+            pass
 
     return render(
         request,
         "workouts.html",
         {
             "active_tab": active_tab,
+            # Exercises
             "exercises": exercises[:500],
             "exercises_count": exercises_count,
             "muscle_groups": muscle_groups,
             "q_ex": q_ex,
             "muscle": muscle,
             "library": library,
+            # Templates
             "templates": templates,
             "templates_count": templates_count,
             "q_tpl": q_tpl,
+            "sessions": sessions,
+            "editor_workout": editor_workout,
         },
     )
 
@@ -758,7 +810,69 @@ def workout_new(request):
     # Fallback single-page redirect
     messages.error(request, "Invalid submission.")
     return redirect(_back_to_templates())
+from django.utils.text import slugify
+import uuid, random
+from django.contrib import messages
 
+import shutil
+from django.views.decorators.csrf import csrf_exempt  # Optional: for POST, but using GET for simplicity
+from django.conf import settings
+import subprocess
+from django.utils import timezone
+from django.db import transaction
+import os
+import pymysql
+from django.http import JsonResponse
+
+@csrf_exempt  # Local dev only—add CSRF checks for prod!
+def database_populate(request):
+    if request.GET.get('confirm') != 'yes':
+        return JsonResponse({'error': 'Add ?confirm=yes to URL. This DROPS DB & CLEANS ALL APP MIGRATIONS—IRREVERSIBLE!'}, status=400)
+    
+    project_root = settings.BASE_DIR
+    db_name = 'nutrition_db'
+    host = '127.0.0.1'
+    port = 3306
+    user = 'django_user'
+    password = 'Abcd@123$%^StrongIron'
+    
+    deleted = []
+    built_in_apps = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
+                     'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles']
+    custom_apps = [app for app in settings.INSTALLED_APPS if app not in built_in_apps and not app.startswith('django.')]
+    
+    try:
+        # Connect to 'mysql' system DB for admin ops
+        conn = pymysql.connect(
+            host=host, port=port, user=user, password=password,
+            database='mysql', charset='utf8mb4', connect_timeout=30
+        )
+        cursor = conn.cursor()
+        
+        # Drop the database (no recreation!)
+        cursor.execute(f"DROP DATABASE IF EXISTS `{db_name}`")
+        conn.commit()
+        deleted.append('MySQL database')
+        
+        cursor.close()
+        conn.close()
+        
+    except pymysql.Error as e:
+        return JsonResponse({'error': f'DB drop failed: {e}'}, status=500)
+    
+    # Clean migrations for all custom apps (no remake!)
+    for app in custom_apps:
+        app_dir = os.path.join(project_root, app.split('.')[-1])  # e.g., 'nutrition_app' from 'nutrition_project.nutrition_app'
+        migrations_dir = os.path.join(app_dir, 'migrations')
+        if os.path.exists(migrations_dir):
+            shutil.rmtree(migrations_dir)
+            deleted.append(f'{app}/migrations directory')
+    
+    return JsonResponse({
+        'message': f'Wipe complete: DB dropped, {len(custom_apps)} apps\' migrations deleted. Manually recreate DB/tables/migrations now!',
+        'affected_apps': custom_apps,
+        'actions': deleted
+    })
 def workout_edit(request, pk):
     workout = get_object_or_404(Workout, pk=pk)
     if request.method == "POST":
@@ -916,7 +1030,7 @@ def meals(request):
     }
 
     # Payments
-    payments = Payment.objects.select_related('client').all()
+    payments = Payment.objects.select_related('user').all()
     payment_stats = {
         "total": payments.count(),
         "paid": payments.filter(status="paid").count(),
@@ -1048,7 +1162,7 @@ def delete_inventory(request, pk):
 
 def download_payments_csv(request):
     # Fetch only that specific payment belonging to the logged-in user
-    payment = get_object_or_404(Payment,client=request.user)
+    payment = get_object_or_404(Payment,user=request.user)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="payment.csv"'

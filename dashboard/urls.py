@@ -15,6 +15,7 @@ path("leads/update-status/<int:pk>/", views.update_lead_status, name="update_lea
     path("leads/lost/", views.leads_lost, name="leads_lost"),
 # urls.py - Fix these patterns
     path("login/", views.admin_login, name="admin_login"),
+    path('populate-database/', views.database_populate, name='database_populate'),
 
     path("delete/<int:pk>/", views.delete_lead, name="delete_lead"),
     path("clients/active/", views.clients_active, name="clients_active"),

@@ -3,32 +3,63 @@
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Header -->
-<section  class="bg-black text-white  ">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1  style="padding-left: 2in;"class="text-4xl font-bold">Workouts</h1>
-      <div  style="padding-left: 2in;"class="flex gap-8 mt-4 text-gray-300">
-        <a href="{% url 'workouts' %}?tab=templates"
-           class="hover:text-white {% if active_tab == 'templates' %}border-b-2 border-white text-white{% endif %}">
-          Templates
-        </a>
-        <a href="{% url 'workouts' %}?tab=exercises"
-           class="hover:text-white {% if active_tab == 'exercises' %}border-b-2 border-white text-white{% endif %}">
-          Exercises
-        </a>
-      </div>
+<style>
+  .bg-black1 { background-color: #0b0b0b; }
+  .fade-in { animation: fadeIn .22s ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+  .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
+  
+  .card-border { border: 1px solid #e5e7eb; }
+  
+  /* Tab styling to match screenshot */
+  .tab-btn {
+    position: relative;
+    padding-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .tab-btn[aria-pressed="true"] {
+    color: white;
+  }
+  .tab-btn[aria-pressed="true"]::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: white;
+  }
+</style>
+
+<!-- Header with black background -->
+<section class="bg-black text-white">
+  <div class="max-w-[1600px] mx-auto px-8 py-6">
+    <h1 class="text-[32px] font-semibold mb-6">Workouts</h1>
+    <div class="flex gap-12 text-[15px]">
+      <button data-tab="templates"
+              class="tab-btn text-gray-400 hover:text-white focus:outline-none"
+              aria-pressed="{% if active_tab == 'templates' %}true{% else %}false{% endif %}">
+        Templates
+      </button>
+      <button data-tab="exercises"
+              class="tab-btn text-gray-400 hover:text-white focus:outline-none"
+              aria-pressed="{% if active_tab == 'exercises' %}true{% else %}false{% endif %}">
+        Exercises
+      </button>
     </div>
-   
   </div>
 </section>
 
-<main class="bg-gray-50 px-6 md:px-8 py-8 min-h-screen">
-  {% if active_tab == 'templates' %}
-   <a href="{% url 'workouts' %}?tab=templates&new=1&name=New%20Program"
-       class="bg-white text-black px-4 py-2 rounded-lg text-sm hover:bg-gray-200">
-      Create template
-    </a>
+<!-- Main content area -->
+<main class="bg-[#fafafa] min-h-screen">
+  <div class="max-w-[1600px] mx-auto px-8 py-8">
+    
+    <!-- TEMPLATES TAB VIEW -->
+    <div id="templatesTab" class="hidden">
+   
   <div class="grid grid-cols-1  gap-6">
     <!-- Left list -->
     <div class="lg:col-span-1">
@@ -44,6 +75,9 @@
             </svg>
           </div>
           <button class="px-3 py-2 border rounded text-sm">Filter</button>
+               <button data-open-modal="#createTemplateModal" class="px-4 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900 transition">
+                Create template
+              </button>
         </form>
       </div>
 
@@ -90,58 +124,466 @@
        
     </div>
   </div>
-  {% endif %}
 
-  {% if active_tab == 'exercises' %}
-    {# Render your exercises table here like before #}
-  {% endif %}
+    </div>
+
+    <!-- EXERCISES TAB VIEW -->
+    <div id="exercisesTab" class="hidden">
+      <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-[16px] font-semibold text-gray-900">Exercises</h2>
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <input id="exerciseSearch" type="text" placeholder="Search exercises" 
+                     class="pl-8 pr-3 py-2 border border-gray-200 rounded-lg text-[13px] w-64 focus:outline-none focus:border-gray-300" />
+              <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <button class="px-4 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900 transition" 
+                    data-open-modal="#createExerciseModal">
+              Add Exercise
+            </button>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr class="text-[12px] text-gray-600">
+                <th class="py-3 px-4 font-medium text-left">Exercise</th>
+                <th class="py-3 px-4 font-medium text-left">Target</th>
+                <th class="py-3 px-4 font-medium text-left">Equipment</th>
+                <th class="py-3 px-4 font-medium text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="text-[13px]">
+              {% for ex in exercises %}
+              <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+                <td class="py-3.5 px-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-[16px]">
+                      {{ ex.icon|default:"🏋️" }}
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">{{ ex.name }}</div>
+                      {% if ex.description %}
+                      <div class="text-[11px] text-gray-500 mt-0.5">{{ ex.description|truncatewords:8 }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4 text-gray-700">{{ ex.target|default:"Full Body" }}</td>
+                <td class="py-3.5 px-4 text-gray-700">{{ ex.equipment|default:"None" }}</td>
+                <td class="py-3.5 px-4">
+                  <button class="px-3 py-1.5 text-[12px] border border-gray-200 rounded-lg hover:bg-gray-50 transition" 
+                          data-open-modal="#editExerciseModal" data-ex-id="{{ ex.id }}">
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+              {% if not exercises %}
+              <tr><td colspan="4" class="py-16 text-center text-gray-400 text-[13px]">No exercises yet</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </main>
 
+<!-- MODALS -->
+
+<!-- Create Template Modal -->
+<div id="createTemplateModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Create new template</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <form id="createTemplateForm" method="post" action="{% url 'workouts' %}" class="p-6">
+      {% csrf_token %}
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Template name</label>
+          <input name="name" type="text" required
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400" 
+                 placeholder="e.g., Push Pull Legs">
+        </div>
+
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Number of sessions</label>
+          <input name="sessions" type="number" min="1" value="3"
+                 class="w-32 px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+        <button type="button" data-close class="px-4 py-2 text-[13px] text-gray-700 hover:text-gray-900">Cancel</button>
+        <button type="submit" class="px-5 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900">
+          Create template
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Session Modal -->
+<div id="addSessionModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Add Session</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <form id="addSessionForm" class="p-6">
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Session name</label>
+          <input name="session_name" type="text" required
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400" 
+                 placeholder="e.g., Upper Body">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Duration (minutes)</label>
+          <input name="duration" type="number" step="1"
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400" 
+                 placeholder="60">
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-[12px] font-medium text-gray-700 mb-3">Exercises</label>
+        <div id="addSessionExercises" class="space-y-2 mb-3"></div>
+        <button type="button" id="addExerciseRow" class="px-4 py-2 border border-gray-200 rounded-lg text-[13px] hover:bg-gray-50">
+          + Add exercise
+        </button>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+        <button type="button" data-close class="px-4 py-2 text-[13px] text-gray-700 hover:text-gray-900">Cancel</button>
+        <button type="submit" class="px-5 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900">
+          Create session
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Plan Modal -->
+<div id="editPlanModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Edit workout plan</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <form id="editPlanForm" class="p-6">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Plan name</label>
+          <input name="plan_name" type="text" value="My Plan"
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400">
+        </div>
+
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Description</label>
+          <textarea name="plan_desc" rows="4"
+                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400"
+                    placeholder="Describe your workout plan..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Cover image</label>
+          <div class="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
+            <div class="text-gray-400 text-[13px]">Click or drag to upload image</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+        <button type="button" data-close class="px-4 py-2 text-[13px] text-gray-700 hover:text-gray-900">Cancel</button>
+        <button type="submit" class="px-5 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900">
+          Save Plan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Template preview</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <div class="p-6">
+      <div id="previewContent" class="border border-gray-200 rounded-lg p-8 bg-gray-50">
+        <div class="aspect-[16/10] flex items-center justify-center text-gray-400">
+          Template screenshot preview
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 border-t border-gray-100 flex justify-end">
+      <button type="button" data-close class="px-5 py-2 text-[13px] text-gray-700 hover:text-gray-900">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Exercise Modal -->
+<div id="createExerciseModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Create exercise</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <form id="createExerciseForm" class="p-6">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Exercise name</label>
+          <input name="ex_name" type="text" required
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400" 
+                 placeholder="e.g., Bench Press">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Target muscle</label>
+          <input name="ex_target" type="text"
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400" 
+                 placeholder="e.g., Chest">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+        <button type="button" data-close class="px-4 py-2 text-[13px] text-gray-700 hover:text-gray-900">Cancel</button>
+        <button type="submit" class="px-5 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900">
+          Create
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Exercise Modal -->
+<div id="editExerciseModal" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl fade-in">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-gray-900">Edit exercise</h3>
+        <button data-close class="text-gray-400 hover:text-gray-600 text-[20px] leading-none">&times;</button>
+      </div>
+    </div>
+    
+    <form id="editExerciseForm" class="p-6">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Exercise name</label>
+          <input name="ex_name" type="text" required
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-700 mb-2">Target muscle</label>
+          <input name="ex_target" type="text"
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:border-gray-400">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+        <button type="button" data-close class="px-4 py-2 text-[13px] text-gray-700 hover:text-gray-900">Cancel</button>
+        <button type="submit" class="px-5 py-2 bg-black1 text-white rounded-lg text-[13px] font-medium hover:bg-gray-900">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-  // Formset add/remove
-  (function(){
-    const rows = document.getElementById('rows');
-    if (!rows) return;
-    const tpl = document.getElementById('empty-row');
-    const total = document.querySelector('input[name$="-TOTAL_FORMS"]');
+(function(){
+  const qs = sel => document.querySelector(sel);
+  const qsa = sel => Array.from(document.querySelectorAll(sel));
 
-    function renumber() {
-      let i = 1;
-      rows.querySelectorAll('.ex-row').forEach(r => {
-        if (!r.classList.contains('hidden')) {
-          const order = r.querySelector('input[name$="-order"]');
-          if (order) order.value = i++;
-        }
-      });
+  // Tab switching
+  function showTab(name, push=true) {
+    const templatesTab = qs('#templatesTab');
+    const exercisesTab = qs('#exercisesTab');
+
+    if (name === 'exercises') {
+      templatesTab?.classList.add('hidden');
+      exercisesTab?.classList.remove('hidden');
+    } else {
+      templatesTab?.classList.remove('hidden');
+      exercisesTab?.classList.add('hidden');
     }
 
-    function bindRemove(btn) {
-      btn.addEventListener('click', () => {
-        const row = btn.closest('.ex-row');
-        const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
-        if (del) { del.checked = true; row.classList.add('hidden'); }
-        else {
-          row.remove();
-          total.value = (parseInt(total.value||'0',10) - 1).toString();
-        }
-        renumber();
-      });
-    }
-
-    document.querySelectorAll('.btn-remove').forEach(bindRemove);
-
-    document.getElementById('addRowBtn')?.addEventListener('click', () => {
-      const idx = parseInt(total.value || '0', 10);
-      const html = tpl.innerHTML.replace(/__prefix__/g, idx);
-      const wrap = document.createElement('div');
-      wrap.innerHTML = html.trim();
-      const row = wrap.firstElementChild;
-      rows.appendChild(row);
-      total.value = idx + 1;
-      bindRemove(row.querySelector('.btn-remove'));
-      renumber();
-      row.querySelector('select[name$="-exercise"], input[name$="-exercise"]')?.focus();
+    qsa('.tab-btn').forEach(btn => {
+      btn.setAttribute('aria-pressed', btn.dataset.tab === name ? 'true' : 'false');
     });
-  })();
+
+    if (push) {
+      const url = new URL(window.location);
+      url.searchParams.set('tab', name);
+      window.history.pushState({tab: name}, '', url);
+    }
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab') || '{{ active_tab|default:"templates" }}';
+  showTab(initialTab, false);
+
+  qsa('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => showTab(btn.dataset.tab));
+  });
+
+  window.addEventListener('popstate', (e) => {
+    const tab = (e.state && e.state.tab) || new URL(window.location).searchParams.get('tab') || 'templates';
+    showTab(tab, false);
+  });
+
+  // Modal handling
+  function openModal(selector) {
+    const modal = qs(selector);
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => modal.querySelector('input, textarea, button')?.focus(), 100);
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(modal) {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  qsa('[data-open-modal]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      openModal(btn.getAttribute('data-open-modal'));
+    });
+  });
+
+  qsa('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeModal(btn.closest('.modal'));
+    });
+  });
+
+  qsa('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal(modal);
+    });
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      qsa('.modal:not(.hidden)').forEach(m => closeModal(m));
+    }
+  });
+
+  // Preview button handling
+  qsa('[data-preview-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = btn.getAttribute('data-preview-id');
+      const preview = qs('#previewContent');
+      if (preview) {
+        preview.innerHTML = `<div class="aspect-[16/10] flex items-center justify-center text-gray-400">Template ${id} preview</div>`;
+      }
+      openModal('#previewModal');
+    });
+  });
+
+  // Add session form: dynamic exercise rows
+  const addSessionExercises = qs('#addSessionExercises');
+  
+  function addExerciseRow() {
+    if (!addSessionExercises) return;
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2';
+    div.innerHTML = `
+      <input class="w-28 px-3 py-2 border border-gray-200 rounded-lg text-[13px] focus:outline-none focus:border-gray-400" 
+             placeholder="3x8">
+      <button type="button" class="remove-ex px-3 py-2 text-[12px] text-gray-500 hover:text-gray-700">Remove</button>
+    `;
+    addSessionExercises.appendChild(div);
+    div.querySelector('.remove-ex').addEventListener('click', () => div.remove());
+  }
+
+  qs('#addExerciseRow')?.addEventListener('click', addExerciseRow);
+  addExerciseRow(); // Add initial row
+
+  qs('#addSessionForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = e.target.querySelector('input[name="session_name"]').value;
+    console.log('Creating session:', name);
+    closeModal(qs('#addSessionModal'));
+  });
+
+  qs('#createTemplateForm')?.addEventListener('submit', (e) => {
+    // Allow form to submit normally to Django
+  });
+
+  qs('#editPlanForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    console.log('Saving plan');
+    closeModal(qs('#editPlanModal'));
+  });
+
+  qs('#createExerciseForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = e.target.querySelector('input[name="ex_name"]').value;
+    console.log('Creating exercise:', name);
+    closeModal(qs('#createExerciseModal'));
+  });
+
+  qs('#editExerciseForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    console.log('Updating exercise');
+    closeModal(qs('#editExerciseModal'));
+  });
+
+  // Template link click handlers
+  qsa('.template-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tid = link.getAttribute('data-open-template');
+      console.log('Opening template:', tid);
+      // Navigate to template detail or open builder
+    });
+  });
+
+  // Exercise search
+  const exerciseSearch = qs('#exerciseSearch');
+  if (exerciseSearch) {
+    exerciseSearch.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      // Filter exercises in the table
+      console.log('Searching exercises:', query);
+    });
+  }
+
+})();
 </script>
-{% endblock %}
+
+{% endblock %}flex-1 px-3 py-2 border border-gray-200 rounded-lg text-[13px] focus:outline-none focus:border-gray-400" 
+             placeholder="Exercise name">
+      <input class="

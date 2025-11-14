@@ -25,7 +25,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.3-4.3M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
         </svg>
       </div>
-      <button data-modal-open="#ingredientModal" class="bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800">
+      <button data-modal-open="#ingredientModal" class="bg-black1 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800">
         Create ingredient
       </button>
     </div>
@@ -73,18 +73,28 @@
   </div>
 </main>
 
-<!-- Create ingredient modal (matching reference) -->
-<div id="ingredientModal" class="modal-overlay fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
-  <div class="relative bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="ingredientTitle">
-    <button type="button" aria-label="Close" data-modal-close="#ingredientModal" class="absolute right-4 top-4 text-gray-500 hover:text-black">✕</button>
+<!-- Ingredient Modal -->
+<div id="ingredientModal" style="margin-top: 50px;"
+  class="modal-overlay fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
 
-    <h2 id="ingredientTitle" class="text-2xl font-bold mb-4">Add ingredient</h2>
+  <div class="relative bg-white rounded-2xl w-full max-w-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto animate-fadeIn" 
+       role="dialog" aria-modal="true" aria-labelledby="ingredientTitle">
+
+    <!-- Close Button -->
+    <button type="button" aria-label="Close" data-modal-close="#ingredientModal"
+      class="absolute right-4 top-4 text-gray-500 hover:text-black text-xl">✕</button>
+
+    <!-- Title -->
+    <h2 id="ingredientTitle" class="text-2xl font-bold mb-4">Add Ingredient</h2>
+
+    <!-- Error message -->
     <div id="ingredientErrors" class="bg-red-50 text-red-700 border border-red-200 rounded p-3 text-sm mb-4 hidden"></div>
 
+    <!-- Form -->
     <form id="ingredientForm" method="post" action="{% url 'ingredient_create' %}">
       {% csrf_token %}
 
-      <!-- Top: name + language -->
+      <!-- Name + Language -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="text-xs text-gray-500">Name</label>
@@ -93,7 +103,7 @@
         <div>
           <label class="text-xs text-gray-500">Language</label>
           <select name="language" class="border p-2 rounded w-full">
-            <option value="">English (US)</option>
+            <option>English (US)</option>
             <option>English (UK)</option>
             <option>Spanish</option>
             <option>French</option>
@@ -101,7 +111,7 @@
         </div>
       </div>
 
-      <!-- Display category (optional UI-only) -->
+      <!-- Category -->
       <div class="mb-4">
         <details class="border rounded-lg">
           <summary class="px-3 py-2 text-sm text-gray-700 cursor-pointer">Display in shopping list category</summary>
@@ -118,39 +128,25 @@
         </details>
       </div>
 
-      <!-- Nutritional value -->
+      <!-- Macronutrients -->
       <div class="mb-2 flex items-center gap-2 text-xs text-gray-600">
         <input type="checkbox" checked disabled>
-        <span>Please make sure to input the correct macronutrient values (per 100g). You won’t be able to edit them after save.</span>
+        <span>Make sure to input the correct macronutrient values (per 100g). You can’t edit them later.</span>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-        <div>
-          <label class="text-xs text-gray-500">Protein/100g</label>
-          <input id="p100" name="protein" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
-        </div>
-        <div>
-          <label class="text-xs text-gray-500">Carbs/100g</label>
-          <input id="c100" name="carbs" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
-        </div>
-        <div>
-          <label class="text-xs text-gray-500">Fat/100g</label>
-          <input id="f100" name="fats" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required>
-        </div>
+        <div><label class="text-xs text-gray-500">Protein/100g</label><input name="protein" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required></div>
+        <div><label class="text-xs text-gray-500">Carbs/100g</label><input name="carbs" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required></div>
+        <div><label class="text-xs text-gray-500">Fat/100g</label><input name="fats" type="number" step="0.1" class="border p-2 rounded w-full" value="0" required></div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label class="text-xs text-gray-500">Calories/100g</label>
-          <input id="k100" name="calories" type="number" step="1" class="border p-2 rounded w-full" value="0" required>
-        </div>
-        <div>
-          <label class="text-xs text-gray-500">Description (optional)</label>
-          <input name="description" type="text" class="border p-2 rounded w-full" placeholder="Short note">
-        </div>
+      <!-- Calories + Description -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div><label class="text-xs text-gray-500">Calories/100g</label><input name="calories" type="number" step="1" class="border p-2 rounded w-full" value="0" required></div>
+        <div><label class="text-xs text-gray-500">Description (optional)</label><input name="description" type="text" class="border p-2 rounded w-full" placeholder="Short note"></div>
       </div>
 
-      <!-- Micronutrients toggle (optional UI) -->
+      <!-- Micronutrients Toggle -->
       <div class="mb-4">
         <label class="inline-flex items-center gap-2 text-sm">
           <input id="microToggle" type="checkbox" class="rounded"> Specify micronutrient information
@@ -164,47 +160,25 @@
 
       <!-- Units -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label class="text-xs text-gray-500">Unit</label>
-          <select class="border p-2 rounded w-full">
-            <option>Portion</option>
-            <option>100 g</option>
-            <option>100 ml</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs text-gray-500">Unit size</label>
-          <input type="number" step="0.1" class="border p-2 rounded w-full" placeholder="e.g., 1 portion = 50 g">
-        </div>
+        <div><label class="text-xs text-gray-500">Unit</label><select class="border p-2 rounded w-full"><option>Portion</option><option>100 g</option><option>100 ml</option></select></div>
+        <div><label class="text-xs text-gray-500">Unit size</label><input type="number" step="0.1" class="border p-2 rounded w-full" placeholder="e.g., 1 portion = 50 g"></div>
       </div>
 
-      <!-- Allergies & preferences (UI only) -->
+      <!-- Preferences -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label class="text-xs text-gray-500">Allergies & intolerances</label>
-          <select class="border p-2 rounded w-full">
-            <option>Contains</option>
-            <option>Free from</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs text-gray-500">Preference</label>
-          <select class="border p-2 rounded w-full">
-            <option>None</option>
-            <option>Halal</option>
-            <option>Kosher</option>
-            <option>Vegan</option>
-          </select>
-        </div>
+        <div><label class="text-xs text-gray-500">Allergies & intolerances</label><select class="border p-2 rounded w-full"><option>Contains</option><option>Free from</option></select></div>
+        <div><label class="text-xs text-gray-500">Preference</label><select class="border p-2 rounded w-full"><option>None</option><option>Halal</option><option>Kosher</option><option>Vegan</option></select></div>
       </div>
 
+      <!-- Actions -->
       <div class="flex justify-end gap-3">
         <button type="button" data-modal-close="#ingredientModal" class="hover:underline">Cancel</button>
-        <button id="ingredientSubmitBtn" class="bg-black text-white px-5 py-2 rounded">Create</button>
+        <button id="ingredientSubmitBtn" class="bg-black1 text-white px-5 py-2 rounded hover:bg-gray-800 transition">Create</button>
       </div>
     </form>
   </div>
 </div>
+
 
 <script>
   // Modal open/close

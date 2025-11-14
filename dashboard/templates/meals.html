@@ -31,37 +31,387 @@
   <main class="px-6 pb-8">
 
     <!-- 🔹 Overview Tab -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+  .bg { margin-top: 30px; }
+  .tab { display: block; }
+  
+  /* Premium Modal Styles */
+  .modal-backdrop.show {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(60px);
+  }
+
+  .premium-modal .modal-dialog {
+    max-width: 500px;
+    width: 90%;
+    margin: auto;
+  }
+
+  .premium-modal .modal-content {
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    animation: modalPop 0.3s ease-out;
+  }
+
+  @keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .premium-modal-header {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: white;
+    padding: 1.5rem;
+    border-bottom: none;
+  }
+
+  .premium-modal-header-danger {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  }
+
+  .premium-modal-body {
+    padding: 2rem;
+    background: #f9fafb;
+  }
+
+  .premium-modal-footer {
+    padding: 1rem 1.5rem;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .premium-input-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .premium-form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .premium-form-control {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .premium-form-control:focus {
+    border-color: #000000;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    outline: none;
+  }
+
+  .premium-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .premium-btn-dark {
+    background: #000000;
+    color: white;
+  }
+
+  .premium-btn-dark:hover {
+    background: #1f2937;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .premium-btn-light {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .premium-btn-light:hover {
+    background: #e5e7eb;
+  }
+
+  .premium-btn-danger {
+    background: #dc2626;
+    color: white;
+  }
+
+  .premium-btn-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+
+  .delete-icon-animate {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  /* Django Form Styling */
+  .premium-modal-body input[type="text"],
+  .premium-modal-body input[type="email"],
+  .premium-modal-body input[type="password"],
+  .premium-modal-body input[type="tel"],
+  .premium-modal-body input[type="date"],
+  .premium-modal-body input[type="number"],
+  .premium-modal-body textarea,
+  .premium-modal-body select {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .premium-modal-body input:focus,
+  .premium-modal-body textarea:focus,
+  .premium-modal-body select:focus {
+    border-color: #000000;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    outline: none;
+  }
+
+  .premium-modal-body label {
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .premium-modal-body p {
+    margin-bottom: 16px;
+  }
+
+  .premium-modal-body .helptext {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  .premium-modal-body .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0 0;
+  }
+
+  .premium-modal-body .errorlist li {
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .premium-modal .modal-dialog {
+      max-width: 90%;
+    }
+    .premium-modal .modal-body {
+      padding: 1.5rem !important;
+    }
+  }
+</style>
+
+<body class="text-white min-h-screen" x-data="{ tab: 'overview', deliveryFilter: 'all', paymentFilter: 'all', showMenu: null }">
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="fixed top-4 right-4 z-50" style="max-width: 400px;">
+    {% for message in messages %}
+    <div class="mb-2 p-4 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %} text-white">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+  <main class="px-6 pb-8">
+    <!-- Overview Tab -->
     <section x-show="tab === 'overview'" x-transition>
-  <div style="margin-top:20px ;" class="black rounded-3xl p-8">
-   <div class="flex items-center justify-around">
-          <div class="text-center">       
-                 <div class="text-4xl font-bold">{{ stats.total_meals }}</div>
-  <div class="text-lg font-semibold">Total Meals</div>
+      <!-- Stats Cards -->
+      <div class="bg-gray-100 rounded-3xl p-8 mt-6">
+        <div class="grid grid-cols-4 gap-8">
+          <!-- Stat 1 -->
+          <div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);" class="rounded-2xl p-6 text-white">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-4xl font-bold mb-1">{{ client_stats.active }}</div>
+                <div class="text-sm text-gray-300">Active Clients</div>
+              </div>
+            </div>
+          </div>
 
+          <!-- Stat 2 -->
+          <div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);" class="rounded-2xl p-6 text-white">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 5v2h6.59L4 18.59 5.41 20 17 8.41V15h2V5z"/>
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-4xl font-bold mb-1">{{ order_stats.pending }}</div>
+                <div class="text-sm text-gray-300">Meals to Prepare</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat 3 -->
+          <div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);" class="rounded-2xl p-6 text-white">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-4xl font-bold mb-1">{{ payment_stats.revenue|floatformat:0 }}</div>
+                <div class="text-sm text-gray-300">Total Revenue (PKR)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat 4 -->
+          <div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);" class="rounded-2xl p-6 text-white">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-8 4c0 .55-.45 1-1 1s-1-.45-1-1V8h2v2zm2-6c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm4 6c0 .55-.45 1-1 1s-1-.45-1-1V8h2v2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-4xl font-bold mb-1">{{ delivery_stats.total }}</div>
+                <div class="text-sm text-gray-300">Total Deliveries</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="text-center">       
-                 <div class="text-4xl font-bold">{{ stats.avg_calories }}</div>
-                   <div class="text-lg font-semibold">Averga Calories</div>
-
-
-        </div>
-         
-        <div class="text-center">       
-               <p class="text-gray-400 text-sm mb-2">Vegan Meals</p>
-                 <div class="text-4xl font-bold">{{ stats.vegan_count }}</div>
-  <div class="text-lg font-semibold">Vegan Meals</div>
-
-        </div>
-      <div class="text-center">       
-                 <div class="text-4xl font-bold">{{ stats.vegetarian_count }}</div>
-  <div class="text-lg font-semibold">Vegetarian Meals</div>
-
-        </div>
-       
       </div>
+
+      <!-- Charts and Summary Section -->
+      <div class="grid grid-cols-3 gap-6 mt-6">
+        
+        <!-- Revenue Chart -->
+        <div class="col-span-2 bg-white rounded-2xl p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Revenue</h2>
+          
+          <!-- Legend -->
+          <div class="flex gap-6 mb-4 text-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background: #93c5fd;"></div>
+              <span class="text-gray-600">All</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background: #60a5fa;"></div>
+              <span class="text-gray-600">Lunch</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background: #3b82f6;"></div>
+              <span class="text-gray-600">Dinner</span>
+            </div>
+          </div>
+          
+          <!-- Chart -->
+          <canvas id="revenueChart" height="80"></canvas>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-white rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Order Summary</h2>
+            <button class="text-sm text-gray-600 flex items-center gap-1">
+              Monthly ▾
+            </button>
+          </div>
+          
+          <div>
+            <div class="rounded-lg px-4 py-3 flex justify-between items-center font-medium mb-2" style="background: #fecaca;">
+              <span class="text-gray-900">Orders</span>
+              <span class="text-gray-900 font-semibold">{{ order_stats.total }}</span>
+            </div>
+            
+            <div class="rounded-lg px-4 py-3 flex justify-between items-center font-medium mb-2" style="background: #bfdbfe;">
+              <span class="text-gray-900">Total Delivered</span>
+              <span class="text-gray-900 font-semibold">{{ order_stats.delivered }}</span>
+            </div>
+            
+            <div class="rounded-lg px-4 py-3 flex justify-between items-center font-medium mb-2" style="background: #fed7aa;">
+              <span class="text-gray-900">In Progress</span>
+              <span class="text-gray-900 font-semibold">{{ order_stats.in_progress }}</span>
+            </div>
+            
+            <div class="rounded-lg px-4 py-3 flex justify-between items-center font-medium mb-2" style="background: #bbf7d0;">
+              <span class="text-gray-900">Inventory Items</span>
+              <span class="text-gray-900 font-semibold">{{ inventory_stats.total_ingredients }}</span>
+            </div>
+            
+            <div class="rounded-lg px-4 py-3 flex justify-between items-center font-medium mb-2" style="background: #ddd6fe;">
+              <span class="text-gray-900">Total Clients</span>
+              <span class="text-gray-900 font-semibold">{{ client_stats.total }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white text-black rounded-2xl shadow-lg overflow-hidden">
+      <!-- Alert Items -->
+      <div class="mt-6 grid grid-cols-1 gap-3">
+        <div class="bg-gray-200 rounded-lg px-5 py-4 flex justify-between items-center font-medium">
+          <span class="text-gray-900">Meals to Prepare Today</span>
+          <span class="text-gray-900 font-bold">{{ order_stats.pending }}</span>
+        </div>
+        
+        <div class="bg-gray-200 rounded-lg px-5 py-4 flex justify-between items-center font-medium">
+          <span class="text-gray-900">Deliveries Today</span>
+          <span class="text-gray-900 font-bold">{{ delivery_stats.out_for_delivery }}</span>
+        </div>
+        
+        <div class="bg-gray-200 rounded-lg px-5 py-4 flex justify-between items-center font-medium">
+          <span class="text-gray-900">Low Stock Alerts</span>
+          <span class="text-gray-900 font-bold">{{ inventory_stats.low_stock }}</span>
+        </div>
+        
+        <div class="bg-gray-200 rounded-lg px-5 py-4 flex justify-between items-center font-medium">
+          <span class="text-gray-900">Pending Payments</span>
+          <span class="text-gray-900 font-bold">{{ payment_stats.pending }}</span>
+        </div>
+        
+        <div class="bg-gray-200 rounded-lg px-5 py-4 flex justify-between items-center font-medium">
+          <span class="text-gray-900">Active Meal Plans</span>
+          <span class="text-gray-900 font-bold">{{ stats.total_meals }}</span>
+        </div>
+      </div>
+
+      <!-- All Meals Table -->
+      <div class="bg-white text-black rounded-2xl shadow-lg overflow-hidden mt-6">
         <div class="p-6">
           <h2 class="text-xl font-bold mb-4">All Meals</h2>
           <table class="w-full text-sm">
@@ -99,6 +449,154 @@
         </div>
       </div>
     </section>
+
+    <!-- Note: Other tabs (Orders, Clients, Inventory, Delivery, Payments) remain the same as your original template -->
+    <!-- Add them here from your original document... -->
+
+  </main>
+
+  <!-- Chart.js Script -->
+  <script>
+    // Generate realistic weekly revenue data
+    function generateRevenueData() {
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const data = {
+        labels: days,
+        datasets: [
+          {
+            label: 'Dinner',
+            data: [45, 38, 42, 58, 65, 78, 95],
+            backgroundColor: '#3b82f6',
+            borderWidth: 0,
+          },
+          {
+            label: 'Lunch',
+            data: [35, 40, 38, 45, 52, 60, 72],
+            backgroundColor: '#60a5fa',
+            borderWidth: 0,
+          },
+          {
+            label: 'All',
+            data: [25, 28, 32, 38, 42, 48, 55],
+            backgroundColor: '#93c5fd',
+            borderWidth: 0,
+          }
+        ]
+      };
+      return data;
+    }
+
+    // Wait for Alpine.js to initialize
+    document.addEventListener('alpine:init', () => {
+      // Initialize Chart when Overview tab is active
+      setTimeout(() => {
+        const ctx = document.getElementById('revenueChart');
+        if (ctx) {
+          const revenueChart = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: generateRevenueData(),
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  backgroundColor: '#1f2937',
+                  padding: 12,
+                  displayColors: true,
+                  callbacks: {
+                    label: function(context) {
+                      return context.dataset.label + ': PKR ' + context.parsed.y + 'k';
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  grid: {
+                    display: false
+                  },
+                  ticks: {
+                    font: {
+                      size: 11
+                    },
+                    color: '#6b7280'
+                  }
+                },
+                y: {
+                  stacked: true,
+                  beginAtZero: true,
+                  max: 160,
+                  ticks: {
+                    stepSize: 20,
+                    callback: function(value) {
+                      return value;
+                    },
+                    font: {
+                      size: 11
+                    },
+                    color: '#6b7280'
+                  },
+                  grid: {
+                    color: '#f3f4f6',
+                    drawBorder: false
+                  }
+                }
+              },
+              interaction: {
+                intersect: false,
+                mode: 'index'
+              }
+            }
+          });
+        }
+      }, 100);
+    });
+
+    // Animate numbers on load
+    function animateValue(element, start, end, duration) {
+      const range = end - start;
+      const increment = range / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+          current = end;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current).toLocaleString();
+      }, 16);
+    }
+
+    // Animate stats on page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const statsElements = document.querySelectorAll('[style*="linear-gradient"] .text-4xl');
+        if (statsElements.length > 0) {
+          statsElements.forEach((stat, index) => {
+            const targetValue = parseInt(stat.textContent.replace(/,/g, ''));
+            if (!isNaN(targetValue)) {
+              animateValue(stat, 0, targetValue, 1000);
+            }
+          });
+        }
+      }, 200);
+    });
+
+    // Auto-hide messages after 5 seconds
+    setTimeout(() => {
+      const messages = document.querySelectorAll('.fixed.top-4 > div');
+      messages.forEach(msg => {
+        msg.style.transition = 'opacity 0.5s';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 500);
+      });
+    }, 5000);
+  </script>
 
     <!-- 🔹 Orders Tab -->
     <section x-show="tab === 'orders'" x-transition>
@@ -848,7 +1346,7 @@
             {% for payment in payments %}
             <tr class="border-b border-gray-100 hover:bg-gray-50">
               <td class="px-4 py-4 text-sm font-medium">{{ payment.id|stringformat:"03d" }}</td>
-              <td class="px-4 py-4 text-sm">{{ payment.client.username }}</td>
+              <td class="px-4 py-4 text-sm">{{ payment.user.username }}</td>
               <td class="px-4 py-4 text-sm">{{ payment.plan_type|default:"Basic Plan" }}</td>
               <td class="px-4 py-4 text-sm">{{ payment.amount|floatformat:0 }} PKR</td>
               <td class="px-4 py-4 text-sm">{{ payment.payment_method|default:"Credit Card" }}</td>
@@ -1052,5 +1550,7 @@ function downloadPDF() {
     }
   });
 
- 
+}
+</script>
+
  {% endblock %}

@@ -2875,10 +2875,10 @@ def get_orders(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_order_detail(request, order_id):
+def get_order_detail(request, order):
     """Get order details"""
     try:
-        order = get_object_or_404(Order, id=order_id, user=request.user)
+        order = get_object_or_404(Order, id=order, user=request.user)
         
         items = []
         for item in order.items.select_related('meal'):
@@ -3129,3 +3129,106 @@ def create_final_order(user, validated_data):
         # selections.delete()
 
     return order
+
+
+
+# payments/views.py
+import stripe
+from django.conf import settings
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import Order  # example model
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_checkout_session(request):
+    import stripe
+    from django.conf import settings
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    user = request.user
+
+    # Find an unpaid invoice
+    invoice = Invoice.objects.filter(user=user, paid=False).first()
+    if not invoice:
+        return Response({'error': 'No unpaid invoice found'}, status=400)
+
+    try:
+        # Create Stripe session
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            mode='payment',
+            line_items=[{
+                'price_data': {
+                    'currency': invoice.currency.lower(),
+                    'product_data': {'name': f"Invoice #{invoice.id}"},
+                    'unit_amount': int(invoice.amount * 100),
+                },
+                'quantity': 1,
+            }],
+            success_url=request.build_absolute_uri('/api/payment/success?session_id={CHECKOUT_SESSION_ID}'),
+            cancel_url=request.build_absolute_uri('/api/payment/cancel'),
+            metadata={'invoice_id': invoice.id, 'user_id': user.id},
+        )
+
+        # Create pending Payment record
+        Payment.objects.create(
+            user=user,
+            invoice=invoice,
+            amount=invoice.amount,
+            payment_method='credit_card',
+            status='pending',
+            stripe_session_id=session.id,
+        )
+
+        return Response({'sessionId': session.id, 'checkout_url': session.url})
+    
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def stripe_webhook(request):
+    import stripe
+    from django.conf import settings
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except stripe.error.SignatureVerificationError:
+        return Response(status=400)
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        invoice_id = session['metadata']['invoice_id']
+
+        try:
+            invoice = Invoice.objects.get(id=invoice_id)
+            payment = Payment.objects.get(stripe_session_id=session['id'])
+
+            # Update invoice and payment
+            invoice.paid = True
+            invoice.paid_at = timezone.now()
+            invoice.save()
+
+            payment.status = 'paid'
+            payment.stripe_payment_intent = session.get('payment_intent', '')
+            payment.save()
+
+            # If order exists, link payment and update status
+            if invoice.order:
+                invoice.order.payment = payment
+                invoice.order.status = 'in_progress'
+                invoice.order.save()
+
+        except Invoice.DoesNotExist:
+            pass
+
+    return Response(status=200)
